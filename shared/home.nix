@@ -4,7 +4,6 @@
   ...
 }: {
   home.username = "simon";
-  home.homeDirectory = "/Users/simon";
 
   programs = {
     awscli.enable = true;

@@ -49,6 +49,7 @@
             home-manager.users.simon = {
               imports = [
                 ./shared/home.nix
+                ./nixos/home.nix
               ];
             };
           }
