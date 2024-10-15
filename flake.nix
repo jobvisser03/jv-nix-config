@@ -41,6 +41,7 @@
         system = "x86_64-linux";
         modules = [
           nixos-wsl.nixosModules.default
+          ./nixos/system.nix
           home-manager.nixosModules.home-manager
           {
             system.stateVersion = "24.05";
