@@ -46,10 +46,10 @@
           {
             system.stateVersion = "24.05";
             wsl.enable = true;
+            wsl.defaultUser = "simon";
             home-manager.users.simon = {
               imports = [
                 ./shared/home.nix
-                ./nixos/home.nix
               ];
             };
           }

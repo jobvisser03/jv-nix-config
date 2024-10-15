@@ -4,7 +4,11 @@
   ...
 }: {
   # This is needed for home-manager to work
-  users.users.simon = {home = "/home/simon";};
+  users.users.simon = {
+    home = "/home/simon";
+    isNormalUser = true;
+  };
+  users.defaultUserShell = pkgs.zsh;
 
   # add nix stuff to /etc/zshrc
   programs.zsh.enable = true;
