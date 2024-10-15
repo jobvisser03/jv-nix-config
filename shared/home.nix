@@ -311,7 +311,6 @@
 
   home.packages = with pkgs; [
     alejandra
-    alt-tab-macos
     (azure-cli.withExtensions [
       azure-cli.extensions.azure-devops
     ])
@@ -320,7 +319,6 @@
     font-awesome
     google-cloud-sdk
     graphviz
-    iina
     imagemagick
     material-design-icons
     (nerdfonts.override {fonts = ["CascadiaCode" "FantasqueSansMono"];})
