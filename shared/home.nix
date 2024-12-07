@@ -303,6 +303,7 @@
 
         bindkey "^ " autosuggest-accept
         test -e "$HOME/.iterm2_shell_integration.zsh" && source "$HOME/.iterm2_shell_integration.zsh"
+        source $HOME/.local/bin/env
       '';
       shellAliases = {
         venv = "source .venv/bin/activate";
