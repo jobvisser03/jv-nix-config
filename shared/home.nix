@@ -7,6 +7,15 @@
 
   programs = {
     awscli.enable = true;
+    atuin = {
+      enable = true;
+      settings = {
+        sync_frequency = "5m";
+        sync = {
+          records = true;
+        };
+      };
+    };
     bat.enable = true;
     broot.enable = true;
     btop.enable = true;
@@ -37,10 +46,10 @@
         ".hg"
       ];
     };
-    fzf = {
-      enable = true;
-      fileWidgetCommand = "fd --type file --follow --hidden --exclude .git";
-    };
+    # fzf = {
+    #   enable = true;
+    #   fileWidgetCommand = "fd --type file --follow --hidden --exclude .git";
+    # };
     git = {
       enable = true;
       lfs.enable = true;
@@ -315,6 +324,7 @@
     ])
     curl
     ffmpeg
+    fzf
     font-awesome
     google-cloud-sdk
     graphviz

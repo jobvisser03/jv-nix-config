@@ -3,4 +3,6 @@
     alt-tab-macos
     iina
   ];
+
+  home.homeDirectory = "/Users/simon";
 }
