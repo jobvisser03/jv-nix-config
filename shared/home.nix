@@ -31,7 +31,7 @@
     eza = {
       enable = true;
       git = true;
-      icons = true;
+      icons = "auto";
       extraOptions = [
         "--group-directories-first"
         "--header"
@@ -337,7 +337,8 @@
     graphviz
     imagemagick
     material-design-icons
-    (nerdfonts.override {fonts = ["CascadiaCode" "FantasqueSansMono"];})
+    nerd-fonts.caskaydia-cove
+    nerd-fonts.fantasque-sans-mono
     nil
     rsync
   ];
