@@ -11,6 +11,8 @@
       enable = true;
       settings = {
         sync_frequency = "5m";
+        style = "compact";
+        enter_accept = true;
         sync = {
           records = true;
         };
@@ -84,6 +86,7 @@
         add_newline = false;
 
         format = lib.strings.concatStrings [
+          "$hostname"
           "[](#DA627D)"
           "$directory"
           "[](fg:#DA627D bg:#FCA17D)"
@@ -194,6 +197,10 @@
           symbol = " ";
           style = "bg:#86BBD8";
           format = "[$symbol($version) ]($style)";
+        };
+
+        hostname = {
+          format = "[$ssh_symbol$hostname ]($style)";
         };
 
         java = {
