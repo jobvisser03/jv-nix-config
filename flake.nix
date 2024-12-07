@@ -33,6 +33,9 @@
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
           ./shared/home.nix
+          {
+            home.homeDirectory = "/home/simon";
+          }
         ];
       };
     };
