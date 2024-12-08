@@ -281,10 +281,11 @@
       };
       initExtra = ''
         export PATH="$HOME/.cargo/bin:$PATH"
-        export PATH="/Users/simon/repos/experiments/flutter/bin:$PATH"
+        export PATH="$HOME/repos/experiments/flutter/bin:$PATH"
         export GEM_HOME=$HOME/.gem
         export PATH=$GEM_HOME/bin:$PATH
-        export PATH="/Users/simon/.gem/ruby/3.3.0/bin:$PATH"
+        export PATH="$HOME/.gem/ruby/3.3.0/bin:$PATH"
+        export PATH="$HOME/.local/bin:$PATH"
 
         export PIP_REQUIRE_VIRTUALENV=1
         export PIP_USE_PEP517=1
@@ -303,7 +304,6 @@
 
         bindkey "^ " autosuggest-accept
         test -e "$HOME/.iterm2_shell_integration.zsh" && source "$HOME/.iterm2_shell_integration.zsh"
-        source $HOME/.local/bin/env
       '';
       shellAliases = {
         venv = "source .venv/bin/activate";
