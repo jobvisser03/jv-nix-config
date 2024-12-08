@@ -202,7 +202,8 @@
 
         hostname = {
           ssh_only = true;
-          format = "[$hostname ]($style)";
+          format = "[$ssh_symbol$hostname ]($style)";
+          ssh_symbol = "🌐";
         };
 
         java = {
