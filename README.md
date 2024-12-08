@@ -1,6 +1,11 @@
 # Nix/Home Manager flake configuration
 
-This repository contains my personal Nix/Home Manager configuration. I currently use Nix mainly in Home Manager and am very happy with it. Mainly because each machine that I work on now has the same command line tools with the same configuration.
+This repository contains my personal Nix/Home Manager configuration. I currently use Nix mainly in Home Manager and am very happy with it.
+
+Main features:
+
+- Each machine has the same command line tools with the same configuration (zsh, starship, git, ...)
+- Shared command history between multiple machines thanks to atuin
 
 I tried using nix-darwin and NixOS, but at the moment they don't bring much value to me. I work with Python a lot, in various team structures, and for now I want to keep using regular virtual environments for my Python projects, which seems like a hassle in NixOS. Thanks to nix-darwin I can now do sudo using Touch ID on my Macbook, but I don't use it for much else.
 
