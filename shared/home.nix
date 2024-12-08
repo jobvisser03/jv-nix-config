@@ -201,7 +201,8 @@
         };
 
         hostname = {
-          format = "[$ssh_symbol$hostname ]($style)";
+          ssh_only = true;
+          format = "[$hostname ]($style)";
         };
 
         java = {
