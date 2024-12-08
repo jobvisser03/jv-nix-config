@@ -113,7 +113,7 @@
           "$cmd_duration"
           "[](#06969A)"
         ];
-        line_break.disabled = true;
+        # line_break.disabled = true;
 
         aws.disabled = true;
         gcloud.disabled = true;
