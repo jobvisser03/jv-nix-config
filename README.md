@@ -11,6 +11,8 @@ I tried using nix-darwin and NixOS, but at the moment they don't bring much valu
 
 ## Very basic steps to set this up yourself
 
+Setting this up can be a bit confusing. Nix will build all of its own packages in `/nix` and symlink them to the right place. It will also create config files like "~/.zshrc". The nix language is often described as "json with functions". The docs and examples can sometimes be confusing. For me the deterministic and portable nature of my home directory is worth the learning curve. It's quite a cool system!
+
 - Install Nix: https://nixos.org/download/
 - Create a new folder and initialiase home-manager: `nix --experimental-features 'nix-command flakes' run home-manager/master -- init --switch`
 - Add your configuration (similar to flake.nix and shared/home.nix from this repository)
@@ -21,6 +23,7 @@ I tried using nix-darwin and NixOS, but at the moment they don't bring much valu
 
 - [Setting up your dotfiles with home-manager as a flake · Chris Portela](https://www.chrisportela.com/posts/home-manager-flake/)
 - [home-manager](https://nix-community.github.io/home-manager/)
+- [Nix language basics — nix.dev documentation](https://nix.dev/tutorials/nix-language)
 - [Flakes - NixOS Wiki](https://nixos.wiki/wiki/Flakes)
 - [GitHub - dminca/nix-config: My Nix configuration for setting up aarch64-darwin & x86\_64-darwin workstations](https://github.com/dminca/nix-config)
-- [Code search results · GitHub](https://github.com/search?q=path%3Ahome.nix&type=code)
+- [Github - Code search results - "path:home.nix"](https://github.com/search?q=path%3Ahome.nix&type=code)
