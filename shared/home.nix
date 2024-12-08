@@ -84,7 +84,8 @@
       enable = true;
       settings = {
         command_timeout = 10000;
-        add_newline = false;
+        add_newline = true;
+        line_break.disabled = false;
 
         format = lib.strings.concatStrings [
           "$hostname"
@@ -113,7 +114,6 @@
           "$cmd_duration"
           "[](#06969A)"
         ];
-        # line_break.disabled = true;
 
         aws.disabled = true;
         gcloud.disabled = true;
