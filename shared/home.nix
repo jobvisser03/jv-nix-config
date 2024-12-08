@@ -292,6 +292,8 @@
         export MANPAGER="sh -c 'col -bx | bat -l man -p'"
         export LANG="en_US.UTF-8"
         export LC_CTYPE="en_US.UTF-8"
+        export LC_ALL="en_US.UTF-8"
+        export LANGUAGE="en_US.UTF-8"
 
         pip() {
             if ! type -P pip &> /dev/null
