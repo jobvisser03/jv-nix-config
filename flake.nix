@@ -26,7 +26,9 @@
         pkgs = nixpkgs.legacyPackages.aarch64-darwin;
         modules = [
           ./shared/home.nix
-          ./darwin/home.nix
+          {
+            home.homeDirectory = "/Users/simon";
+          }
         ];
       };
       "simon-linux" = home-manager.lib.homeManagerConfiguration {
