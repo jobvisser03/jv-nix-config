@@ -113,6 +113,7 @@
           "[](fg:#86BBD8 bg:#06969A)"
           "$cmd_duration"
           "[](#06969A)"
+          "\n$character"
         ];
 
         aws.disabled = true;
