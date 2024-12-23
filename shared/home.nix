@@ -49,10 +49,6 @@
         ".hg"
       ];
     };
-    # fzf = {
-    #   enable = true;
-    #   fileWidgetCommand = "fd --type file --follow --hidden --exclude .git";
-    # };
     git = {
       enable = true;
       lfs.enable = true;
@@ -267,9 +263,10 @@
         iterm_features = [
           "remote_host"
           "current_dir"
-          "prompt_mark"
+          # "prompt_mark"
         ];
         # below part is mostly this file converted to nix with json2nix: https://github.com/JanDeDobbeleer/oh-my-posh/blob/main/themes/powerlevel10k_rainbow.omp.json
+        # and then applying a strange workaround to make unicode characters work: https://github.com/NixOS/nix/issues/10082#issuecomment-2059228774
         blocks = [
           {
             alignment = "left";
@@ -486,8 +483,10 @@
         "--smart-case"
       ];
     };
-    tealdeer.enable = true;
-    yt-dlp.enable = true;
+    tealdeer = {
+      enable = true;
+      settings.updates.auto_update = true;
+    };
     zoxide.enable = true;
     zsh = {
       enable = true;
