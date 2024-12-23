@@ -527,6 +527,20 @@
 
         bindkey "^ " autosuggest-accept
         test -e "$HOME/.iterm2_shell_integration.zsh" && source "$HOME/.iterm2_shell_integration.zsh"
+
+        _zsh_autosuggest_strategy_atuin_auto() {
+            suggestion=$(atuin search --cwd . --cmd-only --limit 1 --search-mode prefix -- "$1")
+        }
+
+        _zsh_autosuggest_strategy_atuin_global() {
+            suggestion=$(atuin search --cmd-only --limit 1 --search-mode prefix -- "$1")
+        }
+
+        function my_precmd() {
+          export ZSH_AUTOSUGGEST_STRATEGY=(atuin_auto atuin_global)
+        }
+        autoload -U add-zsh-hook
+        add-zsh-hook precmd my_precmd
       '';
       shellAliases = {
         venv = "source .venv/bin/activate";
