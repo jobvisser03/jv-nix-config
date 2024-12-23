@@ -1,8 +1,4 @@
-{
-  pkgs,
-  lib,
-  ...
-}: {
+{pkgs, ...}: {
   home.username = "simon";
 
   programs = {
@@ -264,6 +260,220 @@
     oh-my-posh = {
       enable = true;
       useTheme = "powerlevel10k_rainbow";
+      settings = {
+        final_space = true;
+        shell_integration = true;
+        enable_cursor_positioning = true;
+        iterm_features = [
+          "remote_host"
+          "current_dir"
+          "prompt_mark"
+        ];
+        # below part is mostly this file converted to nix with json2nix: https://github.com/JanDeDobbeleer/oh-my-posh/blob/main/themes/powerlevel10k_rainbow.omp.json
+        blocks = [
+          {
+            alignment = "left";
+            segments = [
+              {
+                background = "#d3d7cf";
+                foreground = "#000000";
+                # leading_diamond = builtins.fromJSON ''"\u256d\u2500\ue0b2"'';
+                style = "diamond";
+                template = " {{ if .WSL }}WSL at {{ end }}{{.Icon}} ";
+                type = "os";
+              }
+              {
+                background = "#3465a4";
+                foreground = "#e4e4e4";
+                powerline_symbol = builtins.fromJSON ''"\ue0b0"'';
+                properties = {
+                  home_icon = "~";
+                  style = "full";
+                };
+                style = "powerline";
+                template = builtins.fromJSON ''" \uf07c {{ .Path }} "'';
+                type = "path";
+              }
+              {
+                background = "#4e9a06";
+                background_templates = [
+                  "{{ if or (.Working.Changed) (.Staging.Changed) }}#c4a000{{ end }}"
+                  "{{ if and (gt .Ahead 0) (gt .Behind 0) }}#f26d50{{ end }}"
+                  "{{ if gt .Ahead 0 }}#89d1dc{{ end }}"
+                  "{{ if gt .Behind 0 }}#4e9a06{{ end }}"
+                ];
+                foreground = "#000000";
+                powerline_symbol = builtins.fromJSON ''"\ue0b0"'';
+                properties = {
+                  branch_icon = builtins.fromJSON ''"\uf126 "'';
+                  fetch_stash_count = true;
+                  fetch_status = true;
+                  fetch_upstream_icon = true;
+                };
+                style = "powerline";
+                template = builtins.fromJSON ''" {{ .UpstreamIcon }}{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} \ueb4b {{ .StashCount }}{{ end }} "'';
+                type = "git";
+              }
+            ];
+            type = "prompt";
+          }
+          {
+            alignment = "right";
+            segments = [
+              {
+                background = "#689f63";
+                foreground = "#ffffff";
+                invert_powerline = true;
+                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+                properties = {
+                  fetch_version = true;
+                };
+                style = "powerline";
+                template = builtins.fromJSON ''" {{ if .PackageManagerIcon }}{{ .PackageManagerIcon }} {{ end }}{{ .Full }} \ue718 "'';
+                type = "node";
+              }
+              {
+                background = "#00acd7";
+                foreground = "#111111";
+                invert_powerline = true;
+                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+                properties = {
+                  fetch_version = true;
+                };
+                style = "powerline";
+                template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \ue627 "'';
+                type = "go";
+              }
+              {
+                background = "#4063D8";
+                foreground = "#111111";
+                invert_powerline = true;
+                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+                properties = {
+                  fetch_version = true;
+                };
+                style = "powerline";
+                template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \ue624 "'';
+                type = "julia";
+              }
+              {
+                background = "#FFDE57";
+                foreground = "#111111";
+                invert_powerline = true;
+                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+                properties = {
+                  display_mode = "files";
+                  fetch_virtual_env = false;
+                };
+                style = "powerline";
+                template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \ue235 "'';
+                type = "python";
+              }
+              {
+                background = "#AE1401";
+                foreground = "#ffffff";
+                invert_powerline = true;
+                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+                properties = {
+                  display_mode = "files";
+                  fetch_version = true;
+                };
+                style = "powerline";
+                template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \ue791 "'';
+                type = "ruby";
+              }
+              {
+                background = "#FEAC19";
+                foreground = "#ffffff";
+                invert_powerline = true;
+                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+                properties = {
+                  display_mode = "files";
+                  fetch_version = false;
+                };
+                style = "powerline";
+                template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \uf0e7"'';
+                type = "azfunc";
+              }
+              {
+                background_templates = [
+                  "{{if contains \"default\" .Profile}}#FFA400{{end}}"
+                  "{{if contains \"jan\" .Profile}}#f1184c{{end}}"
+                ];
+                foreground = "#ffffff";
+                invert_powerline = true;
+                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+                properties = {
+                  display_default = false;
+                };
+                style = "powerline";
+                template = builtins.fromJSON ''" {{ .Profile }}{{ if .Region }}@{{ .Region }}{{ end }} \ue7ad "'';
+                type = "aws";
+              }
+              {
+                background = "#ffff66";
+                foreground = "#111111";
+                invert_powerline = true;
+                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+                style = "powerline";
+                template = builtins.fromJSON ''" \uf0ad "'';
+                type = "root";
+              }
+              {
+                background = "#c4a000";
+                foreground = "#000000";
+                invert_powerline = true;
+                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+                style = "powerline";
+                template = builtins.fromJSON ''" {{ .FormattedMs }} \uf252 "'';
+                type = "executiontime";
+              }
+              {
+                background = "#000000";
+                background_templates = [
+                  "{{ if gt .Code 0 }}#cc2222{{ end }}"
+                ];
+                foreground = "#d3d7cf";
+                invert_powerline = true;
+                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+                properties = {
+                  always_enabled = true;
+                };
+                style = "powerline";
+                template = builtins.fromJSON ''" {{ if gt .Code 0 }}{{ reason .Code }}{{ else }}\uf42e{{ end }} "'';
+                type = "status";
+              }
+              {
+                background = "#d3d7cf";
+                foreground = "#000000";
+                invert_powerline = true;
+                style = "diamond";
+                template = builtins.fromJSON ''" {{ .CurrentDate | date .Format }} \uf017 "'';
+                # trailing_diamond = builtins.fromJSON ''"\ue0b0\u2500\u256e"'';
+                type = "time";
+              }
+            ];
+            type = "prompt";
+          }
+          {
+            alignment = "left";
+            newline = true;
+            segments = [
+              {
+                foreground = "#81ff91";
+                foreground_templates = ["{{if gt .Code 0}}#ff3030{{end}}"];
+                style = "diamond";
+                template = builtins.fromJSON ''"\u276f"'';
+                properties.always_enabled = true;
+                type = "text";
+              }
+            ];
+            type = "prompt";
+          }
+        ];
+        console_title_template = "{{ .Shell }} in {{ .Folder }}";
+        version = 3;
+      };
     };
     pandoc.enable = true;
     ripgrep = {
