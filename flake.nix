@@ -17,26 +17,26 @@
     nixpkgs,
     ...
   }: {
-    darwinConfigurations."Simons-MacBook-Air" = darwin.lib.darwinSystem {
+    darwinConfigurations."Job-MacBook-Pro" = darwin.lib.darwinSystem {
       modules = [./darwin/system.nix];
     };
 
     homeConfigurations = {
-      "simon-darwin" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.aarch64-darwin;
+      "job-darwin" = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.x86_64-darwin;
         modules = [
           ./shared/home.nix
           {
-            home.homeDirectory = "/Users/simon";
+            home.homeDirectory = "/Users/job";
           }
         ];
       };
-      "simon-linux" = home-manager.lib.homeManagerConfiguration {
+      "job-linux" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
           ./shared/home.nix
           {
-            home.homeDirectory = "/home/simon";
+            home.homeDirectory = "/home/job";
           }
         ];
       };

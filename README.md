@@ -19,10 +19,10 @@ atuin login
 
 Setting this up can be a bit confusing. Nix will build all of its own packages in `/nix` and symlink them to the right place. It will also create config files like "~/.zshrc". The nix language is often described as "json with functions". The docs and examples can sometimes be confusing. For me the deterministic and portable nature of my home directory is worth the learning curve. It's quite a cool system!
 
-- Install Nix: https://nixos.org/download/
-- Create a new folder and initialiase home-manager: `nix --experimental-features 'nix-command flakes' run home-manager/master -- init --switch`
-- Add your configuration (similar to flake.nix and shared/home.nix from this repository)
-- Enable your configuration: `home-manager switch --flake .#<config-name>` (in my case config-name is either simon-darwin or simon-linux)
+- Install Nix using the Determinate Systems installer: https://github.com/DeterminateSystems/nix-installer
+- Clone this configuration repository to `~/repos/jv-nix-config`
+- Initialiase home-manager from the config repository: `nix --experimental-features 'nix-command flakes' run home-manager/master -- switch`
+- Enable your configuration: `home-manager switch --flake /Users/job/repos/jv-nix-config#job-darwin` (in my case config-name is either job-darwin or job-linux)
 - You will probably get some errors that either tell you what to do or you can solve them by googling (e.g. needing to run the command with  `--experimental-features 'nix-command flakes'` the first time or that you need to move `~/.zshrc` because it will now be managed by home-manager)
 
 ## Links that helped me

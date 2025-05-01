@@ -4,7 +4,7 @@
   ...
 }: {
   # This is needed for home-manager to work
-  users.users.simon = {home = "/Users/simon";};
+  users.users.job = {home = "/Users/job";};
 
   # mkalias can be used to create aliases instead of symlinks for Spotlight
   # environment.systemPackages = [pkgs.mkalias];
