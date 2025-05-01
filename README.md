@@ -21,8 +21,8 @@ Setting this up can be a bit confusing. Nix will build all of its own packages i
 
 - Install Nix using the Determinate Systems installer: https://github.com/DeterminateSystems/nix-installer
 - Clone this configuration repository to `~/repos/jv-nix-config`
-- Initialiase home-manager from the config repository: `nix --experimental-features 'nix-command flakes' run home-manager/master -- switch`
-- Enable your configuration: `home-manager switch --flake /Users/job/repos/jv-nix-config#job-darwin` (in my case config-name is either job-darwin or job-linux)
+- Initialiase home-manager from the config repository: `nix --experimental-features 'nix-command flakes' run home-manager/master -- init --switch`
+- Enable your configuration: `home-manager switch --flake /Users/job/repos/jv-nix-config#job-mac-intel` (in my case config-name is either job-mac-intel or job-linux)
 - You will probably get some errors that either tell you what to do or you can solve them by googling (e.g. needing to run the command with  `--experimental-features 'nix-command flakes'` the first time or that you need to move `~/.zshrc` because it will now be managed by home-manager)
 
 ## Links that helped me

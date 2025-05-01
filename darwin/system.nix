@@ -1,3 +1,4 @@
+# Nix-darwin system configuration for managing macos settings, we don't use this now
 {
   pkgs,
   lib,

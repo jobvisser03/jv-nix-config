@@ -22,11 +22,24 @@
     };
 
     homeConfigurations = {
-      "job-darwin" = home-manager.lib.homeManagerConfiguration {
+      # Work Macbook running Apple Silicon
+      "job-mac-apple-silicon" = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.aarch64-darwin;
+        modules = [
+          ./shared/home.nix
+          {
+            home.username = "job.visser";
+            home.homeDirectory = "/Users/job.visser";
+          }
+        ];
+      };
+      # Personal Macbook running Intel
+      "job-mac-intel" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-darwin;
         modules = [
           ./shared/home.nix
           {
+            home.username = "job";
             home.homeDirectory = "/Users/job";
           }
         ];

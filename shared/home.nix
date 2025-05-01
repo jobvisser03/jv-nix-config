@@ -3,7 +3,7 @@
   lib,
   ...
 }: {
-  home.username = "job";
+
 
   programs = {
     awscli.enable = true;
@@ -360,6 +360,10 @@
             fi
         }
 
+        function cursor {
+            /Applications/Cursor.app/Contents/MacOS/Cursor "$@"
+        }
+
         bindkey "^ " autosuggest-accept
         test -e "$HOME/.iterm2_shell_integration.zsh" && source "$HOME/.iterm2_shell_integration.zsh"
       '';
@@ -370,7 +374,8 @@
         gcs = "gcloud storage";
         cat = "bat -pP";
         ur = "uv run";
-        hm-mac = "home-manager switch --flake /Users/job/repos/jv-nix-config#job-darwin";
+        hm-mac = "home-manager switch --flake /Users/job/repos/jv-nix-config#job-mac-intel";
+        hm-work = "home-manager switch --flake /Users/job.visser/repos/jv-nix-config#job-mac-apple-silicon";
         hm-larkbox = "ssh larkbox 'source /etc/bashrc && cd ~/repos/jv-nix-config && git pull && home-manager switch --flake ~/repos/jv-nix-config#job-linux'";
       };
       plugins = [
@@ -406,6 +411,7 @@
     nil
     rsync
     nodejs
+    devenv
   ];
 
   home.file.".ipython/profile_default/ipython_config.py".text = ''
