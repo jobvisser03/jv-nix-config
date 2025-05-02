@@ -2,13 +2,15 @@
 {
   pkgs,
   lib,
+  hostPlatform,
   ...
 }: {
   # This is needed for home-manager to work
-  users.users.job = {home = "/Users/job";};
+  users.users.job = {home = "/Users/job.visser";};
 
   # mkalias can be used to create aliases instead of symlinks for Spotlight
   # environment.systemPackages = [pkgs.mkalias];
+  environment.systemPackages = [pkgs.vim];
 
   # add nix stuff to /etc/zshrc
   programs.zsh.enable = true;

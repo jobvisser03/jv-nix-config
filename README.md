@@ -15,7 +15,11 @@ nix --experimental-features 'nix-command flakes' run home-manager/master -- --ex
 atuin login
 ```
 
-## Very basic steps to set this up yourself
+## Steps to setup nix-darwin on a new machine
+
+- `nix run nix-darwin --extra-experimental-features nix-command --extra-experimental-features flakes -- switch --flake ~/repos/jv-nix-config`
+
+## Steps to setup home-manager on a new machine
 
 Setting this up can be a bit confusing. Nix will build all of its own packages in `/nix` and symlink them to the right place. It will also create config files like "~/.zshrc". The nix language is often described as "json with functions". The docs and examples can sometimes be confusing. For me the deterministic and portable nature of my home directory is worth the learning curve. It's quite a cool system!
 

@@ -21,7 +21,7 @@
       modules = [./darwin/system-x86_64-darwin.nix];
     };
     darwinConfigurations."Macbook-FNVDGV37HY" = darwin.lib.darwinSystem {
-      modules = [./darwin/system-aarch64.nix];
+      modules = [./darwin/system-aarch64-darwin.nix];
     };
 
     homeConfigurations = {
