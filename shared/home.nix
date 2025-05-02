@@ -10,7 +10,6 @@
     atuin = {
       enable = true;
       settings = {
-        sync_frequency = "5m";
         style = "compact";
         enter_accept = true;
         filter_mode_shell_up_key_binding = "directory";
@@ -19,8 +18,9 @@
         show_tabs = false;
         ctrl_n_shortcuts = true;
         sync = {
-          records = true;
+          records = false;
         };
+        auto_sync = false;
       };
     };
     bat.enable = true;
