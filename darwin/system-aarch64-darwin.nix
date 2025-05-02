@@ -8,6 +8,9 @@
   # This is needed for home-manager to work
   users.users.job = {home = "/Users/job.visser";};
 
+  # this is needed for nix-darwin to work with macos Sequoia
+  ids.uids.nixbld = 31000;
+
   # mkalias can be used to create aliases instead of symlinks for Spotlight
   # environment.systemPackages = [pkgs.mkalias];
   environment.systemPackages = [pkgs.vim];
@@ -65,6 +68,7 @@
       substituters = ["https://nix-community.cachix.org"];
       trusted-public-keys = ["nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="];
       builders-use-substitutes = true;
+      trusted-users = ["root" "job.visser"];
     };
   };
 
