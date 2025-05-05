@@ -48,7 +48,7 @@
         ];
       };
       "job-linux" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.aarch64-linux;
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
           ./shared/home.nix
           {
