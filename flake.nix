@@ -48,11 +48,12 @@
         ];
       };
       "job-linux" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        pkgs = nixpkgs.legacyPackages.aarch64-linux;
         modules = [
           ./shared/home.nix
           {
-            home.homeDirectory = "/home/job";
+            home.username = "jvisser";
+            home.homeDirectory = "/home/jvisser";
           }
         ];
       };
