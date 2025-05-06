@@ -24,12 +24,9 @@
         "brave-browser"
         "orbstack"
         "raycast"
+        "logseq"
       ];
-      taps = [
-        # "homebrew/core"
-        # "homebrew/cask"
-        # "homebrew/cask-fonts"
-      ];
+      taps = [ ];
   };
 
   # add nix stuff to /etc/zshrc

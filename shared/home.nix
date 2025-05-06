@@ -416,7 +416,6 @@
     vim
     hurl
     wezterm
-    logseq
     keepassxc
     drawio
     anki-bin
