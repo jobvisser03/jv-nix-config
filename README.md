@@ -18,6 +18,7 @@ atuin login
 ## Steps to setup nix-darwin on a new machine
 
 - `nix run nix-darwin --extra-experimental-features nix-command --extra-experimental-features flakes -- switch --flake ~/repos/jv-nix-config`
+- After that: `darwin-rebuild switch --flake ~/repos/jv-nix-config`
 
 ## Steps to setup home-manager on a new machine
 

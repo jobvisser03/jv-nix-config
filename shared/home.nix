@@ -326,7 +326,7 @@
         ignoreAllDups = true;
         ignoreSpace = false;
       };
-      initExtra = lib.mkAfter ''
+      initContent = lib.mkAfter ''
         export PATH="$HOME/.cargo/bin:$PATH"
         export PATH="$HOME/repos/experiments/flutter/bin:$PATH"
         export GEM_HOME=$HOME/.gem
@@ -412,6 +412,14 @@
     rsync
     nodejs
     devenv
+    neofetch
+    vim
+    hurl
+    wezterm
+    logseq
+    keepassxc
+    drawio
+    anki-bin
   ];
 
   home.file.".ipython/profile_default/ipython_config.py".text = ''

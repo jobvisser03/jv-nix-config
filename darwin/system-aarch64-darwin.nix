@@ -11,9 +11,26 @@
   # this is needed for nix-darwin to work with macos Sequoia
   ids.uids.nixbld = 31000;
 
-  # mkalias can be used to create aliases instead of symlinks for Spotlight
-  # environment.systemPackages = [pkgs.mkalias];
-  environment.systemPackages = [pkgs.vim];
+  homebrew = {
+      enable = true;
+      onActivation.autoUpdate = true;
+      onActivation.upgrade = true;
+      onActivation.cleanup = "uninstall";
+
+      brews = [ "cowsay" ];
+      casks = [
+        "signal"
+        "whatsapp"
+        "brave-browser"
+        "orbstack"
+        "raycast"
+      ];
+      taps = [
+        # "homebrew/core"
+        # "homebrew/cask"
+        # "homebrew/cask-fonts"
+      ];
+  };
 
   # add nix stuff to /etc/zshrc
   programs.zsh.enable = true;
@@ -50,36 +67,38 @@
   #   };
   # };
 
-  nix = {
-    # update nix to the latest version
-    package = pkgs.nix;
 
-    # clean the nix store
-    gc = {
-      automatic = lib.mkDefault true;
-      options = lib.mkDefault "--delete-older-than 7d";
-    };
+  # disable nix-darwin's management of the Nix installation
+  nix.enable = false;
 
-    settings = {
-      # Necessary for using flakes on this system.
-      experimental-features = ["nix-command" "flakes"];
+  # nix = {
+  #   # update nix to the latest version
+  #   package = pkgs.nix;
 
-      # Cachix is apparently a cache that most people use, but putting it here does not seem to do a lot
-      substituters = ["https://nix-community.cachix.org"];
-      trusted-public-keys = ["nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="];
-      builders-use-substitutes = true;
-      trusted-users = ["root" "job.visser"];
-    };
-  };
+  #   # clean the nix store
+  #   gc = {
+  #     automatic = lib.mkDefault true;
+  #     options = lib.mkDefault "--delete-older-than 7d";
+  #   };
+
+  #   settings = {
+  #     # Necessary for using flakes on this system.
+  #     experimental-features = ["nix-command" "flakes"];
+
+  #     # Cachix is apparently a cache that most people use, but putting it here does not seem to do a lot
+  #     substituters = ["https://nix-community.cachix.org"];
+  #     trusted-public-keys = ["nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="];
+  #     builders-use-substitutes = true;
+  #     trusted-users = ["root" "job.visser"];
+  #   };
+  # };
 
   # hostplatform is just macbook for now
   nixpkgs.hostPlatform = "aarch64-darwin";
 
-  # enable nix-daemon
-  services.nix-daemon.enable = true;
 
   # enable sudo with touch id
-  security.pam.enableSudoTouchIdAuth = true;
+  # security.pam.sudo_local.touchIdAuth = true;
 
   # set some system defaults
   system = {
