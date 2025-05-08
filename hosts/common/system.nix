@@ -1,4 +1,4 @@
-# Nix-darwin system configuration for managing macos settings, we don't use this now
+# CommonNix-darwin system configuration for managing macos settings
 {
   pkgs,
   ...
