@@ -1,16 +1,8 @@
 # Nix-darwin system configuration for managing macos settings, we don't use this now
 {
   pkgs,
-  lib,
-  hostPlatform,
   ...
 }: {
-  # This is needed for home-manager to work
-  users.users.job = {home = "/Users/job.visser";};
-
-  # this is needed for nix-darwin to work with macos Sequoia
-  ids.uids.nixbld = 31000;
-
   homebrew = {
       enable = true;
       onActivation.autoUpdate = true;
@@ -56,10 +48,6 @@
   #     trusted-users = ["root" "job.visser"];
   #   };
   # };
-
-  # hostplatform is just macbook for now
-  nixpkgs.hostPlatform = "aarch64-darwin";
-
   # enable sudo with touch id
   security.pam.services.sudo_local.touchIdAuth = true;
 

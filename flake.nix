@@ -18,10 +18,16 @@
     ...
   }: {
     darwinConfigurations."Job-MacBook-Pro" = darwin.lib.darwinSystem {
-      modules = [./darwin/system-x86_64-darwin.nix];
+      modules = [
+        ./hosts/common/system.nix
+        ./hosts/Job-MacBook-Pro/system.nix
+      ];
     };
     darwinConfigurations."Macbook-FNVDGV37HY" = darwin.lib.darwinSystem {
-      modules = [./darwin/system-aarch64-darwin.nix];
+      modules = [
+        ./hosts/common/system.nix
+        ./hosts/Macbook-FNVDGV37HY/system.nix
+      ];
     };
 
     homeConfigurations = {
