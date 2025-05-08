@@ -32,39 +32,6 @@
   # add nix stuff to /etc/zshrc
   programs.zsh.enable = true;
 
-  # seems to be broken in unstable, something with the kitty theme and base16 vs base24
-  # stylix = {
-  #   enable = true;
-  #   autoEnable = true;
-  #   polarity = "dark";
-  #   image = pkgs.fetchurl {
-  #     url = "https://www.pixelstalk.net/wp-content/uploads/2016/05/Epic-Anime-Awesome-Wallpapers.jpg";
-  #     sha256 = "enQo3wqhgf0FEPHj2coOCvo7DuZv+x5rL/WIo4qPI50=";
-  #   };
-  #   fonts = {
-  #     sizes = {
-  #       applications = 14;
-  #       desktop = 14;
-  #       popups = 14;
-  #       terminal = 14;
-  #     };
-  #     monospace = {
-  #       name = "CaskaydiaCove Nerd Font Mono";
-  #       package = pkgs.nerdfonts.override {fonts = ["CascadiaCode"];};
-  #     };
-  #     sansSerif = {
-  #       name = "Ubuntu";
-  #       package = pkgs.ubuntu_font_family;
-  #     };
-  #     serif = config.stylix.fonts.sansSerif;
-  #     emoji = {
-  #       package = pkgs.noto-fonts-emoji;
-  #       name = "Noto Color Emoji";
-  #     };
-  #   };
-  # };
-
-
   # disable nix-darwin's management of the Nix installation
   nix.enable = false;
 
@@ -93,12 +60,13 @@
   # hostplatform is just macbook for now
   nixpkgs.hostPlatform = "aarch64-darwin";
 
-
   # enable sudo with touch id
-  # security.pam.sudo_local.touchIdAuth = true;
+  security.pam.services.sudo_local.touchIdAuth = true;
 
   # set some system defaults
   system = {
+    keyboard.enableKeyMapping = true;
+    keyboard.remapCapsLockToEscape = true;
     defaults = {
       dock.autohide = true;
       # dock.largesize = 64;
@@ -113,7 +81,8 @@
       loginwindow.GuestEnabled = false;
       NSGlobalDomain.AppleICUForce24HourTime = true;
       # NSGlobalDomain.AppleInterfaceStyle = "Dark";
-      NSGlobalDomain.KeyRepeat = 2;
+      NSGlobalDomain.KeyRepeat = 1;
+      NSGlobalDomain.InitialKeyRepeat = 14;
     };
 
     # Used for backwards compatibility, please read the changelog before changing.
@@ -125,25 +94,5 @@
       /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
     '';
 
-    # below is needed for Spotlight but Raycast is smart enough to read symlinks
-    # activationScripts.applications.text = let
-    #   env = pkgs.buildEnv {
-    #     name = "system-applications";
-    #     paths = config.environment.systemPackages;
-    #     pathsToLink = "/Applications";
-    #   };
-    # in
-    #   lib.mkForce ''
-    #     # Set up applications.
-    #     echo "setting up /Applications..." >&2
-    #     rm -rf /Applications/Nix\ Apps
-    #     mkdir -p /Applications/Nix\ Apps
-    #     find ${env}/Applications -maxdepth 1 -type l -exec readlink '{}' + |
-    #     while read src; do
-    #       app_name=$(basename "$src")
-    #       echo "copying $src" >&2
-    #       ${pkgs.mkalias}/bin/mkalias "$src" "/Applications/Nix Apps/$app_name"
-    #     done
-    #   '';
   };
 }
