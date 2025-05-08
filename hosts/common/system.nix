@@ -16,7 +16,10 @@
         "brave-browser"
         "orbstack"
         "raycast"
-        "logseq"
+        # "logseq"
+        "cryptomator"
+        "darktable"
+        "macfuse"
       ];
       taps = [ ];
   };

@@ -4,6 +4,35 @@
   ...
 }: {
 
+  home.packages = with pkgs; [
+    alejandra
+    # No idea how to get the az ml extension to work
+    # (azure-cli.withExtensions [
+    #   azure-cli.extensions.azure-devops
+    # ])
+    curl
+    ffmpeg
+    fzf
+    font-awesome
+    google-cloud-sdk
+    graphviz
+    imagemagick
+    material-design-icons
+    nerd-fonts.caskaydia-cove
+    nerd-fonts.fantasque-sans-mono
+    nil
+    rsync
+    nodejs
+    devenv
+    neofetch
+    vim
+    hurl
+    wezterm
+    keepassxc
+    drawio
+    anki-bin
+  ];
+
   programs = {
     awscli.enable = true;
     atuin = {
@@ -376,6 +405,7 @@
         hm-mac = "home-manager switch --flake /Users/job/repos/jv-nix-config#job-mac-intel";
         hm-work = "home-manager switch --flake /Users/job.visser/repos/jv-nix-config#job-mac-apple-silicon";
         hm-larkbox = "ssh larkbox 'source /etc/bashrc && cd ~/repos/jv-nix-config && git pull && home-manager switch --flake ~/repos/jv-nix-config#job-linux'";
+        nd = "darwin-rebuild switch --flake ~/repos/jv-nix-config";
       };
       plugins = [
         {
@@ -391,34 +421,6 @@
     };
   };
 
-  home.packages = with pkgs; [
-    alejandra
-    # No idea how to get the az ml extension to work
-    # (azure-cli.withExtensions [
-    #   azure-cli.extensions.azure-devops
-    # ])
-    curl
-    ffmpeg
-    fzf
-    font-awesome
-    google-cloud-sdk
-    graphviz
-    imagemagick
-    material-design-icons
-    nerd-fonts.caskaydia-cove
-    nerd-fonts.fantasque-sans-mono
-    nil
-    rsync
-    nodejs
-    devenv
-    neofetch
-    vim
-    hurl
-    wezterm
-    keepassxc
-    drawio
-    anki-bin
-  ];
 
   home.file.".ipython/profile_default/ipython_config.py".text = ''
     c = get_config()
@@ -438,18 +440,4 @@
     settings.experimental-features = ["nix-command" "flakes"];
   };
 
-  # below is needed for Spotlight but Raycast is smart enough to read symlinks
-  # home.activation = {
-  #   aliasHomeManagerApplications = lib.hm.dag.entryAfter [ "writeBoundary" ] ""
-  #     app_folder="${config.home.homeDirectory}/Applications/Home Manager Apps"
-  #     rm -rf "$app_folder"
-  #     mkdir -p "$app_folder"
-  #     for app in $(find "$genProfilePath/home-path/Applications" -type l); do
-  #         app_target="$app_folder/$(basename $app)"
-  #         real_app="$(readlink $app)"
-  #         echo "mkalias \"$real_app\" \"$app_target\"" >&2
-  #         $DRY_RUN_CMD ${pkgs.mkalias}/bin/mkalias "$real_app" "$app_target"
-  #     done
-  #   "";
-  # };
 }
