@@ -4,7 +4,6 @@
   ...
 }: {
 
-
   programs = {
     awscli.enable = true;
     atuin = {
