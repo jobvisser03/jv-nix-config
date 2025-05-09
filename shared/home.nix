@@ -402,10 +402,11 @@
         gcs = "gcloud storage";
         cat = "bat -pP";
         ur = "uv run";
-        hm-mac = "home-manager switch --flake /Users/job/repos/jv-nix-config#job-mac-intel";
-        hm-work = "home-manager switch --flake /Users/job.visser/repos/jv-nix-config#job-mac-apple-silicon";
-        hm-larkbox = "ssh larkbox 'source /etc/bashrc && cd ~/repos/jv-nix-config && git pull && home-manager switch --flake ~/repos/jv-nix-config#job-linux'";
-        nd = "darwin-rebuild switch --flake ~/repos/jv-nix-config";
+        hm-mac = "home-manager switch --flake /Users/job/repos/jv-nix-config#mac-intel-hm";
+        hm-work = "home-manager switch --flake /Users/job.visser/repos/jv-nix-config#mac-apple-silicon-hm";
+        hm-larkbox = "ssh larkbox 'source /etc/bashrc && cd ~/repos/jv-nix-config && git pull && home-manager switch --flake ~/repos/jv-nix-config#linux-hm'";
+        nd-work = "darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-apple-silicon-host";
+        nd-mac = "darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-host";
       };
       plugins = [
         {

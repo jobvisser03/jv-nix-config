@@ -17,22 +17,22 @@
     nixpkgs,
     ...
   }: {
-    darwinConfigurations."Job-MacBook-Pro" = darwin.lib.darwinSystem {
+    darwinConfigurations."mac-intel-host" = darwin.lib.darwinSystem {
       modules = [
         ./hosts/common/system.nix
-        ./hosts/Job-MacBook-Pro/system.nix
+        ./hosts/mac-intel-host/system.nix
       ];
     };
-    darwinConfigurations."Macbook-FNVDGV37HY" = darwin.lib.darwinSystem {
+    darwinConfigurations."mac-apple-silicon-host" = darwin.lib.darwinSystem {
       modules = [
         ./hosts/common/system.nix
-        ./hosts/Macbook-FNVDGV37HY/system.nix
+        ./hosts/mac-apple-silicon-host/system.nix
       ];
     };
 
     homeConfigurations = {
       # Work Macbook running Apple Silicon
-      "job-mac-apple-silicon" = home-manager.lib.homeManagerConfiguration {
+      "mac-apple-silicon-hm" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.aarch64-darwin;
         modules = [
           ./shared/home.nix
@@ -43,7 +43,7 @@
         ];
       };
       # Personal Macbook running Intel
-      "job-mac-intel" = home-manager.lib.homeManagerConfiguration {
+      "mac-intel-hm" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-darwin;
         modules = [
           ./shared/home.nix
@@ -53,7 +53,7 @@
           }
         ];
       };
-      "job-linux" = home-manager.lib.homeManagerConfiguration {
+      "linux-hm" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.aarch64-linux;
         modules = [
           ./shared/home.nix
