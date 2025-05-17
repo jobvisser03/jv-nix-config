@@ -31,6 +31,7 @@
     keepassxc
     drawio
     anki-bin
+    docker-client
   ];
 
   programs = {
