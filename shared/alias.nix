@@ -65,6 +65,8 @@
   gcm = "git commit --verbose -m";
   gci = "git commit --interactive";
 
+  gac = "git add --all && git commit --verbose -m";
+
   # git stash
   gst = "git stash";
   gstpu = "git stash push";

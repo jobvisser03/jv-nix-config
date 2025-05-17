@@ -170,6 +170,7 @@
             ];
             type = "prompt";
           }
+          # Don't need the clock, ERROR etc. right aligned for now
           # {
           #   alignment = "right";
           #   segments = [
