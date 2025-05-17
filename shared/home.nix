@@ -170,144 +170,144 @@
             ];
             type = "prompt";
           }
-          {
-            alignment = "right";
-            segments = [
-              {
-                background = "#689f63";
-                foreground = "#ffffff";
-                invert_powerline = true;
-                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
-                properties = {
-                  fetch_version = true;
-                };
-                style = "powerline";
-                template = builtins.fromJSON ''" {{ if .PackageManagerIcon }}{{ .PackageManagerIcon }} {{ end }}{{ .Full }} \ue718 "'';
-                type = "node";
-              }
-              {
-                background = "#00acd7";
-                foreground = "#111111";
-                invert_powerline = true;
-                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
-                properties = {
-                  fetch_version = true;
-                };
-                style = "powerline";
-                template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \ue627 "'';
-                type = "go";
-              }
-              {
-                background = "#4063D8";
-                foreground = "#111111";
-                invert_powerline = true;
-                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
-                properties = {
-                  fetch_version = true;
-                };
-                style = "powerline";
-                template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \ue624 "'';
-                type = "julia";
-              }
-              {
-                background = "#FFDE57";
-                foreground = "#111111";
-                invert_powerline = true;
-                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
-                properties = {
-                  display_mode = "files";
-                  fetch_virtual_env = false;
-                };
-                style = "powerline";
-                template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \ue235 "'';
-                type = "python";
-              }
-              {
-                background = "#AE1401";
-                foreground = "#ffffff";
-                invert_powerline = true;
-                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
-                properties = {
-                  display_mode = "files";
-                  fetch_version = true;
-                };
-                style = "powerline";
-                template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \ue791 "'';
-                type = "ruby";
-              }
-              {
-                background = "#FEAC19";
-                foreground = "#ffffff";
-                invert_powerline = true;
-                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
-                properties = {
-                  display_mode = "files";
-                  fetch_version = false;
-                };
-                style = "powerline";
-                template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \uf0e7"'';
-                type = "azfunc";
-              }
-              {
-                background_templates = [
-                  "{{if contains \"default\" .Profile}}#FFA400{{end}}"
-                  "{{if contains \"jan\" .Profile}}#f1184c{{end}}"
-                ];
-                foreground = "#ffffff";
-                invert_powerline = true;
-                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
-                properties = {
-                  display_default = false;
-                };
-                style = "powerline";
-                template = builtins.fromJSON ''" {{ .Profile }}{{ if .Region }}@{{ .Region }}{{ end }} \ue7ad "'';
-                type = "aws";
-              }
-              {
-                background = "#ffff66";
-                foreground = "#111111";
-                invert_powerline = true;
-                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
-                style = "powerline";
-                template = builtins.fromJSON ''" \uf0ad "'';
-                type = "root";
-              }
-              {
-                background = "#c4a000";
-                foreground = "#000000";
-                invert_powerline = true;
-                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
-                style = "powerline";
-                template = builtins.fromJSON ''" {{ .FormattedMs }} \uf252 "'';
-                type = "executiontime";
-              }
-              {
-                background = "#000000";
-                background_templates = [
-                  "{{ if gt .Code 0 }}#cc2222{{ end }}"
-                ];
-                foreground = "#d3d7cf";
-                invert_powerline = true;
-                powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
-                properties = {
-                  always_enabled = true;
-                };
-                style = "powerline";
-                template = builtins.fromJSON ''" {{ if gt .Code 0 }}{{ reason .Code }}{{ else }}\uf42e{{ end }} "'';
-                type = "status";
-              }
-              {
-                background = "#d3d7cf";
-                foreground = "#000000";
-                invert_powerline = true;
-                style = "diamond";
-                template = builtins.fromJSON ''" {{ .CurrentDate | date .Format }} \uf017 "'';
-                # trailing_diamond = builtins.fromJSON ''"\ue0b0\u2500\u256e"'';
-                type = "time";
-              }
-            ];
-            type = "prompt";
-          }
+          # {
+          #   alignment = "right";
+          #   segments = [
+          #     {
+          #       background = "#689f63";
+          #       foreground = "#ffffff";
+          #       invert_powerline = true;
+          #       powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+          #       properties = {
+          #         fetch_version = true;
+          #       };
+          #       style = "powerline";
+          #       template = builtins.fromJSON ''" {{ if .PackageManagerIcon }}{{ .PackageManagerIcon }} {{ end }}{{ .Full }} \ue718 "'';
+          #       type = "node";
+          #     }
+          #     {
+          #       background = "#00acd7";
+          #       foreground = "#111111";
+          #       invert_powerline = true;
+          #       powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+          #       properties = {
+          #         fetch_version = true;
+          #       };
+          #       style = "powerline";
+          #       template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \ue627 "'';
+          #       type = "go";
+          #     }
+          #     {
+          #       background = "#4063D8";
+          #       foreground = "#111111";
+          #       invert_powerline = true;
+          #       powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+          #       properties = {
+          #         fetch_version = true;
+          #       };
+          #       style = "powerline";
+          #       template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \ue624 "'';
+          #       type = "julia";
+          #     }
+          #     {
+          #       background = "#FFDE57";
+          #       foreground = "#111111";
+          #       invert_powerline = true;
+          #       powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+          #       properties = {
+          #         display_mode = "files";
+          #         fetch_virtual_env = false;
+          #       };
+          #       style = "powerline";
+          #       template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \ue235 "'';
+          #       type = "python";
+          #     }
+          #     {
+          #       background = "#AE1401";
+          #       foreground = "#ffffff";
+          #       invert_powerline = true;
+          #       powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+          #       properties = {
+          #         display_mode = "files";
+          #         fetch_version = true;
+          #       };
+          #       style = "powerline";
+          #       template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \ue791 "'';
+          #       type = "ruby";
+          #     }
+          #     {
+          #       background = "#FEAC19";
+          #       foreground = "#ffffff";
+          #       invert_powerline = true;
+          #       powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+          #       properties = {
+          #         display_mode = "files";
+          #         fetch_version = false;
+          #       };
+          #       style = "powerline";
+          #       template = builtins.fromJSON ''" {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} \uf0e7"'';
+          #       type = "azfunc";
+          #     }
+          #     {
+          #       background_templates = [
+          #         "{{if contains \"default\" .Profile}}#FFA400{{end}}"
+          #         "{{if contains \"jan\" .Profile}}#f1184c{{end}}"
+          #       ];
+          #       foreground = "#ffffff";
+          #       invert_powerline = true;
+          #       powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+          #       properties = {
+          #         display_default = false;
+          #       };
+          #       style = "powerline";
+          #       template = builtins.fromJSON ''" {{ .Profile }}{{ if .Region }}@{{ .Region }}{{ end }} \ue7ad "'';
+          #       type = "aws";
+          #     }
+          #     {
+          #       background = "#ffff66";
+          #       foreground = "#111111";
+          #       invert_powerline = true;
+          #       powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+          #       style = "powerline";
+          #       template = builtins.fromJSON ''" \uf0ad "'';
+          #       type = "root";
+          #     }
+          #     {
+          #       background = "#c4a000";
+          #       foreground = "#000000";
+          #       invert_powerline = true;
+          #       powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+          #       style = "powerline";
+          #       template = builtins.fromJSON ''" {{ .FormattedMs }} \uf252 "'';
+          #       type = "executiontime";
+          #     }
+          #     {
+          #       background = "#000000";
+          #       background_templates = [
+          #         "{{ if gt .Code 0 }}#cc2222{{ end }}"
+          #       ];
+          #       foreground = "#d3d7cf";
+          #       invert_powerline = true;
+          #       powerline_symbol = builtins.fromJSON ''"\ue0b2"'';
+          #       properties = {
+          #         always_enabled = true;
+          #       };
+          #       style = "powerline";
+          #       template = builtins.fromJSON ''" {{ if gt .Code 0 }}{{ reason .Code }}{{ else }}\uf42e{{ end }} "'';
+          #       type = "status";
+          #     }
+          #     {
+          #       background = "#d3d7cf";
+          #       foreground = "#000000";
+          #       invert_powerline = true;
+          #       style = "diamond";
+          #       template = builtins.fromJSON ''" {{ .CurrentDate | date .Format }} \uf017 "'';
+          #       # trailing_diamond = builtins.fromJSON ''"\ue0b0\u2500\u256e"'';
+          #       type = "time";
+          #     }
+          #   ];
+          #   type = "prompt";
+          # }
           {
             alignment = "left";
             newline = true;
@@ -397,18 +397,8 @@
         test -e "$HOME/.iterm2_shell_integration.zsh" && source "$HOME/.iterm2_shell_integration.zsh"
       '';
 
-      shellAliases = {
-        venv = "source .venv/bin/activate";
-        helpme = "tldr --list | fzf | xargs tldr";
-        gcs = "gcloud storage";
-        cat = "bat -pP";
-        ur = "uv run";
-        hm-mac = "home-manager switch --flake /Users/job/repos/jv-nix-config#mac-intel-hm";
-        hm-work = "home-manager switch --flake /Users/job.visser/repos/jv-nix-config#mac-apple-silicon-hm";
-        hm-larkbox = "ssh larkbox 'source /etc/bashrc && cd ~/repos/jv-nix-config && git pull && home-manager switch --flake ~/repos/jv-nix-config#linux-hm'";
-        nd-work = "darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-apple-silicon-host";
-        nd-mac = "darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-host";
-      };
+      shellAliases = import ./alias.nix;
+
       plugins = [
         {
           name = "fzf-tab";

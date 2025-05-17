@@ -20,6 +20,7 @@
         "cryptomator"
         "darktable"
         "macfuse"
+        "rancher"
       ];
       taps = [ ];
   };
