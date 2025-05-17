@@ -18,11 +18,11 @@
   gcl = "git clone";
 
   # git pull / git push
-  gpl = "git pull";
+  gl = "git pull";
   gplr = "git pull --rebase";
   gplum = "git pull upstream master";
 
-  gpu = "git push";
+  gp = "git push";
   gput = "git push --tags";
   gpuf = "git push --force";
   gpuu = "git push --set-upstream";
@@ -114,7 +114,7 @@
   gtl = "git tag --list";
 
   # git log
-  gl = "git log --graph --pretty = format:\"%C(yellow)%h%Creset%C(green)%d%Creset %s %C(red)<%an> %C(cyan)(%cr)%Creset\" --abbrev-commit";
+  glog = "git log --graph --pretty = format:\"%C(yellow)%h%Creset%C(green)%d%Creset %s %C(red)<%an> %C(cyan)(%cr)%Creset\" --abbrev-commit";
   gls = "gl --stat";
   gsl = "git shortlog --email";
   gsls = "git shortlog --email --summary --numbered";
