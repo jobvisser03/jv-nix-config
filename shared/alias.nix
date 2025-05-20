@@ -133,4 +133,20 @@
 
   # Misc
   gignore = "git update-index --assume-unchanged";
+
+  btsony = ''
+    DEVICE_ID_XM6=$(blueutil --paired | grep "WH-1000XM6" | head -n 1 | awk -F '[,:] *' '{print $2}')
+    if [ -n "$DEVICE_ID_XM6" ]; then
+      echo "Found WH-1000XM6, connecting..."
+      blueutil --connect "$DEVICE_ID_XM6"
+    else
+      echo "WH-1000XM6 not found, opening selection menu..."
+      DEVICE_ID_FZF=$(blueutil --paired | fzf | awk -F '[,:] *' '{print $2}')
+      if [ -n "$DEVICE_ID_FZF" ]; then
+        blueutil --connect "$DEVICE_ID_FZF"
+      else
+        echo "No device selected from menu."
+      fi
+    fi
+  '';
 }
