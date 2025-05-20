@@ -32,6 +32,7 @@
     drawio
     anki-bin
     docker-client
+    speedtest-cli
   ];
 
   programs = {

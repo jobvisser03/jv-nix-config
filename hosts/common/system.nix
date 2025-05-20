@@ -14,13 +14,16 @@
         "signal"
         "whatsapp"
         "brave-browser"
-        "orbstack"
+        "rancher"
         "raycast"
         "logseq"
         "cryptomator"
         "darktable"
         "macfuse"
         "rancher"
+        "cursor"
+        "visual-studio-code"
+        "qobuz"
       ];
       taps = [ ];
   };
