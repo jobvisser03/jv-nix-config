@@ -23,6 +23,7 @@
         "rancher"
         "cursor"
         "visual-studio-code"
+        "microsoft-azure-storage-explorer"
         "qobuz"
       ];
       taps = [ ];
