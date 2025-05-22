@@ -347,6 +347,12 @@
       settings.updates.auto_update = true;
     };
     zoxide.enable = true;
+    wezterm = {
+      enable = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      extraConfig = ./wezterm.lua;
+    };
     zsh = {
       enable = true;
       autocd = true;
