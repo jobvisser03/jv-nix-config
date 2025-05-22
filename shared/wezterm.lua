@@ -1,14 +1,12 @@
 local wezterm = require 'wezterm'
 local act = wezterm.action
 
-require 'scrollback'
-
 local config = wezterm.config_builder()
 config:set_strict_mode(true)
 
 config.font = wezterm.font 'CaskaydiaCove Nerd Font'
-config.font_size = 14
-config.color_scheme = 'Catppuccin Mocha (Gogh)'
+config.font_size = 18
+config.color_scheme = 'Gruvbox Dark'
 config.colors = {
   split = wezterm.color.get_builtin_schemes()[config.color_scheme].ansi[2],
 }
@@ -109,7 +107,6 @@ end)
 config.keys = {
   { key = 'Enter', mods = 'ALT', action = act.ToggleFullScreen, },
   { key = 'q', mods = 'ALT', action = act.QuitApplication, },
-  { key = 'o', mods = 'ALT', action = act.EmitEvent 'open-hx-with-scrollback', },
 
   { key = 'h', mods = 'ALT', action = act.ActivatePaneDirection 'Left', },
   { key = 'l', mods = 'ALT', action = act.ActivatePaneDirection 'Right', },
@@ -127,13 +124,6 @@ config.keys = {
   { key = '[', mods = 'ALT', action = act.ActivateTabRelative(-1), },
   { key = ']', mods = 'ALT', action = act.ActivateTabRelative(1), },
 
-  -- Floating panes (not implemented yet)
-    -- bind "Alt w" { ToggleFloatingPanes; }
-    -- bind "Alt e" { TogglePaneEmbedOrFloating; }
-    -- bind "Alt b" { MovePaneBackwards; }
-
-  -- Using defaults for tabs (CMD t, CMD 1-9)
-  -- Using defaults for find (CMD f, CTRL-r to toggle case sensitivity & regex modes)
 }
 
 return config
