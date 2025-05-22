@@ -25,6 +25,7 @@
         "visual-studio-code"
         "microsoft-azure-storage-explorer"
         "qobuz"
+        "proton-mail"
       ];
       taps = [ ];
   };
