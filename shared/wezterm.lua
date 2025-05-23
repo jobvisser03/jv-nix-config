@@ -21,37 +21,11 @@ config.window_frame = {
   inactive_titlebar_bg = TITLEBAR_COLOR,
 }
 
--- Switch between just an opacity and a background image based on whether we are fullscreen
--- function set_background(config, is_fullscreen)
---   if is_fullscreen then
---     config.window_background_opacity = nil
---     config.background = {
---       {
---         source = {
---           File = wezterm.home_dir .. '/.config/background.jpg',
---         },
---         -- NOTE: parallax is a bit buggy with opacity causing double images at the moment
---         -- attachment = { Parallax = 0.1 },
---         repeat_y = 'Mirror',
---         horizontal_align = 'Center',
---         opacity = 0.4,
---         hsb = {
---           hue = 1.0,
---           saturation = 0.95,
---           brightness = 0.5,
---         },
---       },
---     }
---   else
---     config.window_background_opacity = 0.85
---     config.background = nil
---   end
--- end
+config.window_background_opacity = 0.85
 
 wezterm.on('window-resized', function(window, pane)
   local overrides = window:get_config_overrides() or {}
   local is_fullscreen = window:get_dimensions().is_full_screen
---   set_background(overrides, is_fullscreen)
   window:set_config_overrides(overrides)
 end)
 
