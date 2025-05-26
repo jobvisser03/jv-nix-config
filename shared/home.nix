@@ -10,9 +10,10 @@
     # (azure-cli.withExtensions [
     #   azure-cli.extensions.azure-devops
     # ])
+    azure-cli
     curl
     ffmpeg
-    fzf
+    fzfmsal-extensions
     font-awesome
     google-cloud-sdk
     graphviz
