@@ -84,11 +84,19 @@
 
   programs.firefox.enable = true;
 
+  nixpkgs.config.allowUnfree = true;
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
    environment.systemPackages = with pkgs; [
 	logseq
-     	
+     	pcloud
+	code-cursor
+	brave	
+	keepassxc
+	cryptomator
+	protonmail-desktop
+	signal-desktop
    ];
 
   # Some programs need SUID wrappers, can be configured further or are
