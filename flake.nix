@@ -18,6 +18,8 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware";
+
+    hyprland.url = "github:hyprwm/Hyprland";
   };
 
   outputs = {
@@ -44,6 +46,7 @@
 
     nixosConfigurations.mac-intel-nixos-host = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
+      specialArgs = { inherit inputs; }; # this is for hyprland
       modules = [
         ./hosts/mac-intel-nixos-host/configuration.nix
         ./hosts/mac-intel-nixos-host/nix/substituter.nix
