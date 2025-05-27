@@ -34,7 +34,7 @@
     anki-bin
     docker-client
     speedtest-cli
-    blueutil
+    # blueutil # not for linux
   ];
 
   programs = {
