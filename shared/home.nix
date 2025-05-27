@@ -352,6 +352,7 @@
       settings.updates.auto_update = true;
     };
     zoxide.enable = true;
+    kitty.enable = true; # for hyprland
     wezterm = {
       enable = true;
       enableZshIntegration = true;

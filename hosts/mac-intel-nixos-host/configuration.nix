@@ -53,12 +53,12 @@
 #  };
 
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
+  #services.xserver.enable = true;
 
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  #services.xserver.displayManager.gdm.enable = true;
+  #services.xserver.desktopManager.gnome.enable = true;
 
 
   # Configure keymap in X11
@@ -71,9 +71,13 @@
   # Enable sound.
   # services.pulseaudio.enable = true;
   # OR
+security.rtkit.enable = true;
   services.pipewire = {
      enable = true;
-     pulse.enable = true;
+       alsa.enable = true;
+  alsa.support32Bit = true;
+  pulse.enable = true;
+  jack.enable = true;
    };
 
   # Enable touchpad support (enabled default in most desktopManager).
@@ -96,7 +100,7 @@
   # $ nix search wget
    environment.systemPackages = with pkgs; [
 	logseq
-     	pcloud
+  pcloud
 	code-cursor
 	brave
 	keepassxc
@@ -104,15 +108,40 @@
 	protonmail-desktop
 	signal-desktop
   vscode.fhs
+  waybar
+  swww
+  kitty
+  rofi-wayland
+  #waybar.overrideAttrs (oldAttrs: {
+  #  mesonFlags = oldAttrs.mesonFlags ++ ["-Dexperimental=true"];
+  #})
+  dunst
+  libnotify
    ];
 
   programs.hyprland = {
     enable = true;
+    xwayland.enable = true;
     # set the flake package
     package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
     # make sure to also set the portal package, so that they are in sync
     portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
   };
+
+  environment.sessionVariables = {
+    WLR_NO_HARDWARE_CURSORS = "1";
+    NIXOS_OZONE_WL = "1";
+  };
+
+  hardware = {
+    graphics.enable = true;
+
+    nvidia.modesetting.enable = true;
+};
+
+  xdg.portal.enable = true;
+xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
