@@ -103,6 +103,7 @@
 	cryptomator
 	protonmail-desktop
 	signal-desktop
+  vscode.fhs
    ];
 
   programs.hyprland = {
