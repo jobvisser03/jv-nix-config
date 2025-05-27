@@ -1,6 +1,13 @@
 {
   description = "Hopefully this flake will become the flake for all my devices?";
 
+  nixConfig = {
+    extra-substituters = [
+      "https://cache.soopy.moe"
+    ];
+    extra-trusted-public-keys = [ "cache.soopy.moe-1:0RZVsQeR+GOh0VQI9rvnHz55nVXkFardDqfm4+afjPo=" ];
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
@@ -9,14 +16,19 @@
 
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
   };
 
   outputs = {
     darwin,
     home-manager,
     nixpkgs,
+    nixos-hardware,
     ...
   }: {
+    formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
+
     darwinConfigurations."mac-intel-host" = darwin.lib.darwinSystem {
       modules = [
         ./hosts/common/system.nix
@@ -27,6 +39,15 @@
       modules = [
         ./hosts/common/system.nix
         ./hosts/mac-apple-silicon-host/system.nix
+      ];
+    };
+
+    nixosConfigurations.mac-intel-nixos-host = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./hosts/mac-intel-nixos-host/configuration.nix
+        ./hosts/mac-intel-nixos-host/nix/substituter.nix
+        nixos-hardware.nixosModules.apple-t2
       ];
     };
 
@@ -50,6 +71,17 @@
           {
             home.username = "job";
             home.homeDirectory = "/Users/job";
+          }
+        ];
+      };
+      # NixOS Intel Mac
+      "mac-intel-nixos-hm" = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        modules = [
+          ./shared/home.nix
+          {
+            home.username = "job";
+            home.homeDirectory = "/home/job";
           }
         ];
       };

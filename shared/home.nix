@@ -13,7 +13,7 @@
     azure-cli
     curl
     ffmpeg
-    fzfmsal-extensions
+    fzf
     font-awesome
     google-cloud-sdk
     graphviz
