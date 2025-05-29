@@ -5,7 +5,7 @@ local config = wezterm.config_builder()
 config:set_strict_mode(true)
 
 config.font = wezterm.font 'CaskaydiaCove Nerd Font'
-config.font_size = 18
+config.font_size = 16
 config.color_scheme = 'Catppuccin Mocha (Gogh)'
 config.colors = {
   split = wezterm.color.get_builtin_schemes()[config.color_scheme].ansi[2],

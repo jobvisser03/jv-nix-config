@@ -46,15 +46,10 @@
 
   # Select internationalisation properties.
  i18n.defaultLocale = "en_US.UTF-8";
-# console = {
-#    font = "Lat2-Terminus16";
-#    keyMap = "us";
-#    useXkbConfig = true; # use xkb.options in tty.
-#  };
 
   # Enable the X11 windowing system.
   # services.xserver.enable = true;
-services.xserver.displayManager.defaultSession = "hyprland";
+services.displayManager.defaultSession = "hyprland";
 
   # Enable the GNOME Desktop Environment.
   # services.xserver.displayManager.gdm.enable = true;
@@ -62,8 +57,14 @@ services.xserver.displayManager.defaultSession = "hyprland";
 
 
   # Configure keymap in X11
-  # services.xserver.xkb.layout = "us";
-  # services.xserver.xkb.options = "eurosign:e,caps:escape";
+  services.xserver.xkb.layout = "us";
+  services.xserver.xkb.options = "caps:escape";
+
+  # Also configure console keymap for TTY
+  console = {
+    # keyMap = "us";
+    useXkbConfig = true; # use xkb.options in tty.
+  };
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
@@ -83,15 +84,17 @@ security.rtkit.enable = true;
   # Enable touchpad support (enabled default in most desktopManager).
    services.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
+  # Define a user account. Don't forget to set a password with 'passwd'.
   users.users.job = {
      isNormalUser = true;
-     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+     extraGroups = [ "wheel" ]; # Enable 'sudo' for the user.
      packages = with pkgs; [
        tree
      ];
+         shell = pkgs.zsh;
    };
 
+  programs.zsh.enable = true;
   programs.firefox.enable = true;
 
   nixpkgs.config.allowUnfree = true;
@@ -117,33 +120,53 @@ security.rtkit.enable = true;
   #})
   dunst
   libnotify
+  greetd.tuigreet
    ];
 
-  programs.hyprland.enable = true;
-  programs.hyprland.package = inputs.hyprland.packages."${pkgs.system}".hyprland;
+  # programs.hyprland.enable = true;
+  # programs.hyprland.package = inputs.hyprland.packages."${pkgs.system}".hyprland;
 
-#   programs.hyprland = {
-#     enable = true;
-#     xwayland.enable = true;
-#     # set the flake package
-#     package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-#     # make sure to also set the portal package, so that they are in sync
-#     portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
-#   };
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+    # set the flake package
+    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    # make sure to also set the portal package, so that they are in sync
+    portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+  };
 
-#   environment.sessionVariables = {
-#     WLR_NO_HARDWARE_CURSORS = "1";
-#     NIXOS_OZONE_WL = "1";
-#   };
+  environment.sessionVariables = {
+    WLR_NO_HARDWARE_CURSORS = "1";
+    NIXOS_OZONE_WL = "1";
+  };
 
-#   hardware = {
-#     graphics.enable = true;
-#     nvidia.modesetting.enable = false;
-# };
+  hardware = {
+    graphics.enable = true;
+    nvidia.modesetting.enable = false;
+};
 
-#   xdg.portal.enable = true;
-#   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  xdg.portal.enable = true;
+  # xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-hyprland pkgs.xdg-desktop-portal-gtk ];
 
+  # Enable Display Manager
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet \
+          --time --time-format '%I:%M %p | %a • %h | %F' \
+          --cmd 'uwsm start hyprland'";
+        user    = "greeter";
+      };
+    };
+  };
+
+  users.users.greeter = {
+    isNormalUser = false;
+    description  = "greetd greeter user";
+    extraGroups  = [ "video" "audio" ];
+    linger        = true;
+  };
 
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
