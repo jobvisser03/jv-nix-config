@@ -10,11 +10,11 @@
       ./hardware-configuration.nix
     ];
 
-  nix.settings = {
-    substituters = ["https://hyprland.cachix.org"];
-    trusted-substituters = ["https://hyprland.cachix.org"];
-    trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
-  };
+  #nix.settings = {
+  #  substituters = ["https://hyprland.cachix.org"];
+  #  trusted-substituters = ["https://hyprland.cachix.org"];
+  #  trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
+  #};
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -53,11 +53,11 @@
 #  };
 
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
+  # services.xserver.enable = true;
+services.xserver.displayManager.defaultSession = "hyprland";
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
+  # services.xserver.displayManager.gdm.enable = true;
   #services.xserver.desktopManager.gnome.enable = true;
 
 
@@ -119,41 +119,43 @@ security.rtkit.enable = true;
   libnotify
    ];
 
-  programs.hyprland = {
-    enable = true;
-    xwayland.enable = true;
-    # set the flake package
-    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-    # make sure to also set the portal package, so that they are in sync
-    portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
-  };
+  programs.hyprland.enable = true;
+  programs.hyprland.package = inputs.hyprland.packages."${pkgs.system}".hyprland;
 
-  environment.sessionVariables = {
-    WLR_NO_HARDWARE_CURSORS = "1";
-    NIXOS_OZONE_WL = "1";
-  };
+#   programs.hyprland = {
+#     enable = true;
+#     xwayland.enable = true;
+#     # set the flake package
+#     package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+#     # make sure to also set the portal package, so that they are in sync
+#     portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+#   };
 
-  hardware = {
-    graphics.enable = true;
+#   environment.sessionVariables = {
+#     WLR_NO_HARDWARE_CURSORS = "1";
+#     NIXOS_OZONE_WL = "1";
+#   };
 
-    nvidia.modesetting.enable = true;
-};
+#   hardware = {
+#     graphics.enable = true;
+#     nvidia.modesetting.enable = false;
+# };
 
-  xdg.portal.enable = true;
-xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+#   xdg.portal.enable = true;
+#   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
+    # Some programs need SUID wrappers, can be configured further or are
+    # started in user sessions.
+    # programs.mtr.enable = true;
+    # programs.gnupg.agent = {
+    #   enable = true;
+    #   enableSSHSupport = true;
+    # };
 
-  # List services that you want to enable:
+    # List services that you want to enable:
 
-  # Enable the OpenSSH daemon.
+    # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
 
   # Open ports in the firewall.
