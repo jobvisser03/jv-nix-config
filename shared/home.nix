@@ -34,12 +34,20 @@ in
         kb_options = "caps:swapescape";
       };
 
+      # Environment variables for better Electron app support
+      env = [
+        "ELECTRON_OZONE_PLATFORM_HINT,auto"
+        "ELECTRON_ENABLE_WAYLAND,1"
+      ];
+
+
       bind =
         [
           "$mod, F, exec, firefox"
           "$mod, T, exec, kitty"
           "$mod, D, exec, rofi -show drun"
           ", Print, exec, grimblast copy area"
+          "$mod SHIFT, Q, exit"  # Logout keybind
         ]
         ++ (
           # workspaces
@@ -473,9 +481,9 @@ in
             fi
         }
 
-        function cursor {
-            /Applications/Cursor.app/Contents/MacOS/Cursor "$@"
-        }
+        #function cursor {
+        #    /Applications/Cursor.app/Contents/MacOS/Cursor "$@"
+        #}
 
         bindkey "^ " autosuggest-accept
         test -e "$HOME/.iterm2_shell_integration.zsh" && source "$HOME/.iterm2_shell_integration.zsh"

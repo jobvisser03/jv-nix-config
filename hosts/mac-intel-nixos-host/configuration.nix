@@ -104,7 +104,16 @@ security.rtkit.enable = true;
    environment.systemPackages = with pkgs; [
 	logseq
   pcloud
-	code-cursor
+  code-cursor
+	# # Wrap cursor with flags to fix pixelation on Wayland
+	# (pkgs.writeShellScriptBin "cursor" ''
+	#   exec ${pkgs.code-cursor}/bin/cursor \
+	#     --enable-features=UseOzonePlatform,WaylandWindowDecorations \
+	#     --ozone-platform=wayland \
+	#     --disable-gpu-sandbox \
+	#     --enable-wayland-ime \
+	#     "$@"
+	# '')
 	brave
 	keepassxc
 	cryptomator
@@ -138,6 +147,13 @@ security.rtkit.enable = true;
   environment.sessionVariables = {
     WLR_NO_HARDWARE_CURSORS = "1";
     NIXOS_OZONE_WL = "1";
+
+    # Fix Electron apps (like Cursor) scaling and rendering on Wayland
+    ELECTRON_OZONE_PLATFORM_HINT = "auto";
+    # Force Electron apps to use Wayland
+    ELECTRON_ENABLE_WAYLAND = "1";
+    # Disable GPU sandbox for better compatibility
+    ELECTRON_NO_SANDBOX = "1";
   };
 
   hardware = {
