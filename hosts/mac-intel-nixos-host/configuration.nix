@@ -21,6 +21,37 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot";
 
+  # T2 Mac suspend/resume fixes
+  boot.kernelParams = [
+    # Fix suspend/resume issues on T2 Macs
+    "intel_iommu=on"
+    "iommu=pt"
+    # Prevent USB devices from waking the system
+    "usbcore.autosuspend=-1"
+  ];
+
+  # Additional T2 Mac power management
+  powerManagement = {
+    enable = true;
+  };
+
+  # Systemd services to fix T2 devices after suspend
+  systemd.services.suspend-fix-t2 = {
+    description = "Disable and Re-Enable Apple BCE Module (and Wi-Fi)";
+    before = [ "sleep.target" ];
+    wantedBy = [ "sleep.target" ];
+    serviceConfig = {
+      User = "root";
+      Type = "oneshot";
+      RemainAfterExit = true;
+      StopWhenUnneeded = true;
+      # Force remove apple-bce module before suspend
+      ExecStart = "${pkgs.kmod}/bin/rmmod -f apple-bce";
+      # Re-enable apple-bce module after resume
+      ExecStop = "${pkgs.kmod}/bin/modprobe apple-bce";
+    };
+  };
+
   hardware.firmware = [
     (pkgs.stdenvNoCC.mkDerivation (final: {
       name = "brcm-firmware";
@@ -130,7 +161,14 @@ security.rtkit.enable = true;
   dunst
   libnotify
   greetd.tuigreet
+  overskride
    ];
+
+ # Enable Bluetooth
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = false;
+
+  boot.loader.timeout = 0;
 
   # programs.hyprland.enable = true;
   # programs.hyprland.package = inputs.hyprland.packages."${pkgs.system}".hyprland;
@@ -146,6 +184,7 @@ security.rtkit.enable = true;
 
   environment.sessionVariables = {
     WLR_NO_HARDWARE_CURSORS = "1";
+    # doesnt work with cursor, does work with the rest
     NIXOS_OZONE_WL = "1";
 
     # Fix Electron apps (like Cursor) scaling and rendering on Wayland
@@ -167,21 +206,25 @@ security.rtkit.enable = true;
   # Enable Display Manager
   services.greetd = {
     enable = true;
-    settings = {
-      default_session = {
+    settings = rec {
+      initial_session = {
         command = "${pkgs.greetd.tuigreet}/bin/tuigreet \
           --time --time-format '%I:%M %p | %a • %h | %F' \
+          --remember-user-session \
+          --asterisks \
+          --user job \
           --cmd 'uwsm start hyprland'";
-        user    = "greeter";
+        user = "greeter";
       };
+      default_session = initial_session;
     };
   };
 
   users.users.greeter = {
     isNormalUser = false;
-    description  = "greetd greeter user";
-    extraGroups  = [ "video" "audio" ];
-    linger        = true;
+    description = "greetd greeter user";
+    extraGroups = [ "video" "audio" ];
+    linger = true;
   };
 
     # Some programs need SUID wrappers, can be configured further or are
