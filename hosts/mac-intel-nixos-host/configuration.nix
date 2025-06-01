@@ -1,56 +1,28 @@
 # Edit this configuration file to define what should be installed on
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-
-{ config, lib, pkgs, inputs, ... }:
-
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}: {
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
-  #nix.settings = {
-  #  substituters = ["https://hyprland.cachix.org"];
-  #  trusted-substituters = ["https://hyprland.cachix.org"];
-  #  trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
-  #};
+  nix.settings = {
+    substituters = ["https://hyprland.cachix.org"];
+    trusted-substituters = ["https://hyprland.cachix.org"];
+    trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
+  };
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot";
-
-  # T2 Mac suspend/resume fixes
-  boot.kernelParams = [
-    # Fix suspend/resume issues on T2 Macs
-    "intel_iommu=on"
-    "iommu=pt"
-    # Prevent USB devices from waking the system
-    "usbcore.autosuspend=-1"
-  ];
-
-  # Additional T2 Mac power management
-  powerManagement = {
-    enable = true;
-  };
-
-  # Systemd services to fix T2 devices after suspend
-  systemd.services.suspend-fix-t2 = {
-    description = "Disable and Re-Enable Apple BCE Module (and Wi-Fi)";
-    before = [ "sleep.target" ];
-    wantedBy = [ "sleep.target" ];
-    serviceConfig = {
-      User = "root";
-      Type = "oneshot";
-      RemainAfterExit = true;
-      StopWhenUnneeded = true;
-      # Force remove apple-bce module before suspend
-      ExecStart = "${pkgs.kmod}/bin/rmmod -f apple-bce";
-      # Re-enable apple-bce module after resume
-      ExecStop = "${pkgs.kmod}/bin/modprobe apple-bce";
-    };
-  };
 
   hardware.firmware = [
     (pkgs.stdenvNoCC.mkDerivation (final: {
@@ -65,27 +37,26 @@
 
   networking.hostName = "job-mac-nixos"; # Define your hostname.
   # Pick only one of the below networking options.
- # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
 
   # Set your time zone.
- time.timeZone = "Europe/Amsterdam";
+  time.timeZone = "Europe/Amsterdam";
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Select internationalisation properties.
- i18n.defaultLocale = "en_US.UTF-8";
+  i18n.defaultLocale = "en_US.UTF-8";
 
   # Enable the X11 windowing system.
   # services.xserver.enable = true;
-services.displayManager.defaultSession = "hyprland";
+  services.displayManager.defaultSession = "hyprland";
 
   # Enable the GNOME Desktop Environment.
   # services.xserver.displayManager.gdm.enable = true;
   #services.xserver.desktopManager.gnome.enable = true;
-
 
   # Configure keymap in X11
   services.xserver.xkb.layout = "us";
@@ -103,27 +74,27 @@ services.displayManager.defaultSession = "hyprland";
   # Enable sound.
   # services.pulseaudio.enable = true;
   # OR
-security.rtkit.enable = true;
+  security.rtkit.enable = true;
   services.pipewire = {
-     enable = true;
-       alsa.enable = true;
-  alsa.support32Bit = true;
-  pulse.enable = true;
-  jack.enable = true;
-   };
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    jack.enable = true;
+  };
 
   # Enable touchpad support (enabled default in most desktopManager).
-   services.libinput.enable = true;
+  services.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with 'passwd'.
   users.users.job = {
-     isNormalUser = true;
-     extraGroups = [ "wheel" ]; # Enable 'sudo' for the user.
-     packages = with pkgs; [
-       tree
-     ];
-         shell = pkgs.zsh;
-   };
+    isNormalUser = true;
+    extraGroups = ["wheel" "video" "audio"]; # Enable 'sudo' for the user.
+    packages = with pkgs; [
+      tree
+    ];
+    shell = pkgs.zsh;
+  };
 
   programs.zsh.enable = true;
   programs.firefox.enable = true;
@@ -132,46 +103,34 @@ security.rtkit.enable = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-   environment.systemPackages = with pkgs; [
-	logseq
-  pcloud
-  code-cursor
-	# # Wrap cursor with flags to fix pixelation on Wayland
-	# (pkgs.writeShellScriptBin "cursor" ''
-	#   exec ${pkgs.code-cursor}/bin/cursor \
-	#     --enable-features=UseOzonePlatform,WaylandWindowDecorations \
-	#     --ozone-platform=wayland \
-	#     --disable-gpu-sandbox \
-	#     --enable-wayland-ime \
-	#     "$@"
-	# '')
-	brave
-	keepassxc
-	cryptomator
-	protonmail-desktop
-	signal-desktop
-  vscode.fhs
-  waybar
-  swww
-  kitty
-  rofi-wayland
-  #waybar.overrideAttrs (oldAttrs: {
-  #  mesonFlags = oldAttrs.mesonFlags ++ ["-Dexperimental=true"];
-  #})
-  dunst
-  libnotify
-  greetd.tuigreet
-  overskride
-   ];
+  environment.systemPackages = with pkgs; [
+    logseq
+    pcloud
+    code-cursor
+    brave
+    keepassxc
+    cryptomator
+    protonmail-desktop
+    signal-desktop
+    vscode.fhs
+    waybar
+    swww
+    kitty
+    rofi-wayland
+    #waybar.overrideAttrs (oldAttrs: {
+    #  mesonFlags = oldAttrs.mesonFlags ++ ["-Dexperimental=true"];
+    #})
+    dunst
+    libnotify
+    greetd.tuigreet
+    overskride
+  ];
 
- # Enable Bluetooth
+  # Enable Bluetooth
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = false;
 
   boot.loader.timeout = 0;
-
-  # programs.hyprland.enable = true;
-  # programs.hyprland.package = inputs.hyprland.packages."${pkgs.system}".hyprland;
 
   programs.hyprland = {
     enable = true;
@@ -198,7 +157,7 @@ security.rtkit.enable = true;
   hardware = {
     graphics.enable = true;
     nvidia.modesetting.enable = false;
-};
+  };
 
   xdg.portal.enable = true;
   # xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-hyprland pkgs.xdg-desktop-portal-gtk ];
@@ -206,38 +165,36 @@ security.rtkit.enable = true;
   # Enable Display Manager
   services.greetd = {
     enable = true;
-    settings = rec {
-      initial_session = {
+    settings = {
+      default_session = {
         command = "${pkgs.greetd.tuigreet}/bin/tuigreet \
           --time --time-format '%I:%M %p | %a • %h | %F' \
-          --remember-user-session \
+          --remember \
           --asterisks \
-          --user job \
           --cmd 'uwsm start hyprland'";
-        user = "greeter";
+        user = "job";
       };
-      default_session = initial_session;
     };
   };
 
-  users.users.greeter = {
-    isNormalUser = false;
-    description = "greetd greeter user";
-    extraGroups = [ "video" "audio" ];
-    linger = true;
-  };
+  # users.users.greeter = {
+  #   isNormalUser = false;
+  #   description = "greetd greeter user";
+  #   extraGroups = ["video" "audio"];
+  #   linger = true;
+  # };
 
-    # Some programs need SUID wrappers, can be configured further or are
-    # started in user sessions.
-    # programs.mtr.enable = true;
-    # programs.gnupg.agent = {
-    #   enable = true;
-    #   enableSSHSupport = true;
-    # };
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
+  # programs.mtr.enable = true;
+  # programs.gnupg.agent = {
+  #   enable = true;
+  #   enableSSHSupport = true;
+  # };
 
-    # List services that you want to enable:
+  # List services that you want to enable:
 
-    # Enable the OpenSSH daemon.
+  # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
 
   # Open ports in the firewall.
@@ -269,6 +226,4 @@ security.rtkit.enable = true;
   #
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
   system.stateVersion = "25.05"; # Did you read the comment?
-
 }
-

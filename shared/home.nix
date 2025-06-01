@@ -5,14 +5,12 @@
   ...
 }:
 
+# TODO set wallpaper
 #      ${pkgs.swww}/bin/swww img ${./wallpaper.png} &
  let
     startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
       ${pkgs.waybar}/bin/waybar &
       ${pkgs.swww}/bin/swww init &
-
-      sleep 1
-
     '';
 in
 {
@@ -21,9 +19,9 @@ in
     # set the Hyprland and XDPH packages to null to use the ones from the NixOS module
     package = null;
     portalPackage = null;
-#    plugins = [
-#      inputs.hyprland-plugins.packages."${pkgs.system}".borders-plus-plus
-#    ];
+    # plugins = [
+    #   inputs.hyprland-plugins.packages."${pkgs.system}".borders-plus-plus
+    # ];
 
     settings = {
       exec-once = ''${startupScript}/bin/start'';
@@ -32,6 +30,38 @@ in
 
       input = {
         kb_options = "caps:swapescape";
+      };
+
+    general = {
+        gaps_in = 5;
+        gaps_out = 10;
+        border_size = 2;
+        "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
+        "col.inactive_border" = "rgba(595959aa)";
+        layout = "dwindle";
+      };
+
+      decoration = {
+        rounding = 10;
+        blur.enabled = true;
+        blur.size = 3;
+        blur.passes = 1;
+        drop_shadow = true;
+        shadow_range = 4;
+        shadow_render_power = 3;
+        "col.shadow" = "rgba(1a1a1aee)";
+      };
+
+      animations = {
+        enabled = true;
+        bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
+        animation = [
+          "windows, 1, 7, myBezier"
+          "windowsOut, 1, 7, default, popin 80%"
+          "border, 1, 10, default"
+          "fade, 1, 7, default"
+          "workspaces, 1, 6, default"
+        ];
       };
 
       # Environment variables for better Electron app support
@@ -46,6 +76,7 @@ in
           "$mod, F, exec, firefox"
           "$mod, T, exec, kitty"
           "$mod, D, exec, rofi -show drun"
+          "$mod, N, exec, logseq"
           ", Print, exec, grimblast copy area"
           "$mod SHIFT, Q, exit"  # Logout keybind
         ]
@@ -61,22 +92,22 @@ in
             )
             9)
         );
+     "plugin:borders-plus-plus" = {
+       add_borders = 1; # 0 - 9
+
+       # you can add up to 9 borders
+       "col.border_1" = "rgb(ffffff)";
+       "col.border_2" = "rgb(2222ff)";
+
+       # -1 means "default" as in the one defined in general:border_size
+       border_size_1 = 10;
+       border_size_2 = -1;
+
+       # makes outer edges match rounding of the parent. Turn on / off to better understand. Default = on.
+       natural_rounding = "yes";
+      };
     };
-#      "plugin:borders-plus-plus" = {
-#        add_borders = 1; # 0 - 9
-#
-#        # you can add up to 9 borders
-#        "col.border_1" = "rgb(ffffff)";
-#        "col.border_2" = "rgb(2222ff)";
-#
-#        # -1 means "default" as in the one defined in general:border_size
-#        border_size_1 = 10;
-#        border_size_2 = -1;
-#
-#        # makes outer edges match rounding of the parent. Turn on / off to better understand. Default = on.
-#        natural_rounding = "yes";
-#      };
-    };
+  };
 
 
 
