@@ -60,7 +60,13 @@
       "mac-apple-silicon-hm" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.aarch64-darwin;
         modules = [
-          ./shared/home.nix
+          ./home/shared-home.nix
+          ./home/home-mac.nix
+          {
+            home.username = "job.visser";
+            home.homeDirectory = "/Users/job.visser";
+          }
+          ./shared/home-mac.nix
           {
             home.username = "job.visser";
             home.homeDirectory = "/Users/job.visser";
@@ -71,7 +77,8 @@
       "mac-intel-hm" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-darwin;
         modules = [
-          ./shared/home.nix
+          ./home/shared-home.nix
+          ./home/home-mac.nix
           {
             home.username = "job";
             home.homeDirectory = "/Users/job";
@@ -82,7 +89,8 @@
       "mac-intel-nixos-hm" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
-          ./shared/home.nix
+          ./home/shared-home.nix
+          ./home/home-nixos.nix
           {
             home.username = "job";
             home.homeDirectory = "/home/job";
@@ -92,7 +100,7 @@
       "linux-hm" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.aarch64-linux;
         modules = [
-          ./shared/home.nix
+          ./home/shared-home.nix
           {
             home.username = "jvisser";
             home.homeDirectory = "/home/jvisser";
