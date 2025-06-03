@@ -66,11 +66,6 @@
             home.username = "job.visser";
             home.homeDirectory = "/Users/job.visser";
           }
-          ./shared/home-mac.nix
-          {
-            home.username = "job.visser";
-            home.homeDirectory = "/Users/job.visser";
-          }
         ];
       };
       # Personal Macbook running Intel

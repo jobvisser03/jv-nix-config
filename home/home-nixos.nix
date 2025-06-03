@@ -79,6 +79,10 @@ in
   home.packages = with pkgs; [
     # Add NixOS-specific packages here
     # e.g. pkgs.waybar, pkgs.swww
+    keepassxc
+    drawio
+    anki-bin
+    docker-client
   ];
   # Add more NixOS-specific config as needed
 }

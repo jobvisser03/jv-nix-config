@@ -30,10 +30,6 @@
     vim
     hurl
     wezterm
-    keepassxc
-    drawio
-    anki-bin
-    docker-client
     speedtest-cli
   ];
 
