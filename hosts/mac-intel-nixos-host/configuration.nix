@@ -11,7 +11,7 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-  ];
+    ];
 
   nix.settings = {
     substituters = ["https://hyprland.cachix.org"];
@@ -173,22 +173,23 @@
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet \
-          --time --time-format '%I:%M %p | %a • %h | %F' \
-          --remember \
-          --asterisks \
-          --cmd 'uwsm start hyprland'";
-        user = "job";
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --remember --asterisks --cmd Hyprland";
+        user = "greeter";
       };
+
+      initial_session = {
+          command = "${pkgs.hyprland}/bin/Hyprland";
+          user = "job";
+        };
     };
   };
 
-  # users.users.greeter = {
-  #   isNormalUser = false;
-  #   description = "greetd greeter user";
-  #   extraGroups = ["video" "audio"];
-  #   linger = true;
-  # };
+  users.users.greeter = {
+    isNormalUser = false;
+    description = "greetd greeter user";
+    extraGroups = ["video" "audio"];
+    linger = true;
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
