@@ -59,6 +59,32 @@
   #services.xserver.desktopManager.gnome.enable = true;
 
   # Configure keymap in X11
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
+  environment.systemPackages = with pkgs; [
+    logseq
+    pcloud
+    code-cursor
+    brave
+    keepassxc
+    cryptomator
+    protonmail-desktop
+    signal-desktop
+    vscode.fhs
+    hyprlock
+    hypridle
+    waybar
+    swww
+    kitty
+    rofi-wayland
+    #waybar.overrideAttrs (oldAttrs: {
+    #  mesonFlags = oldAttrs.mesonFlags ++ ["-Dexperimental=true"];
+    #})
+    dunst
+    libnotify
+    greetd.tuigreet
+  ];
+
   services.xserver.xkb.layout = "us";
   services.xserver.xkb.options = "caps:escape";
 
@@ -101,37 +127,16 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    logseq
-    pcloud
-    code-cursor
-    brave
-    keepassxc
-    cryptomator
-    protonmail-desktop
-    signal-desktop
-    vscode.fhs
-    waybar
-    swww
-    kitty
-    rofi-wayland
-    #waybar.overrideAttrs (oldAttrs: {
-    #  mesonFlags = oldAttrs.mesonFlags ++ ["-Dexperimental=true"];
-    #})
-    dunst
-    libnotify
-    greetd.tuigreet
-    # overskride
-  ];
-
   # Enable Bluetooth
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = false;
   services.blueman.enable = true;
 
   boot.loader.timeout = 0;
+
+
+  programs.hyprlock.enable = true;
+  services.hypridle.enable = true;
 
   programs.hyprland = {
     enable = true;

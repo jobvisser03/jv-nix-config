@@ -14,6 +14,17 @@
     '';
 in
 {
+
+  home.packages = with pkgs; [
+    # Add NixOS-specific packages here
+    # e.g. pkgs.waybar, pkgs.swww
+    keepassxc
+    drawio
+    anki-bin
+    docker-client
+    overskride
+  ];
+
   wayland.windowManager.hyprland = {
     enable = true;
     # set the Hyprland and XDPH packages to null to use the ones from the NixOS module
@@ -75,17 +86,8 @@ in
 #        natural_rounding = "yes";
 #      };
     };
-
-  home.packages = with pkgs; [
-    # Add NixOS-specific packages here
-    # e.g. pkgs.waybar, pkgs.swww
-    keepassxc
-    drawio
-    anki-bin
-    docker-client
-  ];
   # Add more NixOS-specific config as needed
-    vscode = {
+  programs.vscode = {
       enable = true;
       package = pkgs.vscode.fhs;
     };
