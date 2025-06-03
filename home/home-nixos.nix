@@ -6,14 +6,15 @@
 }:
 # NixOS-specific Home Manager options go here
 # Example: Hyprland, Wayland, Linux-only packages, etc.
-#      ${pkgs.swww}/bin/swww img ${./wallpaper.png} &
 let
+
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     ${pkgs.waybar}/bin/waybar &
     ${pkgs.swww}/bin/swww init &
 
-    sleep 1
+    sleep 0.1
 
+    ${pkgs.swww}/bin/swww img /home/job/Pictures/nixos-wallpaper-catppuccin-frappe.png &
   '';
   inherit (lib) mkForce;
   inherit (config.lib.formats.rasi) mkLiteral;
@@ -24,8 +25,6 @@ let
   };
 in {
   home.packages = with pkgs; [
-    # Add NixOS-specific packages here
-    # e.g. pkgs.waybar, pkgs.swww
     keepassxc
     drawio
     anki-bin
@@ -98,6 +97,35 @@ in {
   programs.vscode = {
     enable = true;
     package = pkgs.vscode.fhs;
+  };
+
+  programs.waybar = {
+    enable = true;
+    package = pkgs.waybar;
+    # settings = {
+    #   general = {
+    #     position = "top";
+    #     monitor = "eDP-1";
+    #     padding = "0 0 0 0";
+    #     margin = "0 0 0 0";
+    #   };
+
+    #   modules-left = [
+    #     "sway/workspaces"
+    #     "sway/mode"
+    #   ];
+
+    #   modules-center = [
+    #     "custom/clock"
+    #   ];
+
+    #   modules-right = [
+    #     "custom/battery"
+    #     "custom/volume"
+    #     "network"
+    #     "tray"
+    #   ];
+    # };
   };
 
   programs.hyprlock = {
