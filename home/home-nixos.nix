@@ -85,4 +85,8 @@ in
     docker-client
   ];
   # Add more NixOS-specific config as needed
+    vscode = {
+      enable = true;
+      package = pkgs.vscode.fhs;
+    };
 }
