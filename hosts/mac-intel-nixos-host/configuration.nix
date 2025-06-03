@@ -89,7 +89,7 @@
   # Define a user account. Don't forget to set a password with 'passwd'.
   users.users.job = {
     isNormalUser = true;
-    extraGroups = ["wheel" "video" "audio"]; # Enable 'sudo' for the user.
+    extraGroups = ["wheel" "video" "audio" "networkmanager"]; # Enable 'sudo' for the user.
     packages = with pkgs; [
       tree
     ];
@@ -123,12 +123,13 @@
     dunst
     libnotify
     greetd.tuigreet
-    overskride
+    # overskride
   ];
 
   # Enable Bluetooth
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = false;
+  services.blueman.enable = true;
 
   boot.loader.timeout = 0;
 
