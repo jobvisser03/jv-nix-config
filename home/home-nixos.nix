@@ -26,7 +26,7 @@ let
 in {
 
   imports = [
-    ./modules/wm/waybar.nix
+    ../hosts/mac-intel-nixos-host/modules/wm/waybar.nix
   ];
 
   home.packages = with pkgs; [

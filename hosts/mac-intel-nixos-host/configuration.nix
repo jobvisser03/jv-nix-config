@@ -14,6 +14,17 @@
     ./stylix.nix
     ];
 
+#TODO look into home-manager from nixos
+  # home-manager = {
+  #   extraSpecialArgs = {inherit inputs;};
+  #   users.morten = {
+  #     imports = [
+  #       ../../home/shared-home.nix
+  #       ../../home/home-nixos.nix
+  #     ];
+  #   };
+  # };
+
   nix.settings = {
     substituters = ["https://hyprland.cachix.org"];
     trusted-substituters = ["https://hyprland.cachix.org"];
