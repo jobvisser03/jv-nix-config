@@ -24,6 +24,11 @@ let
     };
   };
 in {
+
+  imports = [
+    ./modules/wm/waybar.nix
+  ];
+
   home.packages = with pkgs; [
     keepassxc
     drawio
@@ -125,7 +130,7 @@ in {
     #     "network"
     #     "tray"
     #   ];
-    # };
+    #non-nix-configs/nixos-wallpaper-catppuccin-frappe.png };
   };
 
   programs.hyprlock = {
