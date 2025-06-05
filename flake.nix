@@ -9,7 +9,7 @@
   };
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
 
     darwin.url = "github:LnL7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
@@ -24,12 +24,12 @@
     hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
 
     stylix = {
-      url = "github:danth/stylix";
+      url = "github:danth/stylix/release-25.05";
 
       inputs = {
         nixpkgs.follows = "nixpkgs";
         # TODO this breaks when home-manager is not a nixos module I think
-        # home-manager.follows = "home-manager";
+        home-manager.follows = "home-manager";
       };
     };
   };

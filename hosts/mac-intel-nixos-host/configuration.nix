@@ -11,10 +11,20 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    # ./stylix.nix
+    ./stylix.nix
   ];
 
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
+  #TODO look into home-manager from nixos
+  # home-manager = {
+  #   # extraSpecialArgs = {inherit inputs;};
+  #   users.job = {
+  #     imports = [
+  #       ../../home/shared-home.nix
+  #       ../../home/home-nixos.nix
+  #     ];
+  #   };
+  # };
+
 
   nix.settings = {
     substituters = ["https://hyprland.cachix.org"];
@@ -125,17 +135,6 @@
     shell = pkgs.zsh;
   };
 
-  #TODO look into home-manager from nixos
-  home-manager = {
-    extraSpecialArgs = {inherit inputs;};
-    users.job = {
-      imports = [
-        ../../home/shared-home.nix
-        ../../home/home-nixos.nix
-      ];
-    };
-
-  };
 
   programs.zsh.enable = true;
   programs.firefox.enable = true;
