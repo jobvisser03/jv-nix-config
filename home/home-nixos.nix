@@ -26,7 +26,7 @@ let
 in {
 
   imports = [
-    ../hosts/mac-intel-nixos-host/modules/wm/waybar.nix
+    # ../hosts/mac-intel-nixos-host/modules/wm/waybar.nix
   ];
 
   home.packages = with pkgs; [
@@ -107,30 +107,203 @@ in {
   programs.waybar = {
     enable = true;
     package = pkgs.waybar;
-    # settings = {
-    #   general = {
-    #     position = "top";
-    #     monitor = "eDP-1";
-    #     padding = "0 0 0 0";
-    #     margin = "0 0 0 0";
-    #   };
 
-    #   modules-left = [
-    #     "sway/workspaces"
-    #     "sway/mode"
-    #   ];
+    settings = {
+      top_bar = {
+        layer = "top";
+        position = "top";
+        height = 32;
+        spacing = 4;
+        modules-left = [
+          "custom/os_button"
+          "hyprland/workspaces"
+        ];
+        modules-center = [
+          "clock#time"
+          "custom/separator"
+          "clock#calendar"
+        ];
+        modules-right = [
+          "tray"
+          "temperature"
+          "cpu"
+          "memory"
+          "disk"
+          "battery"
+          "pulseaudio"
+        ];
 
-    #   modules-center = [
-    #     "custom/clock"
-    #   ];
+        "custom/os_button" = {
+          format = "󱄅";
+          tooltip = false;
+        };
 
-    #   modules-right = [
-    #     "custom/battery"
-    #     "custom/volume"
-    #     "network"
-    #     "tray"
-    #   ];
-    #non-nix-configs/nixos-wallpaper-catppuccin-frappe.png };
+        "hyprland/workspaces" = {
+          on-click = "activate";
+          format = "{icon}";
+          format-icons = {
+            active = "";
+            default = "";
+            empty = "";
+          };
+          persistent-workspaces = {
+            "*" = 10;
+          };
+        };
+
+        "custom/separator" = {
+          format = "|";
+          tooltip = false;
+        };
+
+        "clock#calendar" = {
+          format = "{:%F}";
+          "tooltip-format" = "<tt><small>{calendar}</small></tt>";
+          mode = "year";
+          actions = {
+            on-click-right = "mode";
+          };
+          calendar = {
+            mode = "year";
+            mode-mon-col = 3;
+            weeks-pos = "right";
+            on-scroll-right = "mode";
+            format = {
+              months = "<span color='#edb53d'><b>{}</b></span>";
+              days = "<span color='#edb53d'><b>{}</b></span>";
+              weeks = "<span color='#edb53d'><b>W{}</b></span>";
+              weekdays = "<span color='#edb53d'><b>{}</b></span>";
+              today = "<span color='#fe8019'><b><u>{}</u></b></span>";
+            };
+          };
+        };
+
+        "clock#time" = {
+          format = "{:%H:%M}";
+          "tooltip-format" = "<tt><small>{calendar}</small></tt>";
+          actions = {
+            on-click-right = "mode";
+          };
+          calendar = {
+            mode = "month";
+            mode-mon-col = 3;
+            weeks-pos = "right";
+            on-scroll = 1;
+            on-click-right = "mode";
+            format = {
+              months = "<span color='#edb53d'><b>{}</b></span>";
+              days = "<span color='#edb53d'><b>{}</b></span>";
+              weeks = "<span color='#edb53d'><b>W{}</b></span>";
+              weekdays = "<span color='#edb53d'><b>{}</b></span>";
+              today = "<span color='#fe8019'><b><u>{}</u></b></span>";
+            };
+          };
+        };
+
+        cpu = {
+          format = "󰻠 {usage}%";
+          states = {
+            high = 90;
+            upper-medium = 70;
+            medium = 50;
+            lower-medium = 30;
+            low = 10;
+          };
+          on-click = "kitty btop";
+        };
+
+        temperature = {
+          interval = 10;
+          tooltip = false;
+          thermal-zone = 0;
+          critical-threshold = 80;
+          format = " {temperatureC}°C";
+        };
+
+        memory = {
+          format = "  {percentage}%";
+          tooltip-format = "Main: ({used} GiB/{total} GiB)({percentage}%), available {avail} GiB";
+          states = {
+            high = 90;
+            upper-medium = 70;
+            medium = 50;
+            lower-medium = 30;
+            low = 10;
+          };
+          on-click = "kitty btop";
+        };
+
+        disk = {
+          format = "󰋊 {percentage_used}%";
+          tooltip-format = "({used}/{total})({percentage_used}%) in '{path}', available {free}({percentage_free}%)";
+          states = {
+            high = 90;
+            upper-medium = 70;
+            medium = 50;
+            lower-medium = 30;
+            low = 10;
+          };
+          on-click = "kitty btop";
+        };
+
+        battery = {
+          states = {
+            high = 90;
+            upper-medium = 70;
+            medium = 50;
+            lower-medium = 30;
+            low = 10;
+          };
+          format = "{icon}{capacity}%";
+          format-charging = "󱐋{icon}{capacity}%";
+          format-plugged = "󰚥{icon}{capacity}%";
+          format-time = "{H} h {M} min";
+          format-icons = [
+            "󱃍 "
+            "󰁺 "
+            "󰁻 "
+            "󰁼 "
+            "󰁽 "
+            "󰁾 "
+            "󰁿 "
+            "󰂀 "
+            "󰂁 "
+            "󰂂 "
+            "󰁹 "
+          ];
+          tooltip-format = "{timeTo}";
+        };
+
+        tray = {
+          icon-size = 20;
+          spacing = 2;
+        };
+
+        "pulseaudio" = {
+          tooltip-format = "{desc}\n{format_source}";
+          format = "{icon} {format_source}";
+          format-muted = "󰝟 {format_source}";
+          format-source = "󰍬";
+          format-source-muted = "󰍭";
+          format-icons = {
+            headphone = "󰋋 ";
+            hands-free = " ";
+            headset = "󰋎 ";
+            phone = "󰄜 ";
+            portable = "󰦧 ";
+            car = "󰄋 ";
+            hdmi = "󰡁 ";
+            hifi = "󰋌 ";
+            default = [
+              "󰕿"
+              "󰖀"
+              "󰕾"
+            ];
+          };
+          on-click = "pwvucontrol";
+        };
+      };
+    };
   };
 
   programs.hyprlock = {

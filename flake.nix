@@ -26,7 +26,9 @@
 
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        home-manager.follows = "home-manager";
+        # TODO this breaks when home-manager is not a nixos module I think
+        # it breaks the stylix enable with a 'gnome' is missing error
+        # home-manager.follows = "home-manager";
       };
     };
   };
@@ -72,6 +74,7 @@
       "mac-apple-silicon-hm" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.aarch64-darwin;
         modules = [
+          stylix.homeModules.stylix
           ./home/shared-home.nix
           ./home/home-mac.nix
           {
@@ -96,7 +99,7 @@
       "mac-intel-nixos-hm" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
-          stylix.homeModules.stylix
+          # stylix.homeModules.stylix
           ./home/shared-home.nix
           ./home/home-nixos.nix
           {
