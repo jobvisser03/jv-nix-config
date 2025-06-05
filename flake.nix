@@ -14,8 +14,10 @@
     darwin.url = "github:LnL7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
-    home-manager.url = "github:nix-community/home-manager";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
@@ -27,7 +29,6 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         # TODO this breaks when home-manager is not a nixos module I think
-        # it breaks the stylix enable with a 'gnome' is missing error
         # home-manager.follows = "home-manager";
       };
     };
@@ -61,11 +62,11 @@
       system = "x86_64-linux";
       specialArgs = {inherit inputs;}; # this is for hyprland
       modules = [
-        stylix.nixosModules.stylix
+        inputs.stylix.nixosModules.stylix
+        inputs.home-manager.nixosModules.default
         ./hosts/mac-intel-nixos-host/configuration.nix
         ./hosts/mac-intel-nixos-host/nix/substituter.nix
         nixos-hardware.nixosModules.apple-t2
-        # inputs.home-manager.nixosModules.default
       ];
     };
 
@@ -74,7 +75,6 @@
       "mac-apple-silicon-hm" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.aarch64-darwin;
         modules = [
-          stylix.homeModules.stylix
           ./home/shared-home.nix
           ./home/home-mac.nix
           {
@@ -99,6 +99,7 @@
       "mac-intel-nixos-hm" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
+          # If you want to use home-manager standalon
           # stylix.homeModules.stylix
           ./home/shared-home.nix
           ./home/home-nixos.nix

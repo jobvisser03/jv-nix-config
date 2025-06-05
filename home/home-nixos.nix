@@ -37,6 +37,9 @@ in {
     overskride
   ];
 
+  programs.stylix.enable = false;
+  programs.stylix.autoEnable = false;
+
   wayland.windowManager.hyprland = {
     enable = true;
     # set the Hyprland and XDPH packages to null to use the ones from the NixOS module
