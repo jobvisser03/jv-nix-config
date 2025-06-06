@@ -15,7 +15,7 @@
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -28,7 +28,6 @@
 
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        # TODO this breaks when home-manager is not a nixos module I think
         home-manager.follows = "home-manager";
       };
     };
@@ -63,10 +62,17 @@
       specialArgs = {inherit inputs;}; # this is for hyprland
       modules = [
         inputs.stylix.nixosModules.stylix
-        inputs.home-manager.nixosModules.default
         ./hosts/mac-intel-nixos-host/configuration.nix
         ./hosts/mac-intel-nixos-host/nix/substituter.nix
         nixos-hardware.nixosModules.apple-t2
+        inputs.home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = false;
+          home-manager.useUserPackages = true;
+          home-manager.extraSpecialArgs = { inherit inputs; };
+          home-manager.users.job.imports = [ ./home/shared-home.nix ./home/home-nixos.nix ];
+          home-manager.backupFileExtension = "hm-backup";
+        }
       ];
     };
 
@@ -100,7 +106,7 @@
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
           # If you want to use home-manager standalon
-          # stylix.homeModules.stylix
+          stylix.homeModules.stylix
           ./home/shared-home.nix
           ./home/home-nixos.nix
           {

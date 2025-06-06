@@ -2,12 +2,12 @@
   pkgs,
   lib,
   config,
+  inputs,
   ...
 }:
 # NixOS-specific Home Manager options go here
 # Example: Hyprland, Wayland, Linux-only packages, etc.
 let
-
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     ${pkgs.waybar}/bin/waybar &
     ${pkgs.swww}/bin/swww init &
@@ -18,17 +18,10 @@ let
   '';
   inherit (lib) mkForce;
   inherit (config.lib.formats.rasi) mkLiteral;
-  rofi-theme = {
-    "*" = {
-      background-color = mkLiteral "#00ff00";
-    };
-  };
 in {
-
   imports = [
-    # ../hosts/mac-intel-nixos-host/modules/wm/waybar.nix
+    ../hosts/mac-intel-nixos-host/modules/wm/waybar.nix
   ];
-
   home.packages = with pkgs; [
     keepassxc
     drawio
@@ -37,17 +30,17 @@ in {
     overskride
   ];
 
-  programs.stylix.enable = false;
-  programs.stylix.autoEnable = false;
+  stylix.enable = true;
+  stylix.polarity = "dark";
 
   wayland.windowManager.hyprland = {
     enable = true;
     # set the Hyprland and XDPH packages to null to use the ones from the NixOS module
     package = null;
     portalPackage = null;
-    #    plugins = [
-    #      inputs.hyprland-plugins.packages."${pkgs.system}".borders-plus-plus
-    #    ];
+      #  plugins = [
+      #    inputs.hyprland-plugins.packages."${pkgs.system}".borders-plus-plus
+      #  ];
 
     settings = {
       exec-once = ''${startupScript}/bin/start'';
@@ -63,6 +56,56 @@ in {
         "ELECTRON_OZONE_PLATFORM_HINT,auto"
         "ELECTRON_ENABLE_WAYLAND,1"
       ];
+
+      ecosystem = {
+        no_donation_nag = true;
+      };
+
+      # GENERAL
+      general = {
+        gaps_in = 5;
+        gaps_out = 10;
+        border_size = 2;
+        layout = "dwindle";
+      };
+
+      # DECORATION
+      decoration = {
+        rounding = 5;
+        active_opacity = 0.99;
+        inactive_opacity = 0.9;
+        fullscreen_opacity = 0.9;
+        blur = {
+          enabled = false;
+          size = 8;
+          passes = 2;
+          new_optimizations = true;
+        };
+        shadow = {
+          enabled = false;
+          range = 15;
+          ignore_window = true;
+          render_power = 3;
+        };
+      };
+
+      # ANIMATIONS
+      animations = {
+        enabled = true;
+        bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
+        animation = [
+          "windows, 1, 2, myBezier"
+          "windowsOut, 1, 2, default, popin 80%"
+          "border, 1, 3, default"
+          "fade, 1, 2, default"
+          "workspaces, 1, 1, default"
+        ];
+      };
+
+      # GESTURES
+      gestures = {
+        workspace_swipe = true;
+      };
 
       bind =
         [
@@ -86,20 +129,20 @@ in {
             9)
         );
     };
-    #      "plugin:borders-plus-plus" = {
-    #        add_borders = 1; # 0 - 9
-    #
-    #        # you can add up to 9 borders
-    #        "col.border_1" = "rgb(ffffff)";
-    #        "col.border_2" = "rgb(2222ff)";
-    #
-    #        # -1 means "default" as in the one defined in general:border_size
-    #        border_size_1 = 10;
-    #        border_size_2 = -1;
-    #
-    #        # makes outer edges match rounding of the parent. Turn on / off to better understand. Default = on.
-    #        natural_rounding = "yes";
-    #      };
+        #  "plugin:borders-plus-plus" = {
+        #    add_borders = 1; # 0 - 9
+    
+        #    # you can add up to 9 borders
+        #    "col.border_1" = "rgb(ffffff)";
+        #    "col.border_2" = "rgb(2222ff)";
+    
+        #    # -1 means "default" as in the one defined in general:border_size
+        #    border_size_1 = 10;
+        #    border_size_2 = -1;
+    
+        #    # makes outer edges match rounding of the parent. Turn on / off to better understand. Default = on.
+        #    natural_rounding = "yes";
+        #  };
   };
   # Add more NixOS-specific config as needed
   programs.vscode = {
@@ -107,207 +150,7 @@ in {
     package = pkgs.vscode.fhs;
   };
 
-  programs.waybar = {
-    enable = true;
-    package = pkgs.waybar;
 
-    settings = {
-      top_bar = {
-        layer = "top";
-        position = "top";
-        height = 32;
-        spacing = 4;
-        modules-left = [
-          "custom/os_button"
-          "hyprland/workspaces"
-        ];
-        modules-center = [
-          "clock#time"
-          "custom/separator"
-          "clock#calendar"
-        ];
-        modules-right = [
-          "tray"
-          "temperature"
-          "cpu"
-          "memory"
-          "disk"
-          "battery"
-          "pulseaudio"
-        ];
-
-        "custom/os_button" = {
-          format = "󱄅";
-          tooltip = false;
-        };
-
-        "hyprland/workspaces" = {
-          on-click = "activate";
-          format = "{icon}";
-          format-icons = {
-            active = "";
-            default = "";
-            empty = "";
-          };
-          persistent-workspaces = {
-            "*" = 10;
-          };
-        };
-
-        "custom/separator" = {
-          format = "|";
-          tooltip = false;
-        };
-
-        "clock#calendar" = {
-          format = "{:%F}";
-          "tooltip-format" = "<tt><small>{calendar}</small></tt>";
-          mode = "year";
-          actions = {
-            on-click-right = "mode";
-          };
-          calendar = {
-            mode = "year";
-            mode-mon-col = 3;
-            weeks-pos = "right";
-            on-scroll-right = "mode";
-            format = {
-              months = "<span color='#edb53d'><b>{}</b></span>";
-              days = "<span color='#edb53d'><b>{}</b></span>";
-              weeks = "<span color='#edb53d'><b>W{}</b></span>";
-              weekdays = "<span color='#edb53d'><b>{}</b></span>";
-              today = "<span color='#fe8019'><b><u>{}</u></b></span>";
-            };
-          };
-        };
-
-        "clock#time" = {
-          format = "{:%H:%M}";
-          "tooltip-format" = "<tt><small>{calendar}</small></tt>";
-          actions = {
-            on-click-right = "mode";
-          };
-          calendar = {
-            mode = "month";
-            mode-mon-col = 3;
-            weeks-pos = "right";
-            on-scroll = 1;
-            on-click-right = "mode";
-            format = {
-              months = "<span color='#edb53d'><b>{}</b></span>";
-              days = "<span color='#edb53d'><b>{}</b></span>";
-              weeks = "<span color='#edb53d'><b>W{}</b></span>";
-              weekdays = "<span color='#edb53d'><b>{}</b></span>";
-              today = "<span color='#fe8019'><b><u>{}</u></b></span>";
-            };
-          };
-        };
-
-        cpu = {
-          format = "󰻠 {usage}%";
-          states = {
-            high = 90;
-            upper-medium = 70;
-            medium = 50;
-            lower-medium = 30;
-            low = 10;
-          };
-          on-click = "kitty btop";
-        };
-
-        temperature = {
-          interval = 10;
-          tooltip = false;
-          thermal-zone = 0;
-          critical-threshold = 80;
-          format = " {temperatureC}°C";
-        };
-
-        memory = {
-          format = "  {percentage}%";
-          tooltip-format = "Main: ({used} GiB/{total} GiB)({percentage}%), available {avail} GiB";
-          states = {
-            high = 90;
-            upper-medium = 70;
-            medium = 50;
-            lower-medium = 30;
-            low = 10;
-          };
-          on-click = "kitty btop";
-        };
-
-        disk = {
-          format = "󰋊 {percentage_used}%";
-          tooltip-format = "({used}/{total})({percentage_used}%) in '{path}', available {free}({percentage_free}%)";
-          states = {
-            high = 90;
-            upper-medium = 70;
-            medium = 50;
-            lower-medium = 30;
-            low = 10;
-          };
-          on-click = "kitty btop";
-        };
-
-        battery = {
-          states = {
-            high = 90;
-            upper-medium = 70;
-            medium = 50;
-            lower-medium = 30;
-            low = 10;
-          };
-          format = "{icon}{capacity}%";
-          format-charging = "󱐋{icon}{capacity}%";
-          format-plugged = "󰚥{icon}{capacity}%";
-          format-time = "{H} h {M} min";
-          format-icons = [
-            "󱃍 "
-            "󰁺 "
-            "󰁻 "
-            "󰁼 "
-            "󰁽 "
-            "󰁾 "
-            "󰁿 "
-            "󰂀 "
-            "󰂁 "
-            "󰂂 "
-            "󰁹 "
-          ];
-          tooltip-format = "{timeTo}";
-        };
-
-        tray = {
-          icon-size = 20;
-          spacing = 2;
-        };
-
-        "pulseaudio" = {
-          tooltip-format = "{desc}\n{format_source}";
-          format = "{icon} {format_source}";
-          format-muted = "󰝟 {format_source}";
-          format-source = "󰍬";
-          format-source-muted = "󰍭";
-          format-icons = {
-            headphone = "󰋋 ";
-            hands-free = " ";
-            headset = "󰋎 ";
-            phone = "󰄜 ";
-            portable = "󰦧 ";
-            car = "󰄋 ";
-            hdmi = "󰡁 ";
-            hifi = "󰋌 ";
-            default = [
-              "󰕿"
-              "󰖀"
-              "󰕾"
-            ];
-          };
-          on-click = "pwvucontrol";
-        };
-      };
-    };
-  };
 
   programs.hyprlock = {
     enable = true;
@@ -347,12 +190,12 @@ in {
     };
   };
 
+  # TODO add rofi config from seperate file
   programs.rofi = {
     enable = true;
     cycle = false;
 
     package = pkgs.rofi-wayland;
-    theme = rofi-theme;
     extraConfig = {
       modi = "drun,filebrowser";
       font = "Noto Sans CJK JP 12";

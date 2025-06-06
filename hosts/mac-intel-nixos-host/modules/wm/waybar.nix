@@ -15,7 +15,7 @@
     radius = "5px";
   };
 in {
-  stylix.targets.waybar.enable = false;
+  stylix.targets.waybar.enable = true;
 
   programs.waybar = {
     enable = true;

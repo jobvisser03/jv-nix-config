@@ -25,7 +25,6 @@
   #   };
   # };
 
-
   nix.settings = {
     substituters = ["https://hyprland.cachix.org"];
     trusted-substituters = ["https://hyprland.cachix.org"];
@@ -143,7 +142,7 @@
 
   # Enable Bluetooth
   hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = false;
+  hardware.bluetooth.powerOnBoot = true;
   services.blueman.enable = true;
 
   boot.loader.timeout = 0;
