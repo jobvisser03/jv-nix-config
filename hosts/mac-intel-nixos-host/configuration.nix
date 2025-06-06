@@ -14,17 +14,6 @@
     ./stylix.nix
   ];
 
-  #TODO look into home-manager from nixos
-  # home-manager = {
-  #   # extraSpecialArgs = {inherit inputs;};
-  #   users.job = {
-  #     imports = [
-  #       ../../home/shared-home.nix
-  #       ../../home/home-nixos.nix
-  #     ];
-  #   };
-  # };
-
   nix.settings = {
     substituters = ["https://hyprland.cachix.org"];
     trusted-substituters = ["https://hyprland.cachix.org"];
@@ -110,8 +99,6 @@
   # services.printing.enable = true;
 
   # Enable sound.
-  # services.pulseaudio.enable = true;
-  # OR
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;

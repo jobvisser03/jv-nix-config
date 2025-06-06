@@ -14,13 +14,15 @@ let
 
     sleep 0.1
 
-    ${pkgs.swww}/bin/swww img /home/job/Pictures/nixos-wallpaper-catppuccin-frappe.png &
+    ${pkgs.swww}/bin/swww img /home/job/Pictures/nix-wallpaper-binary-black.png &
   '';
   inherit (lib) mkForce;
   inherit (config.lib.formats.rasi) mkLiteral;
 in {
   imports = [
     ../hosts/mac-intel-nixos-host/modules/wm/waybar.nix
+    ../hosts/mac-intel-nixos-host/modules/wm/hyprlock.nix
+    ../hosts/mac-intel-nixos-host/modules/wm/hypridle.nix
   ];
   home.packages = with pkgs; [
     keepassxc
@@ -150,45 +152,6 @@ in {
     package = pkgs.vscode.fhs;
   };
 
-
-
-  programs.hyprlock = {
-    enable = true;
-
-    settings = {
-      general = {
-        hide_cursor = true;
-        grace = 2;
-      };
-
-      background = mkForce {
-        color = "rgba(25, 20, 20, 1.0)";
-        path = "screenshot";
-        blur_passes = 2;
-        brightness = 0.5;
-      };
-
-      label = {
-        text = "Yes Yes Yes";
-        color = "rgba(222, 222, 222, 1.0)";
-        font_size = 50;
-        font_family = "Noto Sans CJK JP";
-        position = "0, 70";
-        halign = "center";
-        valign = "center";
-      };
-
-      input-field = {
-        size = "50, 50";
-        dots_size = 0.33;
-        dots_spacing = 0.15;
-        outer_color = mkForce "rgba(25, 20, 20, 0)";
-        inner_color = mkForce "rgba(25, 20, 20, 0)";
-        font_color = mkForce "rgba(222, 222, 222, 1.0)";
-        placeholder_text = "パスワード";
-      };
-    };
-  };
 
   # TODO add rofi config from seperate file
   programs.rofi = {

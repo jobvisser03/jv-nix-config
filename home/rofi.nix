@@ -19,7 +19,7 @@ in
 
     extraConfig = {
       modi = "drun,filebrowser";
-      font = "Noto Sans CJK JP 12";
+      font = "Noto Sans CJK JP 16";
       show-icons = true;
       disable-history = true;
       hover-select = true;
@@ -54,7 +54,7 @@ in
       };
 
       mainbox = {
-        padding = mkLiteral "8px";
+        padding = mkLiteral "12px";
       };
 
       inputbar = {
