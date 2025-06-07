@@ -11,14 +11,10 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ./cachix.nix
     ./stylix.nix
   ];
 
-  nix.settings = {
-    substituters = ["https://hyprland.cachix.org"];
-    trusted-substituters = ["https://hyprland.cachix.org"];
-    trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
-  };
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;

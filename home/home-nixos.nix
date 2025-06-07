@@ -10,11 +10,7 @@
 let
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     ${pkgs.waybar}/bin/waybar &
-    ${pkgs.swww}/bin/swww init &
-
-    sleep 0.1
-
-    ${pkgs.swww}/bin/swww img /home/job/Pictures/nix-wallpaper-binary-black.png &
+    ${pkgs.hypridle}/bin/hypridle
   '';
   inherit (lib) mkForce;
   inherit (config.lib.formats.rasi) mkLiteral;
@@ -30,6 +26,7 @@ in {
     anki-bin
     docker-client
     overskride
+    nautilus
   ];
 
   stylix.enable = true;
