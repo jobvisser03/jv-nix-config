@@ -26,6 +26,8 @@
         "microsoft-azure-storage-explorer"
         "qobuz"
         "proton-mail"
+        "keepassxc"
+        "ollama"
       ];
       taps = [ ];
   };
