@@ -9,13 +9,15 @@
   };
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     darwin.url = "github:LnL7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      # url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -24,7 +26,8 @@
     hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
 
     stylix = {
-      url = "github:danth/stylix/release-25.05";
+      # url = "github:danth/stylix/release-25.05";
+      url = "github:danth/stylix/master";
 
       inputs = {
         nixpkgs.follows = "nixpkgs";
