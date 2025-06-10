@@ -8,5 +8,5 @@
     blueutil
   ];
   # Add more macOS-specific config as needed
-
+  nix.package = pkgs.nix;
 }

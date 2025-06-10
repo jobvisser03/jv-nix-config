@@ -30,6 +30,7 @@
     hurl
     wezterm
     speedtest-cli
+    docker-client
   ];
 
   programs = {
