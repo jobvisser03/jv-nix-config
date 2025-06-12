@@ -29,6 +29,7 @@
         "proton-mail"
         "keepassxc"
         "ollama"
+        "vsh"
       ];
       taps = [ ];
   };
