@@ -9,7 +9,8 @@
       onActivation.upgrade = true;
       onActivation.cleanup = "uninstall";
 
-      brews = [ "cowsay" ];
+      brews = [ "cowsay"
+      "vault" ];
       casks = [
         "signal"
         "whatsapp"
@@ -21,7 +22,6 @@
         "darktable"
         "macfuse"
         "rancher"
-        "docker-credential-helper"
         "cursor"
         "visual-studio-code"
         "microsoft-azure-storage-explorer"
@@ -29,9 +29,8 @@
         "proton-mail"
         "keepassxc"
         "ollama"
-        "vsh"
       ];
-      taps = [ ];
+      taps = ["hashicorp/tap"];
   };
 
   # add nix stuff to /etc/zshrc
