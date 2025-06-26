@@ -29,6 +29,7 @@
         "proton-mail"
         "keepassxc"
         "ollama"
+        "slack"
       ];
       taps = ["hashicorp/tap"];
   };
