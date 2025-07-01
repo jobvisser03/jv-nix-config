@@ -5,6 +5,7 @@
   hm-larkbox = "ssh larkbox 'source /etc/bashrc && cd ~/repos/jv-nix-config && git pull && home-manager switch --flake ~/repos/jv-nix-config#linux-hm'";
   nd-work = "darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-apple-silicon-host";
   nd-mac = "darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-host";
+  nr = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-nixos-host";
 
   venv = "source .venv/bin/activate";
   helpme = "tldr --list | fzf | xargs tldr";
