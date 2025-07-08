@@ -92,20 +92,19 @@
                   }
                 ];
                 icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-                definedAliases = ["@np"];
+                definedAliases = ["!np"];
               };
               "NixOS Wiki" = {
                 urls = [{template = "https://nixos.wiki/index.php?search={searchTerms}";}];
                 icon = "https://nixos.wiki/favicon.png";
                 updateInterval = 24 * 60 * 60 * 1000; # every day
-                definedAliases = ["@nw"];
+                definedAliases = ["!nw"];
               };
               "bing".metaData.hidden = true;
               "google".metaData.alias = "!g"; # builtin engines only support specifying one additional alias
             };
           };
           extensions.packages = with inputs.firefox-addons.packages.${pkgs.system}; [
-            # extensions = with pkgs.nur.repos.rycee.firefox-addons; [
             keepassxc-browser
             darkreader
             vimium

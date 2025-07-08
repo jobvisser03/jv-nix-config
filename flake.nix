@@ -112,20 +112,20 @@
         ];
         extraSpecialArgs = {inherit inputs;};
       };
-      # NixOS Intel Mac
-      "mac-intel-nixos-hm" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        modules = [
-          # If you want to use home-manager standalon
-          stylix.homeModules.stylix
-          ./home/shared-home.nix
-          ./home/home-nixos.nix
-          {
-            home.username = "job";
-            home.homeDirectory = "/home/job";
-          }
-        ];
-      };
+      # NixOS Intel Mac - not used bcoz home-manager is in nixosConfigurations
+      # "mac-intel-nixos-hm" = home-manager.lib.homeManagerConfiguration {
+      #   pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      #   modules = [
+      #     # If you want to use home-manager standalon
+      #     stylix.homeModules.stylix
+      #     ./home/shared-home.nix
+      #     ./home/home-nixos.nix
+      #     {
+      #       home.username = "job";
+      #       home.homeDirectory = "/home/job";
+      #     }
+      #   ];
+      # };
       "linux-hm" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.aarch64-linux;
         modules = [
@@ -135,6 +135,7 @@
             home.homeDirectory = "/home/jvisser";
           }
         ];
+        extraSpecialArgs = {inherit inputs;};
       };
     };
   };
