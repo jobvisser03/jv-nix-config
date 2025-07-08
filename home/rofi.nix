@@ -3,14 +3,11 @@
   lib,
   pkgs,
   ...
-}:
-
-let
+}: let
   inherit (lib) mkForce;
   inherit (config.lib.formats.rasi) mkLiteral;
   inherit (config.lib.stylix.colors.withHashtag) base00 base05;
-in
-{
+in {
   programs.rofi = {
     enable = true;
     cycle = false;

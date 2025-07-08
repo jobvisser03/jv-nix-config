@@ -37,9 +37,9 @@ in {
     # set the Hyprland and XDPH packages to null to use the ones from the NixOS module
     package = null;
     portalPackage = null;
-      #  plugins = [
-      #    inputs.hyprland-plugins.packages."${pkgs.system}".borders-plus-plus
-      #  ];
+    #  plugins = [
+    #    inputs.hyprland-plugins.packages."${pkgs.system}".borders-plus-plus
+    #  ];
 
     settings = {
       exec-once = ''${startupScript}/bin/start'';
@@ -128,27 +128,26 @@ in {
             9)
         );
     };
-        #  "plugin:borders-plus-plus" = {
-        #    add_borders = 1; # 0 - 9
-    
-        #    # you can add up to 9 borders
-        #    "col.border_1" = "rgb(ffffff)";
-        #    "col.border_2" = "rgb(2222ff)";
-    
-        #    # -1 means "default" as in the one defined in general:border_size
-        #    border_size_1 = 10;
-        #    border_size_2 = -1;
-    
-        #    # makes outer edges match rounding of the parent. Turn on / off to better understand. Default = on.
-        #    natural_rounding = "yes";
-        #  };
+    #  "plugin:borders-plus-plus" = {
+    #    add_borders = 1; # 0 - 9
+
+    #    # you can add up to 9 borders
+    #    "col.border_1" = "rgb(ffffff)";
+    #    "col.border_2" = "rgb(2222ff)";
+
+    #    # -1 means "default" as in the one defined in general:border_size
+    #    border_size_1 = 10;
+    #    border_size_2 = -1;
+
+    #    # makes outer edges match rounding of the parent. Turn on / off to better understand. Default = on.
+    #    natural_rounding = "yes";
+    #  };
   };
   # Add more NixOS-specific config as needed
   programs.vscode = {
     enable = true;
     package = pkgs.vscode.fhs;
   };
-
 
   # TODO add rofi config from seperate file
   programs.rofi = {

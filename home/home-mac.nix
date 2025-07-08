@@ -1,5 +1,9 @@
-{ pkgs, lib, config, ... }:
 {
+  pkgs,
+  lib,
+  config,
+  ...
+}: {
   # macOS-specific Home Manager options go here
   # Example: macOS-only packages, settings, etc.
   home.packages = with pkgs; [

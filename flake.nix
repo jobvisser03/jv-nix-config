@@ -34,6 +34,12 @@
         home-manager.follows = "home-manager";
       };
     };
+
+    # Firefox addons flake
+    firefox-addons = {
+      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -72,8 +78,8 @@
         {
           home-manager.useGlobalPkgs = false;
           home-manager.useUserPackages = true;
-          home-manager.extraSpecialArgs = { inherit inputs; };
-          home-manager.users.job.imports = [ ./home/shared-home.nix ./home/home-nixos.nix ];
+          home-manager.extraSpecialArgs = {inherit inputs;};
+          home-manager.users.job.imports = [./home/shared-home.nix ./home/home-nixos.nix];
           home-manager.backupFileExtension = "hm-backup";
         }
       ];
@@ -91,6 +97,7 @@
             home.homeDirectory = "/Users/job.visser";
           }
         ];
+        extraSpecialArgs = {inherit inputs;};
       };
       # Personal Macbook running Intel
       "mac-intel-hm" = home-manager.lib.homeManagerConfiguration {
@@ -103,6 +110,7 @@
             home.homeDirectory = "/Users/job";
           }
         ];
+        extraSpecialArgs = {inherit inputs;};
       };
       # NixOS Intel Mac
       "mac-intel-nixos-hm" = home-manager.lib.homeManagerConfiguration {

@@ -1,37 +1,36 @@
 # CommonNix-darwin system configuration for managing macos settings
-{
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   homebrew = {
-      enable = true;
-      onActivation.autoUpdate = true;
-      onActivation.upgrade = true;
-      onActivation.cleanup = "uninstall";
+    enable = true;
+    onActivation.autoUpdate = true;
+    onActivation.upgrade = true;
+    onActivation.cleanup = "uninstall";
 
-      brews = [ "cowsay"
-      "vault" ];
-      casks = [
-        "signal"
-        "whatsapp"
-        "brave-browser"
-        "rancher"
-        "raycast"
-        "logseq"
-        "cryptomator"
-        "darktable"
-        "macfuse"
-        "rancher"
-        "cursor"
-        "visual-studio-code"
-        "microsoft-azure-storage-explorer"
-        "qobuz"
-        "proton-mail"
-        "keepassxc"
-        "ollama"
-        "slack"
-      ];
-      taps = ["hashicorp/tap"];
+    brews = [
+      "cowsay"
+      "vault"
+    ];
+    casks = [
+      "signal"
+      "whatsapp"
+      "brave-browser"
+      "rancher"
+      "raycast"
+      "logseq"
+      "cryptomator"
+      "darktable"
+      "macfuse"
+      "rancher"
+      "cursor"
+      "visual-studio-code"
+      "microsoft-azure-storage-explorer"
+      "qobuz"
+      "proton-mail"
+      "keepassxc"
+      "ollama"
+      "slack"
+    ];
+    taps = ["hashicorp/tap"];
   };
 
   # add nix stuff to /etc/zshrc
@@ -94,6 +93,5 @@
       # so we do not need to logout and login again to make the changes take effect.
       /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
     '';
-
   };
 }
