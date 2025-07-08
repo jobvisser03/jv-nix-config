@@ -106,6 +106,7 @@
           };
           extensions.packages = with inputs.firefox-addons.packages.${pkgs.system}; [
             keepassxc-browser
+            ublock-origin
             darkreader
             vimium
           ];
