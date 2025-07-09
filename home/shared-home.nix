@@ -32,7 +32,17 @@
     speedtest-cli
     docker-client
   ];
-
+  # TODO try and get firerfox nightly working https://nixos.wiki/wiki/Firefox
+  # nixpkgs.overlays =
+  #   let
+  #     # Change this to a rev sha to pin
+  #     moz-rev = "master";
+  #     moz-url = builtins.fetchTarball { url = "https://github.com/mozilla/nixpkgs-mozilla/archive/${moz-rev}.tar.gz";};
+  #     nightlyOverlay = (import "${moz-url}/firefox-overlay.nix");
+  #   in [
+  #     nightlyOverlay
+  #   ];
+  # programs.firefox.package = pkgs.latest.firefox-nightly-bin;
   programs = {
     firefox = {
       enable = true;
@@ -45,6 +55,7 @@
             "browser.startup.homepage" = "https://duckduckgo.com";
             "browser.search.defaultenginename" = "ddg";
             "browser.search.order.1" = "ddg";
+            "browser.urlbar.autoFill.adaptiveHistory.enabled" = true;
 
             "extensions.pocket.enabled" = false;
             "extensions.screenshots.disabled" = true;
@@ -509,7 +520,10 @@
   '';
 
   home.stateVersion = "24.11";
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs = {
+    config.allowUnfree = true; # for things like spotify
+  };
+
   fonts.fontconfig.enable = true;
   programs.home-manager.enable = true;
 
