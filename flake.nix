@@ -72,7 +72,6 @@
       modules = [
         inputs.stylix.nixosModules.stylix
         ./hosts/mac-intel-nixos-host/configuration.nix
-        ./hosts/mac-intel-nixos-host/nix/substituter.nix
         nixos-hardware.nixosModules.apple-t2
         inputs.home-manager.nixosModules.home-manager
         {
@@ -146,17 +145,17 @@
       #     }
       #   ];
       # };
-      "linux-hm" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.aarch64-linux;
-        modules = [
-          ./home/shared-home.nix
-          {
-            home.username = "jvisser";
-            home.homeDirectory = "/home/jvisser";
-          }
-        ];
-        extraSpecialArgs = {inherit inputs;};
-      };
+      # "linux-hm" = home-manager.lib.homeManagerConfiguration {
+      #   pkgs = nixpkgs.legacyPackages.aarch64-linux;
+      #   modules = [
+      #     ./home/shared-home.nix
+      #     {
+      #       home.username = "jvisser";
+      #       home.homeDirectory = "/home/jvisser";
+      #     }
+      #   ];
+      #   extraSpecialArgs = {inherit inputs;};
+      # };
     };
   };
 }
