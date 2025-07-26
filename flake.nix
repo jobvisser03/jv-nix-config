@@ -40,7 +40,6 @@
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
   };
 
   outputs = {
@@ -81,6 +80,26 @@
           home-manager.useUserPackages = true;
           home-manager.extraSpecialArgs = {inherit inputs;};
           home-manager.users.job.imports = [./home/shared-home.nix ./home/home-nixos.nix];
+          home-manager.backupFileExtension = "hm-backup";
+        }
+      ];
+    };
+
+    nixosConfigurations.linux-larkbox-host = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = {inherit inputs;};
+      modules = [
+        inputs.stylix.nixosModules.stylix
+        ./hosts/linux-larkbox-host/configuration.nix
+        inputs.home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = false;
+          home-manager.useUserPackages = true;
+          home-manager.extraSpecialArgs = {inherit inputs;};
+          home-manager.users.job.imports = [
+            ./home/shared-home.nix
+            ./home/home-linux.nix
+          ];
           home-manager.backupFileExtension = "hm-backup";
         }
       ];

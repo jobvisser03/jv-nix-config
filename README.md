@@ -1,5 +1,34 @@
 # Nix/Home Manager flake configuration
 
+├── modules/
+│   ├── default.nix          # Main modules index
+│   ├── system/              # System-level modules
+│   │   ├── default.nix      # System modules index
+│   │   ├── nix.nix          # Nix configuration (shared substituters, etc.)
+│   │   └── users.nix        # User configuration
+│   └── wm/                  # Window manager modules
+│       ├── default.nix      # WM modules index
+│       ├── hyprland.nix
+│       ├── hyprlock.nix
+│       ├── hypridle.nix
+│       └── waybar.nix
+├── profiles/
+│   ├── default.nix          # Profiles index
+│   ├── desktop.nix          # Desktop environment profile
+│   └── stylix.nix           # Styling profile
+├── hosts/
+│   ├── linux-larkbox-host/
+│   │   ├── configuration.nix     # Host-specific config
+│   │   └── hardware-configuration.nix
+│   └── [other hosts...]
+└── home/
+    ├── shared-home.nix      # Shared home-manager config
+    ├── home-linux.nix       # Linux-specific home config
+    ├── home-nixos.nix       # NixOS-specific home config
+    └── home-mac.nix         # macOS-specific home config
+
+## Description
+
 This repository contains my personal Nix/Home Manager configuration. I currently use Nix mainly in Home Manager and am very happy with it.
 
 Main features:
