@@ -11,7 +11,6 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    ./cachix.nix
     ./stylix.nix
 
     # Common system modules
