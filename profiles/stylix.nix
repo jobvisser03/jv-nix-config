@@ -12,7 +12,7 @@
       gnome = {enable = false;}; # Disable GNOME if not needed
     };
     base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
-    image = ../../non-nix-configs/nix-wallpaper-binary-black.png;
+    image = ../non-nix-configs/nix-wallpaper-binary-black.png;
     polarity = "dark";
     fonts = {
       sizes = {

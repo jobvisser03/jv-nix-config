@@ -16,9 +16,9 @@ let
   inherit (config.lib.formats.rasi) mkLiteral;
 in {
   imports = [
-    ../hosts/mac-intel-nixos-host/modules/wm/waybar.nix
-    ../hosts/mac-intel-nixos-host/modules/wm/hyprlock.nix
-    ../hosts/mac-intel-nixos-host/modules/wm/hypridle.nix
+    ../modules/wm/waybar.nix
+    ../modules/wm/hyprlock.nix
+    ../modules/wm/hypridle.nix
   ];
   home.packages = with pkgs; [
     keepassxc
