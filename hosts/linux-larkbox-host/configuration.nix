@@ -12,9 +12,6 @@
     # Common system modules
     ../../modules/system
 
-    # Window manager modules
-   # ../../modules/wm
-
     # Profiles
     ../../profiles/default.nix
   ];

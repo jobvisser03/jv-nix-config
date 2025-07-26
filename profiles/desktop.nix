@@ -9,9 +9,6 @@
 
   # Common desktop packages
   environment.systemPackages = with pkgs; [
-    #waybar.overrideAttrs (oldAttrs: {
-    #  mesonFlags = oldAttrs.mesonFlags ++ ["-Dexperimental=true"];
-    #})
     dunst
     libnotify
     greetd.tuigreet
@@ -54,13 +51,11 @@
   ];
 
   # Common desktop programs for home-manager
-  programs.zsh.enable = true;
-  programs.firefox.enable = true;
-
-  boot.loader.timeout = 0;
-
-  programs.hyprlock.enable = true;
-  services.hypridle.enable = true;  
+  programs = {
+    zsh.enable = true;
+    firefox.enable = true;
+    hyprlock.enable = true;
+  };
 
   # Common desktop services
   services = {
@@ -81,6 +76,8 @@
 
     # Display manager configuration
     displayManager.defaultSession = "hyprland";
+
+    hypridle.enable = true;
 
     # Bluetooth manager
     blueman.enable = true;
@@ -124,7 +121,6 @@
   security.rtkit.enable = true;
   nixpkgs.config.allowUnfree = true;
 
-
   # XDG portal
   # xdg.portal.enable = true;
 
@@ -144,17 +140,4 @@
     extraGroups = ["video" "audio"];
     linger = true;
   };
-
-  # Fonts
-  # fonts.packages = with pkgs; [
-  #   noto-fonts
-  #   noto-fonts-cjk-sans
-  #   noto-fonts-emoji
-  #   liberation_ttf
-  #   fira-code
-  #   fira-code-symbols
-  #   mplus-outline-fonts.githubRelease
-  #   dina-font
-  #   proggyfonts
-  # ];
 }

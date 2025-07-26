@@ -15,6 +15,7 @@
     # Common system modules
     ../../modules/system
 
+    # Profiles
     ../../profiles/default.nix
   ];
 
