@@ -9,9 +9,15 @@
 
   # Common desktop packages
   environment.systemPackages = with pkgs; [
+    #waybar.overrideAttrs (oldAttrs: {
+    #  mesonFlags = oldAttrs.mesonFlags ++ ["-Dexperimental=true"];
+    #})
+    dunst
+    libnotify
+    greetd.tuigreet
+
     # Browsers
     firefox
-    chromium
     brave
 
     # Media
@@ -24,7 +30,6 @@
     # Development tools commonly used on desktop
     git
     vim
-    vscode
     code-cursor
     vscode.fhs
 
@@ -47,6 +52,15 @@
     libnotify
     greetd.tuigreet
   ];
+
+  # Common desktop programs for home-manager
+  programs.zsh.enable = true;
+  programs.firefox.enable = true;
+
+  boot.loader.timeout = 0;
+
+  programs.hyprlock.enable = true;
+  services.hypridle.enable = true;  
 
   # Common desktop services
   services = {
@@ -110,24 +124,9 @@
   security.rtkit.enable = true;
   nixpkgs.config.allowUnfree = true;
 
-  # Programs
-  programs = {
-    zsh.enable = true;
-    firefox.enable = true;
-    hyprlock.enable = true;
-
-    hyprland = {
-      enable = true;
-      xwayland.enable = true;
-      # Note: package should be set per-host with inputs
-    };
-  };
-
-  # Services
-  services.hypridle.enable = true;
 
   # XDG portal
-  xdg.portal.enable = true;
+  # xdg.portal.enable = true;
 
   # Environment variables for Wayland/Hyprland
   environment.sessionVariables = {

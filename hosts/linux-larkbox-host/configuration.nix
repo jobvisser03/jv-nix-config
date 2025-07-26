@@ -13,11 +13,10 @@
     ../../modules/system
 
     # Window manager modules
-    ../../modules/wm
+   # ../../modules/wm
 
     # Profiles
-    ../../profiles/stylix.nix
-    ../../profiles/desktop.nix
+    ../../profiles/default.nix
   ];
 
   # Host-specific configuration

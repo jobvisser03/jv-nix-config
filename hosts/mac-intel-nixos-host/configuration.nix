@@ -11,16 +11,11 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    ./stylix.nix
-
+    
     # Common system modules
     ../../modules/system
 
-    # Window manager modules
-    ../../modules/wm
-
-    # Desktop profile
-    ../../profiles/desktop.nix
+    ../../profiles/default.nix
   ];
 
   # Host-specific configuration
@@ -51,6 +46,7 @@
       '';
     }))
   ];
+
 
   # Network configuration
   networking.networkmanager.enable = true;
