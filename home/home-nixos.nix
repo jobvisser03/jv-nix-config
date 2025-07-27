@@ -19,6 +19,7 @@ in {
     ../modules/wm/waybar.nix
     ../modules/wm/hyprlock.nix
     ../modules/wm/hypridle.nix
+    ../modules/home-manager/rofi.nix
   ];
   home.packages = with pkgs; [
     keepassxc
