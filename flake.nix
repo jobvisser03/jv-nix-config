@@ -55,13 +55,13 @@
 
     darwinConfigurations."mac-intel-host" = darwin.lib.darwinSystem {
       modules = [
-        ./hosts/common/system.nix
+        ./hosts/common-nix-darwin/system.nix
         ./hosts/mac-intel-host/system.nix
       ];
     };
     darwinConfigurations."mac-apple-silicon-host" = darwin.lib.darwinSystem {
       modules = [
-        ./hosts/common/system.nix
+        ./hosts/common-nix-darwin/system.nix
         ./hosts/mac-apple-silicon-host/system.nix
       ];
     };
@@ -145,17 +145,17 @@
       #     }
       #   ];
       # };
-      # "linux-hm" = home-manager.lib.homeManagerConfiguration {
-      #   pkgs = nixpkgs.legacyPackages.aarch64-linux;
-      #   modules = [
-      #     ./home/shared-home.nix
-      #     {
-      #       home.username = "jvisser";
-      #       home.homeDirectory = "/home/jvisser";
-      #     }
-      #   ];
-      #   extraSpecialArgs = {inherit inputs;};
-      # };
+      "linux-hm" = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.aarch64-linux;
+        modules = [
+          ./home/shared-home.nix
+          {
+            home.username = "jvisser";
+            home.homeDirectory = "/home/jvisser";
+          }
+        ];
+        extraSpecialArgs = {inherit inputs;};
+      };
     };
   };
 }
