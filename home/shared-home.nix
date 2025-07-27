@@ -440,7 +440,7 @@
       enable = true;
       enableZshIntegration = true;
       enableBashIntegration = true;
-      extraConfig = builtins.readFile ./wezterm.lua;
+      extraConfig = builtins.readFile ../non-nix-configs/wezterm.lua;
     };
     zsh = {
       enable = true;
