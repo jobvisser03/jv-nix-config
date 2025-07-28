@@ -7,7 +7,7 @@
   nd-mac = "darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-host";
   nr = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-nixos-host";
 
-  dup = "sudo systemctl list-units *docker*"
+  dup = "sudo systemctl list-units *docker*";
   venv = "source .venv/bin/activate";
   helpme = "tldr --list | fzf | xargs tldr";
   gcs = "gcloud storage";
