@@ -33,7 +33,11 @@
 
   # Use the systemd-boot EFI boot loader.
   boot.loader = {
-    systemd-boot.enable = true;
+    systemd-boot.enable = false;
+    boot.loader.grub.enable = true;
+    boot.loader.grub.device = "nodev";
+    boot.loader.grub.useOSProber = true;
+    boot.loader.grub.efiSupport = true;
     efi.canTouchEfiVariables = true;
     efi.efiSysMountPoint = "/boot";
     timeout = 0;
