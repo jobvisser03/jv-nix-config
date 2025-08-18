@@ -27,6 +27,10 @@
     ├── home-nixos.nix       # NixOS-specific home config
     └── home-mac.nix         # macOS-specific home config
 
+## Commands
+
+Delete old generations from boot loader: `sudo nix-collect-garbage --delete-older-than 14d`
+
 ## Description
 
 This repository contains my personal Nix/Home Manager configuration. I currently use Nix mainly in Home Manager and am very happy with it.
