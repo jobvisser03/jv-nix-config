@@ -33,11 +33,21 @@
 
   # Use the systemd-boot EFI boot loader.
   boot.loader = {
-    systemd-boot.enable = false;
-    boot.loader.grub.enable = true;
-    boot.loader.grub.device = "nodev";
-    boot.loader.grub.useOSProber = true;
-    boot.loader.grub.efiSupport = true;
+    systemd-boot.enable = true;
+    # grub.enable = true;
+    # grub.device = "nodev";
+    # grub.useOSProber = true;
+    # grub.efiSupport = true;
+    # Not working because macos EFI/APPLE/BOOT/BOOTX64.EFI doesn't exists
+    # because macos hides this in it's onw partition and preboot config
+    # TODO use rEFInd
+    # grub.extraEntries = ''
+    #   menuentry "macOS" {
+    #     insmod hfsplus
+    #     set root=(hd0,1)
+    #     multiboot /boot
+    #   }
+    # '';
     efi.canTouchEfiVariables = true;
     efi.efiSysMountPoint = "/boot";
     timeout = 0;
