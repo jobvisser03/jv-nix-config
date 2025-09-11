@@ -13,6 +13,7 @@
     casks = [
       "signal"
       "whatsapp"
+      "beeper"
       "brave-browser"
       "rancher"
       "raycast"
