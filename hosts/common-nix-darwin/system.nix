@@ -22,14 +22,13 @@
       "darktable"
       "macfuse"
       "rancher"
-      "docker-credential-helper"
       "cursor"
       "visual-studio-code"
       "microsoft-azure-storage-explorer"
       "qobuz"
       "proton-mail"
       "keepassxc"
-      "ollama"
+      # "ollama"
       "slack"
     ];
     taps = ["hashicorp/tap"];
