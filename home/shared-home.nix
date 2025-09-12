@@ -30,7 +30,7 @@
     hurl
     wezterm
     speedtest-cli
-    docker-client
+    docker-client # for the docker cli
   ];
   # TODO try and get firerfox nightly working https://nixos.wiki/wiki/Firefox
   # nixpkgs.overlays =
