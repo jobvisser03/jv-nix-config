@@ -5,7 +5,7 @@
   hm-larkbox = "ssh larkbox 'source /etc/bashrc && cd ~/repos/jv-nix-config && git pull && home-manager switch --flake ~/repos/jv-nix-config#linux-hm'";
   nd-work = "sudo darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-apple-silicon-host";
   nd-mac = "sudo darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-host";
-  nr = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-nixos-host";
+  nr = "nixos-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-nixos-host";
   hm-update = "nix flake update";
 
   dup = "sudo systemctl list-units *docker*";

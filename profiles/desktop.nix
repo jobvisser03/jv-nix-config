@@ -11,7 +11,6 @@
   environment.systemPackages = with pkgs; [
     dunst
     libnotify
-    greetd.tuigreet
 
     # Browsers
     firefox
@@ -47,7 +46,7 @@
     rofi-wayland
     dunst
     libnotify
-    greetd.tuigreet
+    tuigreet
   ];
 
   # Common desktop programs for home-manager
