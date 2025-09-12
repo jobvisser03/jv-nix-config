@@ -97,7 +97,7 @@
           home-manager.extraSpecialArgs = {inherit inputs;};
           home-manager.users.job.imports = [
             ./home/shared-home.nix
-            ./home/home-linux.nix
+            ./home/home-nixos.nix
           ];
           home-manager.backupFileExtension = "hm-backup";
         }
