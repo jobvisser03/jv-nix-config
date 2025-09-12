@@ -2,6 +2,7 @@
 {...}: {
   # This is needed for home-manager to work
   users.users.job = {home = "/Users/job.visser";};
+  system.primaryUser = "job.visser";
 
   # this is needed for nix-darwin to work with macos Sequoia
   ids.uids.nixbld = 31000;
