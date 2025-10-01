@@ -28,7 +28,7 @@
     vim
     code-cursor
     vscode.fhs
-    nodejs # Includes npm
+    nodejs_latest # Node.js 24 with npm
 
     # Desktop applications
     logseq

@@ -23,7 +23,7 @@
     nerd-fonts.fantasque-sans-mono
     nil
     rsync
-    nodejs
+    nodejs_latest
     devenv
     neofetch
     vim
@@ -201,7 +201,7 @@
     jq.enable = true;
     oh-my-posh = {
       enable = true;
-      useTheme = "powerlevel10k_rainbow";
+      # useTheme = "powerlevel10k_rainbow";
       settings = {
         final_space = true;
         shell_integration = true;
