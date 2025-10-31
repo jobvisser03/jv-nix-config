@@ -177,15 +177,17 @@
       enable = true;
       lfs.enable = true;
 
-      userName = "Job Visser";
-      userEmail = "job@dutchdataworks.com";
-      extraConfig = {
+      settings = {
+        user = {
+          name = "Job Visser";
+          email = "job@dutchdataworks.com";
+        };
         init.defaultBranch = "main";
         rerere.enabled = true;
         pull.rebase = true;
         push.autoSetupRemote = true;
         pack.sparse = true;
-        core.editor = "cursor --wait";
+        core.editor = "code --wait";
       };
       ignores = [
         ".DS_Store"
