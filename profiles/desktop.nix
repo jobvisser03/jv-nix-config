@@ -44,7 +44,7 @@
     waybar
     swww
     kitty
-    rofi-wayland
+    rofi
     dunst
     libnotify
     tuigreet
