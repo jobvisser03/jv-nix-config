@@ -12,7 +12,7 @@ in {
     enable = true;
     cycle = false;
 
-    package = pkgs.rofi-wayland;
+    package = pkgs.rofi;
 
     extraConfig = {
       modi = "drun,filebrowser";
