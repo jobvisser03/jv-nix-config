@@ -14,6 +14,9 @@
 
     # Profiles
     ../../profiles/default.nix
+
+    # TODO Migrate Docker services to larkbox host
+    # ../../docker-services/docker-compose.nix
   ];
 
   # Host-specific configuration

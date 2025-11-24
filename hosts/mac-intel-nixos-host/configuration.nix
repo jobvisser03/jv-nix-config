@@ -17,9 +17,6 @@
 
     # Profiles
     ../../profiles/default.nix
-
-    # Docker services
-    ../../docker-services/docker-compose.nix
   ];
 
   # Host-specific configuration

@@ -92,9 +92,9 @@ in {
       };
 
       # GESTURES
-      gestures = {
-        workspace_swipe = true;
-      };
+      # gestures = {
+      #   workspace_swipe = true;
+      # };
 
       # MASTER
       master = {
