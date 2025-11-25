@@ -37,13 +37,16 @@ in {
 
       # KEYBOARD AND TOUCHPAD
       input = {
-        kb_layout = "dk";
+        kb_layout = "nl";
         follow_mouse = 1;
         touchpad = {
           tap-and-drag = true;
           natural_scroll = true;
         };
-        sensitivity = 0;
+        sensitivity = -0.5;
+        repeat_delay = 100;
+        repeat_rate = 50;
+        accel_profile = "adaptive";
       };
 
       ecosystem = {
