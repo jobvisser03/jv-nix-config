@@ -12,6 +12,9 @@
     dunst
     libnotify
 
+    # Manage hardware
+    radeontop
+
     # Browsers
     firefox
     brave
@@ -110,8 +113,6 @@
       enable = true;
       enable32Bit = true;
     };
-
-    opengl.enable = true;
 
     # Enable bluetooth
     bluetooth = {
