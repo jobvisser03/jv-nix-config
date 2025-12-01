@@ -1,5 +1,5 @@
 {
-  description = "Hopefully this flake will become the flake for all my devices?";
+  description = "Master flake for all devices";
 
   nixConfig = {
     extra-substituters = [
