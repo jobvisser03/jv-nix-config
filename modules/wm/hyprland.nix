@@ -17,7 +17,6 @@ in {
     settings = {
       exec-once = [
         "${startupScript}/bin/start"
-        # "$HOME/.local/share/scripts/hyprland-bitwarden-resize.sh"
       ];
 
       misc = {
@@ -43,8 +42,8 @@ in {
           tap-and-drag = true;
           natural_scroll = true;
         };
-        sensitivity = -0.5;
-        repeat_delay = 100;
+        sensitivity = -1;
+        repeat_delay = 20;
         repeat_rate = 50;
         accel_profile = "adaptive";
       };

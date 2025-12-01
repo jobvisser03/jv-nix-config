@@ -121,9 +121,6 @@
   security.rtkit.enable = true;
   nixpkgs.config.allowUnfree = true;
 
-  # XDG portal
-  # xdg.portal.enable = true;
-
   # Environment variables for Wayland/Hyprland
   environment.sessionVariables = {
     WLR_NO_HARDWARE_CURSORS = "1";
