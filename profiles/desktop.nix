@@ -98,12 +98,20 @@
       layout = "us";
       options = "caps:escape";
     };
+
+    # Set AMD GPU driver
+    xserver.videoDrivers = ["amdgpu"];
   };
 
   # Hardware support
   hardware = {
     # Enable OpenGL
-    graphics.enable = true;
+    graphics = {
+      enable = true;
+      enable32Bit = true;
+    };
+
+    opengl.enable = true;
 
     # Enable bluetooth
     bluetooth = {
