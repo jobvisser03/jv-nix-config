@@ -60,6 +60,9 @@
     hyprlock.enable = true;
   };
 
+  sound.enable = false; # no plain ALSA dmix
+  hardware.pulseaudio.enable = false;
+
   # Common desktop services
   services = {
     # Enable printing
