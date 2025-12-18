@@ -15,7 +15,6 @@
       "whatsapp"
       "beeper"
       "brave-browser"
-      "rancher"
       "raycast"
       "logseq"
       "cryptomator"
@@ -28,6 +27,7 @@
       "qobuz"
       "proton-mail"
       "keepassxc"
+      "docker-credential-helper"
       # "ollama"
       "slack"
     ];
