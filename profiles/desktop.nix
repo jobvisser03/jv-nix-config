@@ -14,6 +14,8 @@
 
     # Manage hardware
     radeontop
+    easyeffects
+    helvum
 
     # Browsers
     firefox
@@ -60,7 +62,6 @@
     hyprlock.enable = true;
   };
 
-  sound.enable = false; # no plain ALSA dmix
   hardware.pulseaudio.enable = false;
 
   # Common desktop services
