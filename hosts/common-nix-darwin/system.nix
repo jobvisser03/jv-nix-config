@@ -30,6 +30,7 @@
       "docker-credential-helper"
       # "ollama"
       "slack"
+      "obs"
     ];
     taps = ["hashicorp/tap"];
   };
