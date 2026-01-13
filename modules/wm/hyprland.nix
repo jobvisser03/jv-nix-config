@@ -37,6 +37,8 @@ in {
       # KEYBOARD AND TOUCHPAD
       input = {
         kb_layout = "nl";
+        # Swaps Left Super with Left Ctrl
+        kb_options = ctrl:swap_lwin_lctl;
         follow_mouse = 1;
         touchpad = {
           tap-and-drag = true;
