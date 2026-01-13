@@ -103,10 +103,7 @@
     # X11 keyboard configuration
     xserver.xkb = {
       layout = "us";
-      options = [
-        "caps:escape"
-        "ctrl:swap_lwin_lctl"
-      ];
+      options = "caps:escape,ctrl:swap_lwin_lctl";
     };
 
     # Set AMD GPU driver
