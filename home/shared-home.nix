@@ -6,11 +6,11 @@
 }: {
   home.packages = with pkgs; [
     alejandra
-    # No idea how to get the az ml extension to work
-    # (azure-cli.withExtensions [
-    #   azure-cli.extensions.azure-devops
-    # ])
-    azure-cli
+    # azure-cli
+    ((pkgs.azure-cli.override {withImmutableConfig = false;}).withExtensions [
+      pkgs.azure-cli-extensions.azure-devops
+      # pkgs.azure-cli-extensions.ml  # Note: ml may still be broken in nixpkgs
+    ])
     curl
     ffmpeg
     fzf
