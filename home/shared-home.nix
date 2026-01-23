@@ -6,11 +6,12 @@
 }: {
   home.packages = with pkgs; [
     alejandra
+    # Currently managing via brew to enable extension installations
     # azure-cli
-    ((pkgs.azure-cli.override {withImmutableConfig = false;}).withExtensions [
-      pkgs.azure-cli-extensions.azure-devops
-      # pkgs.azure-cli-extensions.ml  # Note: ml may still be broken in nixpkgs
-    ])
+    # ((pkgs.azure-cli.override {withImmutableConfig = false;}).withExtensions [
+    #   pkgs.azure-cli-extensions.azure-devops
+    #   # pkgs.azure-cli-extensions.ml  # Note: ml may still be broken in nixpkgs
+    # ])
     curl
     ffmpeg
     fzf
