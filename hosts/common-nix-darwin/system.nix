@@ -9,6 +9,8 @@
     brews = [
       "cowsay"
       "hashicorp/tap/vault"
+      "azure-cli"
+      "docker-credential-helper"
     ];
     casks = [
       "signal"
@@ -27,7 +29,6 @@
       "qobuz"
       "proton-mail"
       "keepassxc"
-      "docker-credential-helper"
       # "ollama"
       "slack"
       "obs"
