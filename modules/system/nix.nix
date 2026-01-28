@@ -6,7 +6,7 @@
     ];
 
     # Allow job user to use nix commands
-    trusted-users = [config.users.users.job.name];
+    trusted-users = ["root" config.users.users.job.name "job.visser"];
 
     # Enable builders to use substitutes
     builders-use-substitutes = true;
