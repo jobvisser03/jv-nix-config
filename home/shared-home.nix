@@ -475,14 +475,17 @@
         export LC_ALL="en_US.UTF-8"
         export LANGUAGE="en_US.UTF-8"
 
-        _zsh_autosuggest_strategy_atuin_auto() {
-            suggestion=$(atuin search --cwd . --cmd-only --limit 1 --search-mode prefix -- "$1")
-        }
+        # Only set up atuin autosuggestions if atuin is available
+        if command -v atuin &> /dev/null; then
+            _zsh_autosuggest_strategy_atuin_auto() {
+                suggestion=$(atuin search --cwd . --cmd-only --limit 1 --search-mode prefix -- "$1")
+            }
 
-        _zsh_autosuggest_strategy_atuin_global() {
-            suggestion=$(atuin search --cmd-only --limit 1 --search-mode prefix -- "$1")
-        }
-        export ZSH_AUTOSUGGEST_STRATEGY=(atuin_auto atuin_global)
+            _zsh_autosuggest_strategy_atuin_global() {
+                suggestion=$(atuin search --cmd-only --limit 1 --search-mode prefix -- "$1")
+            }
+            export ZSH_AUTOSUGGEST_STRATEGY=(atuin_auto atuin_global)
+        fi
 
         pip() {
             if ! type -P pip &> /dev/null
