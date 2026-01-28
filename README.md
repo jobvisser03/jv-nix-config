@@ -63,6 +63,32 @@ Setting this up can be a bit confusing. Nix will build all of its own packages i
 - Enable your configuration: `home-manager switch --flake /Users/job/repos/jv-nix-config#job-mac-intel` (in my case config-name is either job-mac-intel or job-linux)
 - You will probably get some errors that either tell you what to do or you can solve them by googling (e.g. needing to run the command with  `--experimental-features 'nix-command flakes'` the first time or that you need to move `~/.zshrc` because it will now be managed by home-manager)
 
+## Trusted Users Issue with Determinate Nix
+
+If you see warnings like:
+```
+warning: ignoring untrusted substituter 'https://cache.soopy.moe', you are not a trusted user.
+warning: ignoring the client-specified setting 'trusted-public-keys', because it is a restricted setting and you are not a trusted user
+```
+
+This happens because Determinate Nix uses a special configuration structure. The `nix.settings.trusted-users` in your nix-darwin or home-manager configuration won't automatically work.
+
+### Solution
+
+Add your username to the trusted users in the Determinate Nix custom config file:
+
+```bash
+echo "trusted-users = root <your-username>" | sudo tee -a /etc/nix/nix.custom.conf
+```
+
+Then restart the Nix daemon:
+
+```bash
+sudo launchctl stop org.nixos.nix-daemon && sudo launchctl start org.nixos.nix-daemon
+```
+
+**Note:** Determinate Nix manages `/etc/nix/nix.conf` automatically and includes `/etc/nix/nix.custom.conf` for user modifications. Don't edit `nix.conf` directly as it will be overwritten.
+
 ## Links that helped me
 
 - [Setting up your dotfiles with home-manager as a flake · Chris Portela](https://www.chrisportela.com/posts/home-manager-flake/)
