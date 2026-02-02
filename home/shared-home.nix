@@ -34,6 +34,7 @@
     docker-client # for the docker cli
     yt-dlp
     android-tools
+    retroarch-free
   ];
   # TODO try and get firerfox nightly working https://nixos.wiki/wiki/Firefox
   # nixpkgs.overlays =

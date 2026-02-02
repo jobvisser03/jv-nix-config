@@ -4,20 +4,27 @@
   lib,
   ...
 }: {
-  # Runtime
+
   virtualisation.docker = {
     enable = true;
     autoPrune.enable = true;
+    oci-containers.backend = "docker";
+    # Set up resource limits
+    daemon.settings = {
+      experimental = true;
+      default-address-pools = [
+        {
+          base = "172.30.0.0/16";
+          size = 24;
+        }
+      ];
+    };
   };
-  virtualisation.oci-containers.backend = "docker";
-
   # Containers
   virtualisation.oci-containers.containers."ofelia" = {
     image = "mcuadros/ofelia:latest";
     volumes = [
-      # TODO change location
-      "/home/job/repos/compose2nix-photoprism/jobs.ini:/etc/ofelia/config.ini:rw"
-      # "/opt/stacks/photoprism/jobs.ini:/etc/ofelia/config.ini:rw"
+      "/home/job/photoprism-docker-config/jobs.ini:/etc/ofelia/config.ini:rw"
       "/var/run/docker.sock:/var/run/docker.sock:ro"
     ];
     log-driver = "journald";
@@ -57,9 +64,7 @@
       "MARIADB_USER" = "photoprism";
     };
     volumes = [
-      # "/home/jvisser/photoprism-docker-compose/database:/var/lib/mysql:rw"
-      # TODO change location
-      "/home/job/repos/compose2nix-photoprism/photoprism-docker-compose/database:/var/lib/mysql:rw"
+      "/home/job/photoprism-docker-config/database:/var/lib/mysql:rw"
     ];
     cmd = ["--innodb-buffer-pool-size=1G" "--transaction-isolation=READ-COMMITTED" "--character-set-server=utf8mb4" "--collation-server=utf8mb4_unicode_ci" "--max-connections=512" "--innodb-rollback-on-timeout=OFF" "--innodb-lock-wait-timeout=120"];
     log-driver = "journald";
@@ -127,9 +132,8 @@
       "PHOTOPRISM_WORKERS" = "4";
     };
     volumes = [
-      # "/home/jvisser/photoprism-docker-compose/storage:/photoprism/storage:rw"
-      "/home/job/repos/compose2nix-photoprism/photoprism-docker-compose/storage:/photoprism/storage:rw"
-      # "/media/usb-drive/PICTURES:/photoprism/originals:rw"
+      "/home/job/photoprism-docker-config/storage:/photoprism/storage:rw"
+      "/media/usb-drive/PICTURES:/photoprism/originals:rw"
     ];
     ports = [
       "2342:2342/tcp"

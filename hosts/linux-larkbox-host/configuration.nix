@@ -15,8 +15,8 @@
     # Profiles
     ../../profiles/default.nix
 
-    # TODO Migrate Docker services to larkbox host
-    # ../../docker-services/docker-compose.nix
+    # Docker services to larkbox host
+    ../../docker-services/docker-compose.nix
   ];
 
   # Host-specific configuration
@@ -46,6 +46,9 @@
     ];
     shell = pkgs.zsh;
   };
+ 
+  services.openssh.enable = true;
+  networking.firewall.enable = false;
 
   # Host-specific greetd initial session
   services.greetd.settings.initial_session = {
@@ -61,5 +64,5 @@
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken.
-  system.stateVersion = "25.05";
+  system.stateVersion = "25.11";
 }
