@@ -6,6 +6,7 @@
   nd-work = "sudo darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-apple-silicon-host";
   nd-mac = "sudo darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-host";
   nr = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-nixos-host";
+  nrl = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#linux-larkbox-host";
   nup = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-nixos-host --upgrade";
   hm-update = "nix flake update";
 

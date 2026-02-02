@@ -144,17 +144,17 @@
       #     }
       #   ];
       # };
-      "linux-hm" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.aarch64-linux;
-        modules = [
-          ./home/shared-home.nix
-          {
-            home.username = "jvisser";
-            home.homeDirectory = "/home/jvisser";
-          }
-        ];
-        extraSpecialArgs = {inherit inputs;};
-      };
+      #  "linux-hm" = home-manager.lib.homeManagerConfiguration {
+      #    pkgs = nixpkgs.legacyPackages.aarch64-linux;
+      #    modules = [
+      #      ./home/shared-home.nix
+      #      {
+      #        home.username = "job";
+      #        home.homeDirectory = "/home/job";
+      #      }
+      #    ];
+      #    extraSpecialArgs = {inherit inputs;};
+      #  };
     };
   };
 }
