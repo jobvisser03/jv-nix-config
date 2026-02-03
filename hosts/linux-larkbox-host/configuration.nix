@@ -93,7 +93,7 @@
 
     # Storage paths
     mounts = {
-      photos = "/media/usb-drive/PICTURES";
+      photos = "/mnt/usb-drive/PHOTOS-PCLOUD";
     };
 
     # Services infrastructure

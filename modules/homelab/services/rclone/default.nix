@@ -27,7 +27,7 @@ in {
           };
           mountpoint = lib.mkOption {
             type = lib.types.path;
-            example = "/media/pcloud";
+            example = "/home/job/pcloud";
             description = "Local mount path";
           };
           cacheMode = lib.mkOption {
