@@ -6,6 +6,8 @@
 }: let
   cfg = config.homelab.services.radicale;
   homelab = config.homelab;
+  # Internal port for Radicale (Caddy proxies external port to this)
+  internalPort = cfg.port + 10000;
 in {
   options.homelab.services.radicale = {
     enable = lib.mkEnableOption "Radicale - CalDAV and CardDAV server";
@@ -13,7 +15,7 @@ in {
     port = lib.mkOption {
       type = lib.types.port;
       default = 5232;
-      description = "Port for Radicale web interface";
+      description = "External port for Radicale web interface (via Caddy)";
     };
 
     passwordFile = lib.mkOption {
@@ -59,7 +61,8 @@ in {
 
       settings = {
         server = {
-          hosts = ["127.0.0.1:${toString cfg.port}"];
+          # Listen on internal port only (Caddy handles external access)
+          hosts = ["127.0.0.1:${toString internalPort}"];
         };
 
         storage = {
@@ -80,11 +83,11 @@ in {
       };
     };
 
-    # Caddy reverse proxy
+    # Caddy reverse proxy - external port to internal Radicale
     services.caddy.virtualHosts = lib.mkIf homelab.services.enableReverseProxy {
       "http://${homelab.hostname}:${toString cfg.port}" = {
         extraConfig = ''
-          reverse_proxy http://127.0.0.1:${toString cfg.port}
+          reverse_proxy http://127.0.0.1:${toString internalPort}
         '';
       };
     };
