@@ -89,6 +89,9 @@
       modules = [
         inputs.stylix.nixosModules.stylix
         ./hosts/linux-larkbox-host/configuration.nix
+        # Intel N100 is Alder Lake-N architecture - use the AOOSTAR R1 N100 profile
+        # which includes proper Intel CPU + GPU optimizations for this chip
+        nixos-hardware.nixosModules.aoostar-r1-n100
         inputs.home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = false;
