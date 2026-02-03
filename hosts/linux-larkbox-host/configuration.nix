@@ -15,8 +15,8 @@
     # Profiles
     ../../profiles/default.nix
 
-    # Docker services to larkbox host
-    ../../docker-services/docker-compose.nix
+    # Homelab services
+    ../../modules/homelab
   ];
 
   # Host-specific configuration
@@ -46,7 +46,7 @@
     ];
     shell = pkgs.zsh;
   };
- 
+
   services.openssh.enable = true;
   networking.firewall.enable = false;
 
@@ -56,9 +56,39 @@
     user = "job";
   };
 
+  # Desktop mode - always plugged in (no TLP battery management)
+  powerManagement.desktopMode = true;
+
+  # Enable Intel graphics hardware acceleration (for Immich ML, video transcoding)
+  hardware.graphics.enable = true;
+
+  # ============================================
+  # Homelab Configuration
+  # ============================================
+  homelab = {
+    enable = true;
+
+    # Storage paths
+    mounts = {
+      media = "/media/usb-drive";
+      photos = "/media/usb-drive/PICTURES";
+    };
+
+    # Services infrastructure
+    services.enable = true;
+
+    # Individual services
+    services.immich.enable = true;
+    services.homepage.enable = true;
+    services.radicale.enable = true;
+    # services.radicale.passwordFile = "/etc/secrets/radicale-htpasswd";  # Uncomment after creating htpasswd file
+    services.homeassistant.enable = true;
+  };
+
   # System packages specific to this host
   environment.systemPackages = with pkgs; [
-    # Add larkbox-specific packages here
+    # Homelab utilities
+    htpasswd  # For creating Radicale passwords
   ];
 
   # This value determines the NixOS release from which the default
