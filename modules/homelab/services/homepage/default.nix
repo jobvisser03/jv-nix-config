@@ -31,6 +31,16 @@ in {
         }
       ];
     };
+
+    # Jellyfin widget configuration
+    jellyfin = {
+      apiKeyFile = lib.mkOption {
+        type = lib.types.nullOr lib.types.path;
+        default = null;
+        description = "Path to file containing Jellyfin API key for widget stats";
+        example = "config.sops.secrets.jellyfin_api_key.path";
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -44,6 +54,7 @@ in {
     services.homepage-dashboard = {
       enable = true;
       listenPort = cfg.port;
+      openFirewall = !homelab.services.enableReverseProxy;
 
       # Custom CSS for cleaner look
       customCSS = ''
@@ -105,7 +116,7 @@ in {
       services = let
         hl = homelab.services;
 
-        # Build service entry if enabled
+        # Build service entry if enabled (basic, no widget)
         mkServiceEntry = name: serviceCfg:
           lib.optional serviceCfg.enable {
             "${serviceCfg.homepage.name}" = {
@@ -116,9 +127,31 @@ in {
             };
           };
 
+        # Build Jellyfin entry with optional widget (when API key is provided)
+        jellyfinEntry =
+          lib.optional (hl.jellyfin.enable or false) {
+            "${hl.jellyfin.homepage.name}" =
+              {
+                icon = hl.jellyfin.homepage.icon;
+                description = hl.jellyfin.homepage.description;
+                href = "http://${homelab.hostname}:${toString hl.jellyfin.port}";
+                siteMonitor = "http://127.0.0.1:${toString hl.jellyfin.port}";
+              }
+              // lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
+                widget = {
+                  type = "jellyfin";
+                  url = "http://127.0.0.1:${toString hl.jellyfin.port}";
+                  key = "{{HOMEPAGE_FILE_JELLYFIN_API_KEY}}";
+                  enableBlocks = true;
+                  enableNowPlaying = true;
+                };
+              };
+          };
+
         # Group services by category
         mediaServices =
-          (lib.optionals (hl.immich.enable or false) (mkServiceEntry "immich" hl.immich));
+          (lib.optionals (hl.immich.enable or false) (mkServiceEntry "immich" hl.immich))
+          ++ jellyfinEntry;
 
         smartHomeServices =
           (lib.optionals (hl.homeassistant.enable or false) (mkServiceEntry "homeassistant" hl.homeassistant));
@@ -199,6 +232,12 @@ in {
           reverse_proxy http://127.0.0.1:${toString cfg.port}
         '';
       };
+    };
+
+    # Set up environment variable for Jellyfin API key file
+    # Homepage uses HOMEPAGE_FILE_* convention to read secrets from files
+    systemd.services.homepage-dashboard.environment = lib.mkIf (cfg.jellyfin.apiKeyFile != null) {
+      HOMEPAGE_FILE_JELLYFIN_API_KEY = cfg.jellyfin.apiKeyFile;
     };
   };
 }

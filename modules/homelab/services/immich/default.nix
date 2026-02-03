@@ -58,6 +58,11 @@ in {
       port = cfg.port;
       mediaLocation = cfg.mediaDir;
       group = homelab.group;
+      # Bind to all interfaces when reverse proxy is disabled
+      host =
+        if homelab.services.enableReverseProxy
+        then "127.0.0.1"
+        else "0.0.0.0";
       # Hardware acceleration is automatically enabled when available
     };
 
@@ -76,5 +81,8 @@ in {
         '';
       };
     };
+
+    # Open firewall for direct access when reverse proxy is disabled
+    networking.firewall.allowedTCPPorts = lib.mkIf (!homelab.services.enableReverseProxy) [cfg.port];
   };
 }

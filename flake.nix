@@ -39,6 +39,12 @@
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Secret management
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -87,6 +93,7 @@
       system = "x86_64-linux";
       specialArgs = {inherit inputs;};
       modules = [
+        inputs.sops-nix.nixosModules.sops
         inputs.stylix.nixosModules.stylix
         ./hosts/linux-larkbox-host/configuration.nix
         # Intel N100 is Alder Lake-N architecture - use the AOOSTAR R1 N100 profile

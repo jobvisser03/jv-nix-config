@@ -69,9 +69,10 @@ in {
         "${cfg.configDir}:/config"
       ];
 
-      ports = [
-        "127.0.0.1:${toString cfg.port}:8123"
-      ];
+      ports =
+        if homelab.services.enableReverseProxy
+        then ["127.0.0.1:${toString cfg.port}:8123"]
+        else ["${toString cfg.port}:8123"]; # Bind to all interfaces
 
       environment = {
         TZ = homelab.timeZone;

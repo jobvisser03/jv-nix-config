@@ -11,11 +11,6 @@ in {
 
     # Storage paths
     mounts = {
-      media = lib.mkOption {
-        type = lib.types.path;
-        default = "/media/usb-drive";
-        description = "Path to media storage (USB drive, NAS mount, etc.)";
-      };
       photos = lib.mkOption {
         type = lib.types.path;
         default = "${cfg.mounts.media}/PICTURES";
