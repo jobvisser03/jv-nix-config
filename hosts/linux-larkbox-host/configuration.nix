@@ -68,6 +68,9 @@
   # VS Code Remote SSH support (nix-ld with required libraries)
   programs.vscodeRemoteSSH.enable = true;
 
+  # Enable Hyprland at NixOS level (makes hyprctl, start-hyprland available in PATH)
+  programs.hyprland.enable = true;
+
   # Host-specific greetd initial session
   # Use start-hyprland wrapper instead of direct Hyprland binary
   # (avoids "use start-hyprland instead" warning)
