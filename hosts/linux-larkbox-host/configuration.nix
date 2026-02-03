@@ -91,7 +91,7 @@
   # System packages specific to this host
   environment.systemPackages = with pkgs; [
     # Homelab utilities
-    htpasswd  # For creating Radicale passwords
+    apacheHttpd  # Provides htpasswd for creating Radicale passwords
   ];
 
   # This value determines the NixOS release from which the default
