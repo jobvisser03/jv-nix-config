@@ -61,8 +61,12 @@ in {
 
       settings = {
         server = {
-          # Listen on internal port only (Caddy handles external access)
-          hosts = ["127.0.0.1:${toString internalPort}"];
+          # When reverse proxy is enabled, listen on internal port only
+          # Otherwise, listen on all interfaces on the configured port
+          hosts =
+            if homelab.services.enableReverseProxy
+            then ["127.0.0.1:${toString internalPort}"]
+            else ["0.0.0.0:${toString cfg.port}"];
         };
 
         storage = {

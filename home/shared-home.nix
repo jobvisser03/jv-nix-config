@@ -35,6 +35,7 @@
     yt-dlp
     android-tools
     retroarch-free
+    opencode
   ];
   # TODO try and get firerfox nightly working https://nixos.wiki/wiki/Firefox
   # nixpkgs.overlays =

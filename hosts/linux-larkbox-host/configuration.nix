@@ -15,6 +15,10 @@
     # Profiles
     ../../profiles/default.nix
 
+    # Secret management (sops-nix)
+    ../../modules/sops
+    ./secrets.nix
+
     # Homelab services
     ../../modules/homelab
   ];
@@ -36,6 +40,17 @@
 
   # Network configuration
   networking.networkmanager.enable = true;
+
+  # Enable Avahi for mDNS (makes larkbox.local resolvable on local network)
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true; # Enable mDNS resolution for IPv4
+    publish = {
+      enable = true;
+      addresses = true;
+      workstation = true;
+    };
+  };
 
   # Define user account specific to this host
   users.users.job = {
@@ -73,25 +88,51 @@
 
     # Storage paths
     mounts = {
-      media = "/media/usb-drive";
       photos = "/media/usb-drive/PICTURES";
     };
 
     # Services infrastructure
     services.enable = true;
+    services.enableReverseProxy = false; # Direct port access for now
 
     # Individual services
     services.immich.enable = true;
+    services.jellyfin.enable = false;
     services.homepage.enable = true;
-    services.radicale.enable = true;
-    # services.radicale.passwordFile = "/etc/secrets/radicale-htpasswd";  # Uncomment after creating htpasswd file
+    # services.homepage.jellyfin.apiKeyFile = config.sops.secrets.jellyfin_api_key.path;
+    services.radicale.enable = false;
+    services.radicale.passwordFile = config.sops.secrets.radicale_htpasswd.path;
     services.homeassistant.enable = true;
+
+    # Rclone pCloud mounts
+    services.rclone = {
+      enable = true;
+      configFile = config.sops.secrets.rclone_config.path;
+      mounts = {
+        # pCloud photos for Immich integration
+        pcloud-photos = {
+          remote = "pcloud:PHOTOS";
+          mountpoint = "/mnt/usb-drive/PHOTOS-PCLOUD";
+          cacheMode = "writes";
+          readOnly = true; # Immich only needs to read
+        };
+        # KeePass vault for password database access
+        pcloud-keepass = {
+          remote = "pcloud:keepass-vault";
+          mountpoint = "/home/job/pcloud/keepass-vault";
+          cacheMode = "writes";
+          readOnly = false; # Allow writes for KeePass sync
+          uid = 1000; # job user
+          gid = 100; # users group
+        };
+      };
+    };
   };
 
   # System packages specific to this host
   environment.systemPackages = with pkgs; [
     # Homelab utilities
-    apacheHttpd  # Provides htpasswd for creating Radicale passwords
+    apacheHttpd # Provides htpasswd for creating Radicale passwords
   ];
 
   # This value determines the NixOS release from which the default

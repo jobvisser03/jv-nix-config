@@ -19,9 +19,11 @@ in {
 
   imports = [
     ./immich
+    ./jellyfin
     ./homepage
     ./radicale
     ./homeassistant
+    ./rclone
   ];
 
   config = lib.mkIf (cfg.enable && cfg.services.enable) {
