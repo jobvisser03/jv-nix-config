@@ -69,8 +69,10 @@
   programs.vscodeRemoteSSH.enable = true;
 
   # Host-specific greetd initial session
+  # Use start-hyprland wrapper instead of direct Hyprland binary
+  # (avoids "use start-hyprland instead" warning)
   services.greetd.settings.initial_session = {
-    command = "${pkgs.hyprland}/bin/Hyprland";
+    command = "${pkgs.hyprland}/bin/start-hyprland";
     user = "job";
   };
 
