@@ -50,6 +50,9 @@
   services.openssh.enable = true;
   networking.firewall.enable = false;
 
+  # VS Code Remote SSH support (nix-ld with required libraries)
+  programs.vscodeRemoteSSH.enable = true;
+
   # Host-specific greetd initial session
   services.greetd.settings.initial_session = {
     command = "${pkgs.hyprland}/bin/Hyprland";
