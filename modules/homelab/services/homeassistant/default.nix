@@ -125,11 +125,14 @@ in {
 
     # Udev rules for Zigbee USB adapter (Sonoff Zigbee 3.0 USB Dongle Plus)
     # This allows container access without privileged mode
+    # Using ACTION=="add" and KERNEL=="ttyUSB*" for proper device creation matching
     services.udev.extraRules = lib.mkIf cfg.zigbee2mqtt.enable ''
       # Sonoff Zigbee 3.0 USB Dongle Plus (CH9102 USB-Serial)
-      SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d4", MODE="0666", GROUP="dialout"
-      # Alternative: Silicon Labs CP210x (some Sonoff variants)
-      SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE="0666", GROUP="dialout"
+      ACTION=="add", SUBSYSTEM=="tty", KERNEL=="ttyUSB*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d4", MODE="0666", GROUP="dialout", SYMLINK+="zigbee"
+      # Silicon Labs CP210x (Sonoff Zigbee 3.0 USB Dongle Plus V2 and some variants)
+      ACTION=="add", SUBSYSTEM=="tty", KERNEL=="ttyUSB*", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE="0666", GROUP="dialout", SYMLINK+="zigbee"
+      # Also handle ttyACM devices (some adapters use CDC-ACM driver)
+      ACTION=="add", SUBSYSTEM=="tty", KERNEL=="ttyACM*", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE="0666", GROUP="dialout", SYMLINK+="zigbee"
     '';
 
     # ==========================================
