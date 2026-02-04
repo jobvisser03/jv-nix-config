@@ -29,7 +29,7 @@
   };
 
   fileSystems."/mnt/usb-drive" = {
-    device = "/dev/disk/by-label/Backup\\040Plus";
+    device = "/dev/disk/by-label/Backup\\x20Plus";
     fsType = "auto";
   };
 

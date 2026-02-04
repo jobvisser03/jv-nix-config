@@ -56,6 +56,12 @@ in {
             example = ["--buffer-size=64M" "--dir-cache-time=72h"];
             description = "Additional rclone mount arguments";
           };
+          requiredMounts = lib.mkOption {
+            type = lib.types.listOf lib.types.str;
+            default = [];
+            example = ["/mnt/usb-drive"];
+            description = "Filesystem mounts that must be available before this rclone mount starts";
+          };
         };
       });
       default = {};
@@ -115,11 +121,24 @@ in {
 
     # Create a systemd service for each mount
     systemd.services =
-      lib.mapAttrs' (name: mount:
+      lib.mapAttrs' (name: mount: let
+        # Convert mount paths to systemd unit names using systemd-escape
+        # e.g., /mnt/usb-drive -> mnt-usb\x2ddrive.mount
+        pathToUnit = path: let
+          # Remove leading slash, replace / with -, escape special chars like - to \x2d
+          cleaned = lib.removePrefix "/" path;
+          # Systemd escapes - as \x2d in path components (but not the separators)
+          parts = lib.splitString "/" cleaned;
+          escapedParts = map (part: builtins.replaceStrings ["-"] ["\\x2d"] part) parts;
+          escaped = lib.concatStringsSep "-" escapedParts;
+        in "${escaped}.mount";
+        requiredMountUnits = map pathToUnit mount.requiredMounts;
+      in
         lib.nameValuePair "rclone-${name}" {
           description = "rclone mount: ${name} (${mount.remote} -> ${mount.mountpoint})";
-          after = ["network-online.target"];
+          after = ["network-online.target"] ++ requiredMountUnits;
           wants = ["network-online.target"];
+          requires = requiredMountUnits;
           # Don't use WantedBy - let the path watcher trigger via target
           wantedBy = [];
           partOf = ["rclone-mounts.target"];
@@ -132,7 +151,11 @@ in {
 
           serviceConfig = {
             Type = "notify";
-            ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${mount.mountpoint}";
+            # Unmount any stale FUSE mount before starting (ignore errors if not mounted)
+            ExecStartPre = [
+              "${pkgs.coreutils}/bin/mkdir -p ${mount.mountpoint}"
+              "-${pkgs.fuse}/bin/fusermount -uz ${mount.mountpoint}"
+            ];
             ExecStart = let
               uidArg =
                 if mount.uid != null
@@ -152,13 +175,14 @@ in {
                 --config=${cfg.configFile} \
                 --vfs-cache-mode ${mount.cacheMode} \
                 --allow-other \
+                --allow-non-empty \
                 ${uidArg} \
                 ${gidArg} \
                 ${readOnlyArg} \
                 ${extraArgsStr} \
                 ${mount.remote} ${mount.mountpoint}
             '';
-            ExecStop = "${pkgs.fuse}/bin/fusermount -u ${mount.mountpoint}";
+            ExecStop = "${pkgs.fuse}/bin/fusermount -uz ${mount.mountpoint}";
             Restart = "on-failure";
             RestartSec = "10s";
             # Give rclone time to establish connection

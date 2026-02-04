@@ -91,35 +91,45 @@
   homelab = {
     enable = true;
 
-    # Storage paths
-    mounts = {
-      photos = "/mnt/usb-drive/PHOTOS-PCLOUD";
-    };
-
     # Services infrastructure
     services.enable = true;
     services.enableReverseProxy = false; # Direct port access for now
 
     # Individual services
-    services.immich.enable = true;
+    services.immich = {
+      enable = true;
+      # mediaDir defaults to /var/lib/immich (Immich internal storage)
+      # External library for pCloud photos (configured in Immich UI after deployment)
+      externalLibraryDirs = ["/mnt/usb-drive/PHOTOS-PCLOUD"];
+    };
     services.jellyfin.enable = false;
     services.homepage.enable = true;
     # services.homepage.jellyfin.apiKeyFile = config.sops.secrets.jellyfin_api_key.path;
     services.radicale.enable = false;
     services.radicale.passwordFile = config.sops.secrets.radicale_htpasswd.path;
-    services.homeassistant.enable = true;
+    services.homeassistant = {
+      enable = true;
+      # Zigbee2MQTT for Sonoff Zigbee 3.0 USB Dongle Plus
+      zigbee2mqtt = {
+        enable = true;
+        usbDevice = "/dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_34bde4cea845ed1184b8d18f0a86e0b4-if00-port0";
+      };
+      # Mosquitto MQTT broker for Home Assistant <-> Zigbee2MQTT communication
+      mosquitto.enable = true;
+    };
 
     # Rclone pCloud mounts
     services.rclone = {
       enable = true;
       configFile = config.sops.secrets.rclone_config.path;
       mounts = {
-        # pCloud photos for Immich integration
+        # pCloud photos for Immich external library (read-only)
         pcloud-photos = {
           remote = "pcloud:PHOTOS";
           mountpoint = "/mnt/usb-drive/PHOTOS-PCLOUD";
-          cacheMode = "writes";
-          readOnly = true; # Immich only needs to read
+          cacheMode = "minimal"; # Read-only access, minimal caching
+          readOnly = true; # External library is read-only
+          requiredMounts = ["/mnt/usb-drive"]; # Wait for USB drive to be mounted
         };
         # KeePass vault for password database access
         pcloud-keepass = {
