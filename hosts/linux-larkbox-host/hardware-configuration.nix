@@ -24,6 +24,11 @@
       options = [ "fmask=0022" "dmask=0022" ];
     };
 
+  fileSystems."/mnt/usb-drive" =
+    { device = "/dev/disk/by-label/Backup\\040Plus";
+      fsType = "auto";
+    };
+
   swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
