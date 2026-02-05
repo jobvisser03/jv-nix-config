@@ -65,6 +65,12 @@
   # Network configuration
   networking.networkmanager.enable = true;
 
+  # Enable Avahi for mDNS (resolves .local hostnames like larkbox.local)
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+  };
+
   # Host-specific hardware settings
   hardware = {
     # Disable nvidia modesetting for this host
