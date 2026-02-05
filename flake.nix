@@ -3,9 +3,13 @@
 
   nixConfig = {
     extra-substituters = [
+      "https://jv-nix-config-cache.cachix.org"
       "https://cache.soopy.moe"
     ];
-    extra-trusted-public-keys = ["cache.soopy.moe-1:0RZVsQeR+GOh0VQI9rvnHz55nVXkFardDqfm4+afjPo="];
+    extra-trusted-public-keys = [
+      "jv-nix-config-cache.cachix.org-1:pvYeur0OqEar9g5x6mETEsrJSoW+U7eE7BbA4bB925w="
+      "cache.soopy.moe-1:0RZVsQeR+GOh0VQI9rvnHz55nVXkFardDqfm4+afjPo="
+      ];
   };
 
   inputs = {
