@@ -36,6 +36,7 @@
     android-tools
     retroarch-free
     opencode
+    cachix
   ];
   # TODO try and get firerfox nightly working https://nixos.wiki/wiki/Firefox
   # nixpkgs.overlays =

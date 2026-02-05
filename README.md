@@ -89,6 +89,20 @@ sudo launchctl stop org.nixos.nix-daemon && sudo launchctl start org.nixos.nix-d
 
 **Note:** Determinate Nix manages `/etc/nix/nix.conf` automatically and includes `/etc/nix/nix.custom.conf` for user modifications. Don't edit `nix.conf` directly as it will be overwritten.
 
+## Cachix personal cache
+
+Authenticate with your Cachix personal cache to speed up builds and share build results across your machines. You can get your auth token from the Cachix website.
+```
+cachix authtoken XXX
+```
+
+Add to any devenv repository:
+```
+cachix.pull = [ "jv-nix-config-cache" ];
+```
+
+Verify if it works with `devenv shell` and check if you see cache hits in the output.
+
 ## Links that helped me
 
 - [Setting up your dotfiles with home-manager as a flake · Chris Portela](https://www.chrisportela.com/posts/home-manager-flake/)
