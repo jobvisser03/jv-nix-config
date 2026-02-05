@@ -100,7 +100,10 @@
       enable = true;
       # mediaDir defaults to /var/lib/immich (Immich internal storage)
       # External library for pCloud photos (configured in Immich UI after deployment)
-      externalLibraryDirs = ["/mnt/usb-drive/PHOTOS-PCLOUD"];
+      externalLibraryDirs = [
+        "/mnt/usb-drive/PHOTOS-PCLOUD"
+        "/mnt/usb-drive/SMARTPHONE-PHOTOS-PCLOUD"
+      ];
     };
     services.jellyfin.enable = false;
     services.homepage.enable = true;
@@ -127,6 +130,14 @@
         pcloud-photos = {
           remote = "pcloud:PHOTOS";
           mountpoint = "/mnt/usb-drive/PHOTOS-PCLOUD";
+          cacheMode = "minimal"; # Read-only access, minimal caching
+          readOnly = true; # External library is read-only
+          requiredMounts = ["/mnt/usb-drive"]; # Wait for USB drive to be mounted
+        };
+        # pCloud smartphone photos for Immich external library (read-only)
+        pcloud-smartphone-photos = {
+          remote = "pcloud:'Automatic Upload'";
+          mountpoint = "/mnt/usb-drive/SMARTPHONE-PHOTOS-PCLOUD";
           cacheMode = "minimal"; # Read-only access, minimal caching
           readOnly = true; # External library is read-only
           requiredMounts = ["/mnt/usb-drive"]; # Wait for USB drive to be mounted

@@ -13,7 +13,7 @@ in {
     mounts = {
       photos = lib.mkOption {
         type = lib.types.path;
-        default = "${cfg.mounts.media}/PICTURES";
+        default = "${cfg.mounts.media}/PHOTOS-PCLOUD";
         description = "Path to photos storage for Immich";
       };
     };
