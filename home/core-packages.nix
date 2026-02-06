@@ -1,7 +1,4 @@
-{
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   home.packages = with pkgs; [
     alejandra
     curl
@@ -26,7 +23,6 @@
     docker-client
     yt-dlp
     android-tools
-    retroarch-free
     opencode
     cachix
   ];

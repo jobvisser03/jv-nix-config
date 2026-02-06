@@ -1,9 +1,7 @@
 # Larkbox host-specific Home Manager configuration
-{
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   home.packages = with pkgs; [
     tree
+    retroarch-free
   ];
 }
