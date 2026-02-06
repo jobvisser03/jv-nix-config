@@ -62,7 +62,7 @@
     hyprlock.enable = true;
   };
 
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
 
   # Common desktop services
   services = {

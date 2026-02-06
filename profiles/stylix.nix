@@ -7,9 +7,8 @@
 }: {
   stylix = {
     enable = true;
-    # autoEnable = false;
     targets = {
-      gnome = {enable = false;}; # Disable GNOME if not needed
+      gnome.enable = false;
     };
     base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
     image = ../non-nix-configs/nix-wallpaper-binary-black.png;

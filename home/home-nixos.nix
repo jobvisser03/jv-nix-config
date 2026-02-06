@@ -28,6 +28,7 @@ in {
 
   stylix.enable = true;
   stylix.polarity = "dark";
+  stylix.targets.firefox.profileNames = ["default"];
 
   wayland.windowManager.hyprland = {
     enable = true;
