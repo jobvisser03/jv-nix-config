@@ -11,7 +11,6 @@
       "hashicorp/tap/vault"
       "azure-cli"
       "docker-credential-helper"
-      "opencode"
     ];
     casks = [
       "signal"
