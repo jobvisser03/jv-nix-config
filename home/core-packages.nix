@@ -1,0 +1,33 @@
+{
+  pkgs,
+  ...
+}: {
+  home.packages = with pkgs; [
+    alejandra
+    curl
+    ffmpeg
+    fzf
+    font-awesome
+    google-cloud-sdk
+    graphviz
+    imagemagick
+    material-design-icons
+    nerd-fonts.caskaydia-cove
+    nerd-fonts.fantasque-sans-mono
+    nil
+    rsync
+    nodejs_latest
+    devenv
+    neofetch
+    vim
+    hurl
+    wezterm
+    speedtest-cli
+    docker-client
+    yt-dlp
+    android-tools
+    retroarch-free
+    opencode
+    cachix
+  ];
+}

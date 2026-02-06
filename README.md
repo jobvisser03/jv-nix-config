@@ -1,113 +1,203 @@
-# Nix/Home Manager flake configuration
+# Nix Flake Configuration
 
-├── modules/
-│   ├── default.nix          # Main modules index
-│   ├── system/              # System-level modules
-│   │   ├── default.nix      # System modules index
-│   │   ├── nix.nix          # Nix configuration (shared substituters, etc.)
-│   │   └── users.nix        # User configuration
-│   └── wm/                  # Window manager modules
-│       ├── default.nix      # WM modules index
-│       ├── hyprland.nix
-│       ├── hyprlock.nix
-│       ├── hypridle.nix
-│       └── waybar.nix
-├── profiles/
-│   ├── default.nix          # Profiles index
-│   ├── desktop.nix          # Desktop environment profile
-│   └── stylix.nix           # Styling profile
-├── hosts/
-│   ├── linux-larkbox-host/
-│   │   ├── configuration.nix     # Host-specific config
+This repository contains my personal Nix configuration using flakes, supporting multiple platforms (macOS via nix-darwin and NixOS).
+
+## Quick Reference
+
+```bash
+# macOS (nix-darwin)
+darwin-rebuild switch --flake .#mac-intel-host
+darwin-rebuild switch --flake .#mac-apple-silicon-host
+
+# NixOS
+sudo nixos-rebuild switch --flake .#linux-larkbox-host
+sudo nixos-rebuild switch --flake .#mac-intel-nixos-host
+
+# Home Manager (standalone)
+home-manager switch --flake .#mac-intel-hm
+home-manager switch --flake .#mac-apple-silicon-hm
+```
+
+## Structure
+
+```
+.
+├── flake.nix              # Main entry point - defines all configurations
+├── README.md              # This file
+│
+├── home/                  # Home Manager configurations
+│   ├── shared-home.nix    # Common home config (imports all others)
+│   ├── core-packages.nix  # Base packages for all systems
+│   ├── home-nixos.nix     # NixOS-specific home config (Hyprland, etc.)
+│   ├── home-mac.nix       # macOS-specific home config
+│   ├── alias.nix          # Shell aliases
+│   └── programs/          # Program-specific configs
+│       ├── default.nix    # Aggregates all program configs
+│       ├── browser.nix    # Firefox settings
+│       ├── shell.nix      # zsh, atuin, direnv, eza, fzf-tab
+│       ├── dev-tools.nix  # git, awscli, ripgrep, etc.
+│       └── productivity.nix  # oh-my-posh, wezterm, kitty
+│
+├── hosts/                 # Host-specific configurations
+│   ├── common/            # Shared host configurations
+│   │   ├── darwin/        # Common macOS settings (Homebrew, Touch ID, etc.)
+│   │   └── nixos/         # Common NixOS settings (timezone, locale, avahi, etc.)
+│   │
+│   ├── linux-larkbox-host/    # NixOS homelab server
+│   │   ├── configuration.nix  # System configuration
+│   │   ├── hardware-configuration.nix
+│   │   ├── home.nix       # Host-specific home packages
+│   │   └── secrets.nix    # SOPS secrets configuration
+│   │
+│   ├── mac-intel-nixos-host/  # Intel Mac running NixOS
+│   │   ├── configuration.nix
 │   │   └── hardware-configuration.nix
-│   └── [other hosts...]
-└── home/
-    ├── shared-home.nix      # Shared home-manager config
-    ├── home-linux.nix       # Linux-specific home config
-    ├── home-nixos.nix       # NixOS-specific home config
-    └── home-mac.nix         # macOS-specific home config
-
-## Commands
-
-Delete old generations from boot loader: `sudo nix-collect-garbage --delete-older-than 14d`
-
-## Description
-
-This repository contains my personal Nix/Home Manager configuration. I currently use Nix mainly in Home Manager and am very happy with it.
-
-Main features:
-
-- Each machine has the same command line tools with the same configuration (zsh, starship, git, ...)
-- Shared command history between multiple machines thanks to atuin
-
-I tried using nix-darwin and NixOS, but at the moment they don't bring much value to me. I work with Python a lot, in various team structures, and for now I want to keep using regular virtual environments for my Python projects, which seems like a hassle in NixOS. Thanks to nix-darwin I can now do sudo using Touch ID on my Macbook, but I don't use it for much else.
-
-## Note to self: adding a new linux machine
-```
-nix --experimental-features 'nix-command flakes' run home-manager/master -- --experimental-features 'nix-command flakes' switch --flake .#simon-linux
-atuin login
+│   │
+│   ├── mac-intel-host/        # Intel Mac running macOS
+│   │   └── system.nix     # Host-specific Darwin settings
+│   │
+│   └── mac-apple-silicon-host/  # Apple Silicon Mac
+│       └── system.nix
+│
+├── modules/               # Reusable NixOS modules
+│   ├── default.nix
+│   ├── homelab/          # Homelab services (Immich, Home Assistant, etc.)
+│   ├── sops/             # Secret management configuration
+│   ├── system/           # System-level modules (nix settings, power management)
+│   └── wm/               # Window manager configs (Hyprland, Waybar, etc.)
+│
+├── profiles/              # Configuration profiles
+│   ├── default.nix
+│   ├── desktop.nix       # Desktop environment settings
+│   └── stylix.nix        # Theming and styling
+│
+└── secrets/               # SOPS-encrypted secrets
+    ├── larkbox.yaml
+    └── shared.yaml
 ```
 
-## Steps to setup nix-darwin on a new machine
+## Adding a New Host
 
-- `nix run nix-darwin --extra-experimental-features nix-command --extra-experimental-features flakes -- switch --flake ~/repos/jv-nix-config`
-- After that: `darwin-rebuild switch --flake ~/repos/jv-nix-config`
+### NixOS Host
 
-## Steps to setup home-manager on a new machine
+1. Create directory: `hosts/<hostname>/`
+2. Copy `hardware-configuration.nix` from the target machine
+3. Create `configuration.nix` importing common modules and setting host-specific options
+4. Optionally create `home.nix` for host-specific packages
+5. Add to `flake.nix` in `nixosConfigurations`
 
-Setting this up can be a bit confusing. Nix will build all of its own packages in `/nix` and symlink them to the right place. It will also create config files like "~/.zshrc". The nix language is often described as "json with functions". The docs and examples can sometimes be confusing. For me the deterministic and portable nature of my home directory is worth the learning curve. It's quite a cool system!
-
-- Install Nix using the Determinate Systems installer: https://github.com/DeterminateSystems/nix-installer
-- Clone this configuration repository to `~/repos/jv-nix-config`
-- Initialiase home-manager from the config repository: `nix --experimental-features 'nix-command flakes' run home-manager/master -- init --switch`
-- Enable your configuration: `home-manager switch --flake /Users/job/repos/jv-nix-config#job-mac-intel` (in my case config-name is either job-mac-intel or job-linux)
-- You will probably get some errors that either tell you what to do or you can solve them by googling (e.g. needing to run the command with  `--experimental-features 'nix-command flakes'` the first time or that you need to move `~/.zshrc` because it will now be managed by home-manager)
-
-## Trusted Users Issue with Determinate Nix
-
-If you see warnings like:
+Example `configuration.nix`:
+```nix
+{
+  imports = [
+    ./hardware-configuration.nix
+    ../common/nixos
+    ../../modules/system
+    ../../profiles
+    # ... other imports
+  ];
+  
+  networking.hostName = "<hostname>";
+  # Host-specific config...
+}
 ```
-warning: ignoring untrusted substituter 'https://cache.soopy.moe', you are not a trusted user.
-warning: ignoring the client-specified setting 'trusted-public-keys', because it is a restricted setting and you are not a trusted user
+
+### macOS Host
+
+1. Create directory: `hosts/<hostname>/`
+2. Create `system.nix` with host-specific settings (architecture, user, etc.)
+3. Add to `flake.nix` in `darwinConfigurations`
+
+## Home Manager Structure
+
+Home configurations are split logically for maintainability:
+
+- **`shared-home.nix`** - Entry point, imports all home configs
+- **`core-packages.nix`** - Base packages available on all systems
+- **`home-nixos.nix`** - NixOS-specific (Hyprland, Wayland apps, Linux packages)
+- **`home-mac.nix`** - macOS-specific packages
+- **`programs/`** - Individual program configurations organized by category:
+  - `browser.nix` - Firefox with extensions and search engines
+  - `shell.nix` - zsh, atuin (history), direnv, eza, fzf-tab
+  - `dev-tools.nix` - git, awscli, ripgrep, bat, broot, btop, jq
+  - `productivity.nix` - oh-my-posh (prompt), wezterm, kitty, pandoc, zoxide
+
+## Secrets
+
+Secrets are managed with [sops-nix](https://github.com/Mic92/sops-nix).
+
+```bash
+# Edit host-specific secrets
+sops secrets/larkbox.yaml
+
+# Edit shared secrets
+sops secrets/shared.yaml
 ```
 
-This happens because Determinate Nix uses a special configuration structure. The `nix.settings.trusted-users` in your nix-darwin or home-manager configuration won't automatically work.
+## Setup Instructions
 
-### Solution
+### New NixOS Machine
 
-Add your username to the trusted users in the Determinate Nix custom config file:
+1. Install NixOS with the standard installer
+2. Clone this repo to `~/repos/jv-nix-config`
+3. Run: `sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#<hostname>`
+
+### New macOS Machine
+
+1. Install Nix using the [Determinate Systems installer](https://github.com/DeterminateSystems/nix-installer)
+2. Clone this repo to `~/repos/jv-nix-config`
+3. Initial setup: `nix run nix-darwin --extra-experimental-features nix-command --extra-experimental-features flakes -- switch --flake ~/repos/jv-nix-config`
+4. Subsequent updates: `darwin-rebuild switch --flake ~/repos/jv-nix-config`
+
+### Home Manager (Standalone)
+
+Useful for non-NixOS Linux or when not using nix-darwin on macOS:
+
+```bash
+nix --experimental-features 'nix-command flakes' run home-manager/master -- init --switch
+home-manager switch --flake /Users/job/repos/jv-nix-config#<config-name>
+```
+
+## Maintenance
+
+```bash
+# Check configuration
+nix flake check
+
+# Format code
+nix fmt
+
+# Show available configurations
+nix flake show
+
+# Update all inputs
+nix flake update
+
+# Clean old generations
+sudo nix-collect-garbage --delete-older-than 14d
+```
+
+## Troubleshooting
+
+### Trusted Users Warning
+
+If you see warnings about untrusted substituters with Determinate Nix:
 
 ```bash
 echo "trusted-users = root <your-username>" | sudo tee -a /etc/nix/nix.custom.conf
-```
-
-Then restart the Nix daemon:
-
-```bash
 sudo launchctl stop org.nixos.nix-daemon && sudo launchctl start org.nixos.nix-daemon
 ```
 
-**Note:** Determinate Nix manages `/etc/nix/nix.conf` automatically and includes `/etc/nix/nix.custom.conf` for user modifications. Don't edit `nix.conf` directly as it will be overwritten.
+### Cachix Authentication
 
-## Cachix personal cache
-
-Authenticate with your Cachix personal cache to speed up builds and share build results across your machines. You can get your auth token from the Cachix website.
-```
-cachix authtoken XXX
+```bash
+cachix authtoken <your-token>
 ```
 
-Add to any devenv repository:
-```
-cachix.pull = [ "jv-nix-config-cache" ];
-```
+## Resources
 
-Verify if it works with `devenv shell` and check if you see cache hits in the output.
-
-## Links that helped me
-
-- [Setting up your dotfiles with home-manager as a flake · Chris Portela](https://www.chrisportela.com/posts/home-manager-flake/)
-- [home-manager](https://nix-community.github.io/home-manager/)
-- [Nix language basics — nix.dev documentation](https://nix.dev/tutorials/nix-language)
-- [Flakes - NixOS Wiki](https://nixos.wiki/wiki/Flakes)
-- [GitHub - dminca/nix-config: My Nix configuration for setting up aarch64-darwin & x86\_64-darwin workstations](https://github.com/dminca/nix-config)
-- [Github - Code search results - "path:home.nix"](https://github.com/search?q=path%3Ahome.nix&type=code)
+- [Home Manager Manual](https://nix-community.github.io/home-manager/)
+- [Nix Language Basics](https://nix.dev/tutorials/nix-language)
+- [Flakes Wiki](https://nixos.wiki/wiki/Flakes)
+- [nix-darwin](https://github.com/LnL7/nix-darwin)
+- [sops-nix](https://github.com/Mic92/sops-nix)

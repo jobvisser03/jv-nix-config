@@ -13,14 +13,12 @@
   };
 
   inputs = {
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     darwin.url = "github:LnL7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     home-manager = {
-      # url = "github:nix-community/home-manager/release-25.05";
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -30,21 +28,15 @@
     hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
 
     stylix = {
-      # url = "github:danth/stylix/release-25.05";
       url = "github:danth/stylix/master";
-
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Firefox addons flake
     firefox-addons = {
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Secret management
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -64,20 +56,20 @@
 
     darwinConfigurations."mac-intel-host" = darwin.lib.darwinSystem {
       modules = [
-        ./hosts/common-nix-darwin/system.nix
+        ./hosts/common/darwin
         ./hosts/mac-intel-host/system.nix
       ];
     };
     darwinConfigurations."mac-apple-silicon-host" = darwin.lib.darwinSystem {
       modules = [
-        ./hosts/common-nix-darwin/system.nix
+        ./hosts/common/darwin
         ./hosts/mac-apple-silicon-host/system.nix
       ];
     };
 
     nixosConfigurations.mac-intel-nixos-host = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = {inherit inputs;}; # this is for hyprland
+      specialArgs = {inherit inputs;};
       modules = [
         inputs.stylix.nixosModules.stylix
         ./hosts/mac-intel-nixos-host/configuration.nix
@@ -100,8 +92,6 @@
         inputs.sops-nix.nixosModules.sops
         inputs.stylix.nixosModules.stylix
         ./hosts/linux-larkbox-host/configuration.nix
-        # Intel N100 is Alder Lake-N architecture - use the AOOSTAR R1 N100 profile
-        # which includes proper Intel CPU + GPU optimizations for this chip
         nixos-hardware.nixosModules.aoostar-r1-n100
         inputs.home-manager.nixosModules.home-manager
         {
@@ -111,6 +101,7 @@
           home-manager.users.job.imports = [
             ./home/shared-home.nix
             ./home/home-nixos.nix
+            ./hosts/linux-larkbox-host/home.nix
           ];
           home-manager.backupFileExtension = "hm-backup";
         }
@@ -144,31 +135,7 @@
         ];
         extraSpecialArgs = {inherit inputs;};
       };
-      # NixOS Intel Mac - not used bcoz home-manager is in nixosConfigurations
-      # "mac-intel-nixos-hm" = home-manager.lib.homeManagerConfiguration {
-      #   pkgs = nixpkgs.legacyPackages.x86_64-linux;
-      #   modules = [
-      #     # If you want to use home-manager standalon
-      #     stylix.homeModules.stylix
-      #     ./home/shared-home.nix
-      #     ./home/home-nixos.nix
-      #     {
-      #       home.username = "job";
-      #       home.homeDirectory = "/home/job";
-      #     }
-      #   ];
-      # };
-      #  "linux-hm" = home-manager.lib.homeManagerConfiguration {
-      #    pkgs = nixpkgs.legacyPackages.aarch64-linux;
-      #    modules = [
-      #      ./home/shared-home.nix
-      #      {
-      #        home.username = "job";
-      #        home.homeDirectory = "/home/job";
-      #      }
-      #    ];
-      #    extraSpecialArgs = {inherit inputs;};
-      #  };
+
     };
   };
 }
