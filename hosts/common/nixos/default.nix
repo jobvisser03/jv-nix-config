@@ -25,9 +25,9 @@
   programs.vscodeRemoteSSH.enable = lib.mkDefault true;
 
   users.users.job = {
-    isNormalUser = true;
-    extraGroups = ["wheel" "video" "audio" "networkmanager"];
-    shell = pkgs.zsh;
+    isNormalUser = lib.mkDefault true;
+    extraGroups = lib.mkDefault ["wheel" "video" "audio" "networkmanager"];
+    shell = lib.mkDefault pkgs.zsh;
   };
 
   system.stateVersion = lib.mkDefault "25.11";

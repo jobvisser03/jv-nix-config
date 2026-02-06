@@ -32,11 +32,10 @@ home-manager switch --flake .#mac-apple-silicon-hm
 │   ├── home-mac.nix       # macOS-specific home config
 │   ├── alias.nix          # Shell aliases
 │   └── programs/          # Program-specific configs
-│       ├── default.nix    # Aggregates all program configs
-│       ├── browser.nix    # Firefox settings
-│       ├── shell.nix      # zsh, atuin, direnv, eza, fzf-tab
-│       ├── dev-tools.nix  # git, awscli, ripgrep, etc.
-│       └── productivity.nix  # oh-my-posh, wezterm, kitty
+    │       ├── default.nix    # Aggregates all program configs
+    │       ├── browser.nix    # Firefox settings
+    │       ├── shell.nix      # zsh, atuin, direnv, eza, fzf-tab, oh-my-posh, wezterm, kitty
+    │       └── dev-tools.nix  # git, awscli, ripgrep, bat, broot, etc.
 │
 ├── hosts/                 # Host-specific configurations
 │   ├── common/            # Shared host configurations
@@ -118,9 +117,8 @@ Home configurations are split logically for maintainability:
 - **`home-mac.nix`** - macOS-specific packages
 - **`programs/`** - Individual program configurations organized by category:
   - `browser.nix` - Firefox with extensions and search engines
-  - `shell.nix` - zsh, atuin (history), direnv, eza, fzf-tab
+  - `shell.nix` - zsh, atuin (history), direnv, eza, fzf-tab, oh-my-posh (prompt with hostname), wezterm, kitty, pandoc, zoxide
   - `dev-tools.nix` - git, awscli, ripgrep, bat, broot, btop, jq
-  - `productivity.nix` - oh-my-posh (prompt), wezterm, kitty, pandoc, zoxide
 
 ## Secrets
 
