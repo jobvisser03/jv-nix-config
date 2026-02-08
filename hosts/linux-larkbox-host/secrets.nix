@@ -35,6 +35,48 @@
         mode = "0400";
         path = "/run/secrets/rclone.conf";
       };
+
+      # GitLab database password
+      gitlab_database_password = {
+        owner = "gitlab";
+        group = "gitlab";
+        mode = "0400";
+      };
+
+      # GitLab initial root password
+      gitlab_initial_root_password = {
+        owner = "gitlab";
+        group = "gitlab";
+        mode = "0400";
+      };
+
+      # GitLab secret key base
+      gitlab_secret = {
+        owner = "gitlab";
+        group = "gitlab";
+        mode = "0400";
+      };
+
+      # GitLab OTP secret
+      gitlab_otp_secret = {
+        owner = "gitlab";
+        group = "gitlab";
+        mode = "0400";
+      };
+
+      # GitLab database secret
+      gitlab_db_secret = {
+        owner = "gitlab";
+        group = "gitlab";
+        mode = "0400";
+      };
+
+      # GitLab JWS private key
+      gitlab_jws_key = {
+        owner = "gitlab";
+        group = "gitlab";
+        mode = "0400";
+      };
     };
   };
 }

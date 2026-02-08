@@ -61,6 +61,8 @@
     services.enable = true;
     services.enableReverseProxy = false;
 
+    services.gitlab.enable = true;
+
     services.immich = {
       enable = true;
       externalLibraryDirs = [
