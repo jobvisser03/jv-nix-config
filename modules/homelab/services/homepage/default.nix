@@ -234,9 +234,13 @@ in {
       };
     };
 
-    # Set up environment variable for Jellyfin API key file
+    # Set up environment variables
     # Homepage uses HOMEPAGE_FILE_* convention to read secrets from files
-    systemd.services.homepage-dashboard.environment = lib.mkIf (cfg.jellyfin.apiKeyFile != null) {
+    systemd.services.homepage-dashboard.environment = {
+      # Allow access via hostname (fixes "Host validation failed" error)
+      # Append to existing localhost,127.0.0.1 that NixOS module sets
+      HOMEPAGE_ALLOWED_HOSTS = lib.mkForce "localhost:${toString cfg.port},127.0.0.1:${toString cfg.port},${homelab.hostname}:${toString cfg.port}";
+    } // lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
       HOMEPAGE_FILE_JELLYFIN_API_KEY = cfg.jellyfin.apiKeyFile;
     };
   };

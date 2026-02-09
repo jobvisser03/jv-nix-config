@@ -77,6 +77,36 @@
         group = "gitlab";
         mode = "0400";
       };
+
+      # GitLab Active Record encryption keys
+      gitlab_active_record_primary_key = {
+        owner = "gitlab";
+        group = "gitlab";
+        mode = "0400";
+      };
+
+      gitlab_active_record_deterministic_key = {
+        owner = "gitlab";
+        group = "gitlab";
+        mode = "0400";
+      };
+
+      gitlab_active_record_salt = {
+        owner = "gitlab";
+        group = "gitlab";
+        mode = "0400";
+      };
+
+      # GitLab Runner registration config
+      # Contains CI_SERVER_URL and CI_SERVER_TOKEN (runner authentication token)
+      # Get token from GitLab: Admin > CI/CD > Runners > New instance runner
+      # Note: Owner is root because gitlab-runner uses DynamicUser and the
+      # configure script runs as root (ExecStartPre with ! prefix)
+      gitlab_runner_registration = {
+        owner = "root";
+        group = "root";
+        mode = "0400";
+      };
     };
   };
 }

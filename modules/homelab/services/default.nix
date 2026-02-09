@@ -19,6 +19,7 @@ in {
 
   imports = [
     ./gitlab
+    ./gitlab-runner
     ./immich
     ./jellyfin
     ./homepage

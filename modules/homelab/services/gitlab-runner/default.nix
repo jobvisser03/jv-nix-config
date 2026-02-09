@@ -7,7 +7,6 @@
   ...
 }: let
   cfg = config.homelab.services.gitlab-runner;
-  homelab = config.homelab;
 in {
   options.homelab.services.gitlab-runner = {
     enable = lib.mkEnableOption "GitLab Runner - CI/CD job executor";
@@ -15,19 +14,20 @@ in {
     # Registration configuration
     gitlabUrl = lib.mkOption {
       type = lib.types.str;
-      default = "https://gitlab.com";
+      default = "http://${config.homelab.hostname}:${toString config.homelab.services.gitlab.port}";
       description = "URL of the GitLab instance";
     };
 
-    # Secret file containing CI_SERVER_URL and REGISTRATION_TOKEN (or CI_SERVER_TOKEN for new registration)
-    registrationConfigFile = lib.mkOption {
+    # Secret file containing authentication token (new GitLab 17+ workflow)
+    authenticationTokenConfigFile = lib.mkOption {
       type = lib.types.path;
       default = config.sops.secrets.gitlab_runner_registration.path;
       description = ''
-        Path to environment file containing registration variables.
-        Should contain at minimum:
-        - CI_SERVER_URL=https://gitlab.com (or your GitLab instance URL)
-        - CI_SERVER_TOKEN=<runner-authentication-token>
+        Path to file containing the runner authentication token.
+        Should contain: CI_SERVER_TOKEN=glrt-xxxxxxxxxxxxxxxxxxxx
+        
+        Get token from GitLab: Admin > CI/CD > Runners > New instance runner
+        Configure tags, protected status, etc. in GitLab UI when creating the runner.
       '';
     };
 
@@ -36,13 +36,6 @@ in {
       type = lib.types.str;
       default = "alpine:latest";
       description = "Default Docker image for CI jobs";
-    };
-
-    # Runner tags
-    tagList = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = ["nix" "docker"];
-      description = "Tags for the runner to pick up specific jobs";
     };
 
     # Concurrent jobs
@@ -74,16 +67,36 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    # Enable IP forwarding for Docker networking
+    # Enable IP forwarding for container networking
     boot.kernel.sysctl."net.ipv4.ip_forward" = true;
 
-    # Enable Docker for the runner
-    virtualisation.docker = {
-      enable = true;
-      autoPrune = {
-        enable = true;
-        dates = "weekly";
+    # Enable Podman's Docker-compatible socket for gitlab-runner
+    # This allows gitlab-runner to use Podman as the container runtime
+    virtualisation.podman.dockerSocket.enable = true;
+
+    # Prevent gitlab-runner module from auto-enabling Docker
+    # We use Podman with dockerSocket instead
+    virtualisation.docker.enable = lib.mkForce false;
+
+    # Create a combined auth config file that includes both URL and token
+    # The token file from sops contains only CI_SERVER_TOKEN
+    # We need to add CI_SERVER_URL for the registration to work
+    systemd.services.gitlab-runner-auth-config = {
+      description = "Generate GitLab Runner authentication config";
+      wantedBy = ["gitlab-runner.service"];
+      before = ["gitlab-runner.service"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
       };
+      script = ''
+        mkdir -p /run/gitlab-runner
+        {
+          echo "CI_SERVER_URL=${cfg.gitlabUrl}"
+          cat ${cfg.authenticationTokenConfigFile}
+        } > /run/gitlab-runner/auth-config
+        chmod 600 /run/gitlab-runner/auth-config
+      '';
     };
 
     # GitLab Runner service
@@ -94,8 +107,11 @@ in {
       services = {
         # Nix-enabled runner using Docker executor with host's nix-daemon
         # This shares the host's nix store with containers for caching
+        # Uses Podman via Docker-compatible socket
+        # Note: Tags, protected status, etc. are configured in GitLab UI (new workflow)
         nix = {
-          registrationConfigFile = cfg.registrationConfigFile;
+          authenticationTokenConfigFile = "/run/gitlab-runner/auth-config";
+          executor = "docker";
           dockerImage = cfg.dockerImage;
           dockerVolumes = [
             "/nix/store:/nix/store:ro"
@@ -125,7 +141,6 @@ in {
             PATH = "/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/bin:/sbin:/usr/bin:/usr/sbin";
             NIX_SSL_CERT_FILE = "/nix/var/nix/profiles/default/etc/ssl/certs/ca-bundle.crt";
           };
-          tagList = cfg.tagList;
         };
       };
     };

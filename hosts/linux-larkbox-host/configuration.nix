@@ -45,30 +45,6 @@
 
   services.openssh.enable = true;
 
-  # GitLab configuration
-  services.gitlab = {
-    enable = true;
-    databasePasswordFile = config.sops.secrets.gitlab_database_password.path;
-    initialRootPasswordFile = config.sops.secrets.gitlab_initial_root_password.path;
-    secrets = {
-      secretFile = config.sops.secrets.gitlab_secret.path;
-      otpFile = config.sops.secrets.gitlab_otp_secret.path;
-      dbFile = config.sops.secrets.gitlab_db_secret.path;
-      jwsFile = config.sops.secrets.gitlab_jws_key.path;
-    };
-  };
-
-  # Nginx reverse proxy for GitLab
-  services.nginx = {
-    enable = true;
-    recommendedProxySettings = true;
-    virtualHosts = {
-      localhost = {
-        locations."/".proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
-      };
-    };
-  };
-
   programs.vscodeRemoteSSH.enable = true;
   programs.hyprland.enable = true;
 
@@ -83,7 +59,13 @@
   homelab = {
     enable = true;
     services.enable = true;
-    services.enableReverseProxy = false;
+    services.enableReverseProxy = true;
+
+    # GitLab - Web-based Git repository management
+    services.gitlab.enable = false;
+
+    # GitLab Runner - CI/CD job executor
+    services.gitlab-runner.enable = false;
 
     services.immich = {
       enable = true;
