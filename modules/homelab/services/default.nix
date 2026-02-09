@@ -29,14 +29,16 @@ in {
   ];
 
   config = lib.mkIf (cfg.enable && cfg.services.enable) {
-    # Open firewall for HTTP (local network only, no HTTPS needed)
+    # Open firewall for HTTP (local network + Tailscale, no HTTPS needed)
+    # Tailscale interface is trusted, so this allows both local and remote (via Tailscale) access
     networking.firewall.allowedTCPPorts = lib.mkIf cfg.services.enableReverseProxy [80];
 
-    # Caddy reverse proxy (local network, no HTTPS)
+    # Caddy reverse proxy (HTTP only, encrypted via Tailscale tunnel when accessing remotely)
     services.caddy = lib.mkIf cfg.services.enableReverseProxy {
       enable = true;
       globalConfig = ''
-        # Local network only - no automatic HTTPS
+        # HTTP only - no automatic HTTPS
+        # Encryption provided by Tailscale tunnel for remote access
         auto_https off
       '';
     };

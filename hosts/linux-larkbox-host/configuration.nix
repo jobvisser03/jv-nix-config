@@ -25,7 +25,19 @@
   };
 
   networking.networkmanager.enable = true;
-  networking.firewall.enable = false;
+  
+  # Firewall configuration - allow local network and Tailscale
+  networking.firewall = {
+    enable = true;
+    # Trust Tailscale interface - all Tailscale traffic allowed
+    trustedInterfaces = [ "tailscale0" ];
+    # Allow Tailscale UDP for connection establishment
+    allowedUDPPorts = [ 41641 ];
+    # Note: HTTP port 80 opened by homelab module when reverse proxy enabled
+  };
+
+  # Tailscale VPN - enable server routing features for homelab
+  services.tailscale.useRoutingFeatures = "server";
 
   services.avahi = {
     enable = true;

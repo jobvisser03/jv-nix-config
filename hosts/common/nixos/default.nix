@@ -24,6 +24,12 @@
 
   programs.vscodeRemoteSSH.enable = lib.mkDefault true;
 
+  # Tailscale VPN for secure external access
+  services.tailscale = {
+    enable = lib.mkDefault true;
+    useRoutingFeatures = lib.mkDefault "client";
+  };
+
   users.users.job = {
     isNormalUser = lib.mkDefault true;
     extraGroups = lib.mkDefault ["wheel" "video" "audio" "networkmanager"];
