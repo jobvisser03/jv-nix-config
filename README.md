@@ -75,6 +75,142 @@ home-manager switch --flake .#mac-apple-silicon-hm
     └── shared.yaml
 ```
 
+## Homelab Architecture
+
+The homelab module (`modules/homelab/`) provides a complete self-hosted services stack with secure remote access. The architecture is designed for simplicity and security, using HTTP locally while leveraging Tailscale's WireGuard encryption for remote access.
+
+### Components
+
+#### 1. **Tailscale** - Secure VPN Access Layer
+- **Purpose**: Encrypted WireGuard tunnel for secure remote access
+- **Configuration**: Enabled on all NixOS systems via `hosts/common/nixos/default.nix`
+- **Network**: Creates `tailscale0` interface (trusted in firewall)
+- **Access**: Services accessible via Tailscale IPs (e.g., `http://100.x.y.z`) or MagicDNS hostnames
+
+#### 2. **Caddy** - HTTP Reverse Proxy
+- **Purpose**: Single entry point routing traffic to backend services
+- **Port**: Listens on port 80 (HTTP only)
+- **Configuration**: `modules/homelab/services/default.nix`
+- **Features**: 
+  - No automatic HTTPS (`auto_https off`)
+  - Virtual host routing to different services
+  - Handles WebSocket proxying for Home Assistant
+- **Why HTTP?**: Encryption provided by Tailscale tunnel; HTTPS would be redundant
+
+#### 3. **Podman** - Container Runtime
+- **Purpose**: Runs containerized services (Home Assistant, etc.)
+- **Network**: Custom `homelab` network with DNS resolution between containers
+- **Configuration**: Automatic container restart, pruning, and DNS-enabled networking
+
+#### 4. **Services**
+Available services in `modules/homelab/services/`:
+- **GitLab** - Git repository management (port 8929)
+- **GitLab Runner** - CI/CD executor
+- **Immich** - Photo management and backup (port 2283)
+- **Jellyfin** - Media server (port 8096)
+- **Home Assistant** - Home automation and IoT (port 8123)
+  - Mosquitto MQTT broker
+  - Zigbee2MQTT for Zigbee devices
+- **Homepage** - Service dashboard (port 80, root `/`)
+- **Radicale** - CalDAV/CardDAV server (optional, port 5232)
+- **rclone** - Cloud storage mounts (pCloud integration)
+
+### Request Flow
+
+#### Local Network Access
+```
+User (192.168.x.x)
+    ↓
+    [Port 80] → Caddy Reverse Proxy
+                    ↓
+        ┌───────────┼───────────┬─────────────┬──────────────┐
+        ↓           ↓           ↓             ↓              ↓
+    GitLab:8929  Immich:2283  Jellyfin:8096  HomeAssistant  Homepage
+                                              (Podman)       (root /)
+```
+
+**Path**: `http://larkbox` or `http://192.168.x.x` → Caddy routes based on port/path → Backend service
+
+#### Remote Access via Tailscale
+```
+User (anywhere with Tailscale)
+    ↓
+    Tailscale VPN (WireGuard encrypted tunnel)
+    ↓
+    [tailscale0 interface → 100.x.y.z]
+    ↓
+    [Port 80] → Caddy Reverse Proxy
+                    ↓
+        ┌───────────┼───────────┬─────────────┬──────────────┐
+        ↓           ↓           ↓             ↓              ↓
+    GitLab:8929  Immich:2283  Jellyfin:8096  HomeAssistant  Homepage
+                                              (Podman)       (root /)
+```
+
+**Path**: `http://100.x.y.z` or `http://larkbox.tailnet.ts.net` → Tailscale encrypted tunnel → Caddy → Backend service
+
+**Security**: All traffic encrypted at network layer (WireGuard), no HTTPS overhead needed
+
+### Network & Firewall Configuration
+
+#### Firewall Rules (`hosts/linux-larkbox-host/configuration.nix`)
+```nix
+networking.firewall = {
+  enable = true;
+  trustedInterfaces = [ "tailscale0" ];  # Trust all Tailscale traffic
+  allowedUDPPorts = [ 41641 ];           # Tailscale connection establishment
+  # Port 80 opened by homelab module
+};
+```
+
+#### Service Routing
+- **Caddy** listens on `0.0.0.0:80` (all interfaces, including Tailscale)
+- **Backend services** listen on `localhost` or internal Podman network
+- **Tailscale interface** is trusted → no additional firewall rules needed
+- **Local network** accesses same port 80 → transparent routing
+
+### Adding a Homelab Service
+
+1. **Create service module**: `modules/homelab/services/<service-name>/default.nix`
+2. **Define options**: Port, enable flag, storage paths
+3. **Configure backend**: Systemd service or Podman container
+4. **Add Caddy virtual host** (if using reverse proxy):
+   ```nix
+   services.caddy.virtualHosts."http://:${toString cfg.port}" = {
+     extraConfig = ''
+       reverse_proxy localhost:${toString internalPort}
+     '';
+   };
+   ```
+5. **Import in** `modules/homelab/services/default.nix`
+6. **Enable in host config**: `homelab.services.<service-name>.enable = true;`
+
+### Access Methods
+
+| Method | URL | Security | Use Case |
+|--------|-----|----------|----------|
+| **Local LAN** | `http://larkbox` or `http://192.168.x.x` | Unencrypted (trusted network) | Home network access |
+| **Tailscale IP** | `http://100.x.y.z` | WireGuard encrypted | Remote access from phone/laptop |
+| **MagicDNS** | `http://larkbox.tailnet.ts.net` | WireGuard encrypted | Remote access with friendly hostname |
+
+### First-Time Tailscale Setup
+
+After deploying the configuration:
+
+```bash
+# Authenticate with Tailscale (opens browser)
+sudo tailscale up
+
+# Check status and get your IP
+tailscale status
+tailscale ip -4
+
+# Enable MagicDNS (optional, in Tailscale admin console)
+# Settings → DNS → Enable MagicDNS
+```
+
+Then access services from anywhere: `http://100.x.y.z` or `http://larkbox`
+
 ## Adding a New Host
 
 ### NixOS Host
