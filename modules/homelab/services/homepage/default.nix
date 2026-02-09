@@ -128,25 +128,24 @@ in {
           };
 
         # Build Jellyfin entry with optional widget (when API key is provided)
-        jellyfinEntry =
-          lib.optional (hl.jellyfin.enable or false) {
-            "${hl.jellyfin.homepage.name}" =
-              {
-                icon = hl.jellyfin.homepage.icon;
-                description = hl.jellyfin.homepage.description;
-                href = "http://${homelab.hostname}:${toString hl.jellyfin.port}";
-                siteMonitor = "http://127.0.0.1:${toString hl.jellyfin.port}";
-              }
-              // lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
-                widget = {
-                  type = "jellyfin";
-                  url = "http://127.0.0.1:${toString hl.jellyfin.port}";
-                  key = "{{HOMEPAGE_FILE_JELLYFIN_API_KEY}}";
-                  enableBlocks = true;
-                  enableNowPlaying = true;
-                };
+        jellyfinEntry = lib.optional (hl.jellyfin.enable or false) {
+          "${hl.jellyfin.homepage.name}" =
+            {
+              icon = hl.jellyfin.homepage.icon;
+              description = hl.jellyfin.homepage.description;
+              href = "http://${homelab.hostname}:${toString hl.jellyfin.port}";
+              siteMonitor = "http://127.0.0.1:${toString hl.jellyfin.port}";
+            }
+            // lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
+              widget = {
+                type = "jellyfin";
+                url = "http://127.0.0.1:${toString hl.jellyfin.port}";
+                key = "{{HOMEPAGE_FILE_JELLYFIN_API_KEY}}";
+                enableBlocks = true;
+                enableNowPlaying = true;
               };
-          };
+            };
+        };
 
         # Group services by category
         mediaServices =
@@ -154,94 +153,103 @@ in {
           ++ jellyfinEntry;
 
         smartHomeServices =
-          (lib.optionals (hl.homeassistant.enable or false) (mkServiceEntry "homeassistant" hl.homeassistant));
+          lib.optionals (hl.homeassistant.enable or false) (mkServiceEntry "homeassistant" hl.homeassistant);
 
         regularServices =
-          (lib.optionals (hl.radicale.enable or false) (mkServiceEntry "radicale" hl.radicale));
-      in
-        [
-          {
-            Media = mediaServices;
-          }
-          {
-            Services = regularServices;
-          }
-          {
-            "Smart Home" = smartHomeServices;
-          }
-          {
-            Misc = cfg.customLinks;
-          }
-          {
-            System = let
-              glancesPort = toString config.services.glances.port;
-            in [
-              {
-                Info = {
-                  widget = {
-                    type = "glances";
-                    url = "http://localhost:${glancesPort}";
-                    metric = "info";
-                    chart = false;
-                    version = 4;
-                  };
+          (lib.optionals (hl.gitlab.enable or false) (mkServiceEntry "gitlab" hl.gitlab))
+          ++ (lib.optionals (hl.radicale.enable or false) (mkServiceEntry "radicale" hl.radicale));
+      in [
+        {
+          Media = mediaServices;
+        }
+        {
+          Services = regularServices;
+        }
+        {
+          "Smart Home" = smartHomeServices;
+        }
+        {
+          Misc = cfg.customLinks;
+        }
+        {
+          System = let
+            glancesPort = toString config.services.glances.port;
+          in [
+            {
+              Info = {
+                widget = {
+                  type = "glances";
+                  url = "http://localhost:${glancesPort}";
+                  metric = "info";
+                  chart = false;
+                  version = 4;
                 };
-              }
-              {
-                CPU = {
-                  widget = {
-                    type = "glances";
-                    url = "http://localhost:${glancesPort}";
-                    metric = "cpu";
-                    chart = false;
-                    version = 4;
-                  };
+              };
+            }
+            {
+              CPU = {
+                widget = {
+                  type = "glances";
+                  url = "http://localhost:${glancesPort}";
+                  metric = "cpu";
+                  chart = false;
+                  version = 4;
                 };
-              }
-              {
-                Memory = {
-                  widget = {
-                    type = "glances";
-                    url = "http://localhost:${glancesPort}";
-                    metric = "memory";
-                    chart = false;
-                    version = 4;
-                  };
+              };
+            }
+            {
+              Memory = {
+                widget = {
+                  type = "glances";
+                  url = "http://localhost:${glancesPort}";
+                  metric = "memory";
+                  chart = false;
+                  version = 4;
                 };
-              }
-              {
-                Disk = {
-                  widget = {
-                    type = "glances";
-                    url = "http://localhost:${glancesPort}";
-                    metric = "disk:sda";
-                    chart = false;
-                    version = 4;
-                  };
+              };
+            }
+            {
+              Disk = {
+                widget = {
+                  type = "glances";
+                  url = "http://localhost:${glancesPort}";
+                  metric = "disk:sda";
+                  chart = false;
+                  version = 4;
                 };
-              }
-            ];
-          }
-        ];
+              };
+            }
+          ];
+        }
+      ];
     };
 
     # Caddy reverse proxy - serve dashboard at root
+    # Use catch-all to handle hostname, IPs, and Tailscale addresses
     services.caddy.virtualHosts = lib.mkIf homelab.services.enableReverseProxy {
-      "http://${homelab.hostname}" = {
+      "http://:80" = {
         extraConfig = ''
-          reverse_proxy http://127.0.0.1:${toString cfg.port}
+          reverse_proxy http://127.0.0.1:${toString cfg.port} {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+          }
         '';
       };
     };
 
     # Set up environment variables
     # Homepage uses HOMEPAGE_FILE_* convention to read secrets from files
-    systemd.services.homepage-dashboard.environment = {
-      # Allow access via hostname (fixes "Host validation failed" error)
-      # Append to existing localhost,127.0.0.1 that NixOS module sets
-      HOMEPAGE_ALLOWED_HOSTS = lib.mkForce "localhost:${toString cfg.port},127.0.0.1:${toString cfg.port},${homelab.hostname}:${toString cfg.port}";
-    } // lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
-      HOMEPAGE_FILE_JELLYFIN_API_KEY = cfg.jellyfin.apiKeyFile;
-    };
+    systemd.services.homepage-dashboard.environment =
+      {
+        # Allow access from hostname and common patterns (localhost, IPs)
+        # Homepage validates Host header, so we need to list all possible access methods
+        # Wildcards are not supported, so we list patterns without ports (Caddy forwards on port 80)
+        HOMEPAGE_ALLOWED_HOSTS = lib.mkForce "${homelab.hostname},localhost,127.0.0.1";
+      }
+      // lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
+        HOMEPAGE_FILE_JELLYFIN_API_KEY = cfg.jellyfin.apiKeyFile;
+      };
   };
 }
