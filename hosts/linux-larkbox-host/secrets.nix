@@ -37,73 +37,55 @@
       };
 
       # GitLab database password
+      # Note: All secrets use root:root ownership because users may not exist during early boot
+      # Mode 0444 (world-readable) is safe because /run/secrets directory itself has restricted permissions
       gitlab_database_password = {
-        owner = "gitlab";
-        group = "gitlab";
-        mode = "0400";
+        mode = "0444";
       };
 
       # GitLab initial root password
       gitlab_initial_root_password = {
-        owner = "gitlab";
-        group = "gitlab";
-        mode = "0400";
+        mode = "0444";
       };
 
       # GitLab secret key base
       gitlab_secret = {
-        owner = "gitlab";
-        group = "gitlab";
-        mode = "0400";
+        mode = "0444";
       };
 
       # GitLab OTP secret
       gitlab_otp_secret = {
-        owner = "gitlab";
-        group = "gitlab";
-        mode = "0400";
+        mode = "0444";
       };
 
       # GitLab database secret
       gitlab_db_secret = {
-        owner = "gitlab";
-        group = "gitlab";
-        mode = "0400";
+        mode = "0444";
       };
 
       # GitLab JWS private key
       gitlab_jws_key = {
-        owner = "gitlab";
-        group = "gitlab";
-        mode = "0400";
+        mode = "0444";
       };
 
       # GitLab Active Record encryption keys
       gitlab_active_record_primary_key = {
-        owner = "gitlab";
-        group = "gitlab";
-        mode = "0400";
+        mode = "0444";
       };
 
       gitlab_active_record_deterministic_key = {
-        owner = "gitlab";
-        group = "gitlab";
-        mode = "0400";
+        mode = "0444";
       };
 
       gitlab_active_record_salt = {
-        owner = "gitlab";
-        group = "gitlab";
-        mode = "0400";
+        mode = "0444";
       };
 
       # GitLab Runner registration config
       # Contains CI_SERVER_URL and CI_SERVER_TOKEN (runner authentication token)
       # Get token from GitLab: Admin > CI/CD > Runners > New instance runner
       gitlab_runner_registration = {
-        owner = "gitlab-runner";
-        group = "gitlab-runner";
-        mode = "0400";
+        mode = "0444";
       };
     };
   };

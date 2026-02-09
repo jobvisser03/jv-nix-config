@@ -62,10 +62,10 @@
     services.enableReverseProxy = true;
 
     # GitLab - Web-based Git repository management
-    services.gitlab.enable = false;
+    services.gitlab.enable = true;
 
     # GitLab Runner - CI/CD job executor
-    services.gitlab-runner.enable = false;
+    services.gitlab-runner.enable = true;
 
     services.immich = {
       enable = true;
