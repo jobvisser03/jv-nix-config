@@ -13,7 +13,7 @@
     nerd-fonts.fantasque-sans-mono
     nil
     rsync
-    nodejs_latest
+    nodejs_22
     devenv
     neofetch
     vim

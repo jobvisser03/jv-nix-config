@@ -5,18 +5,17 @@
     extra-substituters = [
       "https://jv-nix-config-cache.cachix.org"
       "https://cache.soopy.moe"
+      "https://cache.nixos.org"
     ];
     extra-trusted-public-keys = [
       "jv-nix-config-cache.cachix.org-1:pvYeur0OqEar9g5x6mETEsrJSoW+U7eE7BbA4bB925w="
       "cache.soopy.moe-1:0RZVsQeR+GOh0VQI9rvnHz55nVXkFardDqfm4+afjPo="
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
     ];
   };
 
   inputs = {
-    # # nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    # Uses rolling channel for more up-to-date packages from devenv
-    nixpkgs.url = "github:cachix/devenv-nixpkgs/rolling";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     darwin.url = "github:LnL7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";

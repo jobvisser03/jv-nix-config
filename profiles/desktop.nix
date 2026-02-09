@@ -33,7 +33,7 @@
     vim
     code-cursor
     vscode.fhs
-    nodejs_latest # Node.js 24 with npm
+    nodejs_22 # Node.js LTS
 
     # Desktop applications
     logseq
