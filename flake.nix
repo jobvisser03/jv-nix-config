@@ -28,8 +28,6 @@
 
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
-    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
-
     stylix = {
       url = "github:danth/stylix/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -51,7 +49,6 @@
     home-manager,
     nixpkgs,
     nixos-hardware,
-    hyprland,
     stylix,
     ...
   } @ inputs: {

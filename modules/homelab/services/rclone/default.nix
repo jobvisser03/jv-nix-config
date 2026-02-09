@@ -116,7 +116,9 @@ in {
     # Target that groups all rclone mount services
     systemd.targets.rclone-mounts = {
       description = "All rclone mount services";
+      after = ["network-online.target" "sops-nix.service"];
       wants = lib.mapAttrsToList (name: _: "rclone-${name}.service") cfg.mounts;
+      wantedBy = ["multi-user.target"];
     };
 
     # Create a systemd service for each mount
@@ -136,10 +138,10 @@ in {
       in
         lib.nameValuePair "rclone-${name}" {
           description = "rclone mount: ${name} (${mount.remote} -> ${mount.mountpoint})";
-          after = ["network-online.target"] ++ requiredMountUnits;
+          after = ["network-online.target" "sops-nix.service"] ++ requiredMountUnits;
           wants = ["network-online.target"];
           requires = requiredMountUnits;
-          # Don't use WantedBy - let the path watcher trigger via target
+          # Pulled in via rclone-mounts.target which is wanted by multi-user.target
           wantedBy = [];
           partOf = ["rclone-mounts.target"];
 

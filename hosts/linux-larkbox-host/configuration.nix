@@ -73,7 +73,7 @@
   programs.hyprland.enable = true;
 
   services.greetd.settings.initial_session = {
-    command = "${pkgs.hyprland}/bin/start-hyprland";
+    command = "Hyprland";
     user = "job";
   };
 

@@ -94,7 +94,7 @@
       enable = true;
       settings = {
         default_session = {
-          command = "${pkgs.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --remember --asterisks --cmd ${pkgs.hyprland}/bin/start-hyprland";
+          command = "${pkgs.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --remember --asterisks --cmd Hyprland";
           user = "greeter";
         };
       };

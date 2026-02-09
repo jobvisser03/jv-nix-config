@@ -89,7 +89,7 @@
 
   # Host-specific greetd initial session
   services.greetd.settings.initial_session = {
-    command = "${pkgs.hyprland}/bin/Hyprland";
+    command = "Hyprland";
     user = "job";
   };
 
