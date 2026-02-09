@@ -100,11 +100,9 @@
       # GitLab Runner registration config
       # Contains CI_SERVER_URL and CI_SERVER_TOKEN (runner authentication token)
       # Get token from GitLab: Admin > CI/CD > Runners > New instance runner
-      # Note: Owner is root because gitlab-runner uses DynamicUser and the
-      # configure script runs as root (ExecStartPre with ! prefix)
       gitlab_runner_registration = {
-        owner = "root";
-        group = "root";
+        owner = "gitlab-runner";
+        group = "gitlab-runner";
         mode = "0400";
       };
     };
