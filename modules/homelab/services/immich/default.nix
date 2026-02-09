@@ -78,10 +78,14 @@ in {
     # Immich service configuration
     services.immich = {
       enable = true;
-      port = cfg.port;
+      # Use internal port when reverse proxy is enabled to avoid port conflict
+      port = 
+        if homelab.services.enableReverseProxy
+        then cfg.port + 10000
+        else cfg.port;
       mediaLocation = cfg.mediaDir;
       group = homelab.group;
-      # Bind to all interfaces when reverse proxy is disabled
+      # Bind to all interfaces when reverse proxy is disabled, localhost when enabled
       host =
         if homelab.services.enableReverseProxy
         then "127.0.0.1"
@@ -113,19 +117,19 @@ in {
     services.caddy.virtualHosts = lib.mkIf homelab.services.enableReverseProxy {
       "http://${homelab.hostname}:${toString cfg.port}" = {
         extraConfig = ''
-          reverse_proxy http://${config.services.immich.host}:${toString config.services.immich.port}
+          reverse_proxy http://127.0.0.1:${toString (cfg.port + 10000)}
         '';
       };
       # Also serve at /photos path on main hostname
       "http://${homelab.hostname}/photos/*" = {
         extraConfig = ''
           uri strip_prefix /photos
-          reverse_proxy http://${config.services.immich.host}:${toString config.services.immich.port}
+          reverse_proxy http://127.0.0.1:${toString (cfg.port + 10000)}
         '';
       };
     };
 
-    # Open firewall for direct access when reverse proxy is disabled
-    networking.firewall.allowedTCPPorts = lib.mkIf (!homelab.services.enableReverseProxy) [cfg.port];
+    # Open firewall for access (Caddy when enabled, direct when disabled)
+    networking.firewall.allowedTCPPorts = [cfg.port];
   };
 }

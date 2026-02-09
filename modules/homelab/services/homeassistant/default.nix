@@ -6,6 +6,9 @@
 }: let
   cfg = config.homelab.services.homeassistant;
   homelab = config.homelab;
+
+  # Network name for inter-container communication
+  homelabNetwork = "homelab";
 in {
   options.homelab.services.homeassistant = {
     enable = lib.mkEnableOption "Home Assistant - Home automation platform";
@@ -63,7 +66,7 @@ in {
 
       image = lib.mkOption {
         type = lib.types.str;
-        default = "docker.io/library/eclipse-mosquitto:1.6.9";
+        default = "docker.io/library/eclipse-mosquitto:2";
         description = "Docker image for Mosquitto MQTT broker";
       };
 
@@ -123,9 +126,129 @@ in {
         "d ${cfg.mosquitto.configDir}/log 0775 ${homelab.user} ${homelab.group} - -"
       ];
 
+    # ==========================================
+    # Mosquitto Configuration Setup
+    # ==========================================
+    # Deploy Mosquitto config before container starts
+    systemd.services.mosquitto-setup-config = lib.mkIf cfg.mosquitto.enable {
+      description = "Setup Mosquitto MQTT broker configuration";
+      before = ["podman-mosquitto.service"];
+      after = ["podman-homelab-network.service"];
+      requires = ["podman-homelab-network.service"];
+      wantedBy = ["podman-mosquitto.service"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        User = "root";
+      };
+      script = ''
+        CONFIG_FILE="${cfg.mosquitto.configDir}/config/mosquitto.conf"
+
+        # Create Mosquitto config
+        cat > "$CONFIG_FILE" << 'MQTTCONFIG'
+# Mosquitto MQTT Broker Configuration - managed by NixOS
+# Listen on all interfaces for container networking
+listener ${toString cfg.mosquitto.port} 0.0.0.0
+
+# WebSocket listener
+listener ${toString cfg.mosquitto.websocketPort} 0.0.0.0
+protocol websockets
+
+# Allow anonymous connections (local network only)
+allow_anonymous true
+
+# Persistence
+persistence true
+persistence_location /mosquitto/data/
+
+# Logging
+log_dest file /mosquitto/log/mosquitto.log
+log_dest stdout
+MQTTCONFIG
+
+        # Ensure proper permissions
+        chown ${homelab.user}:${homelab.group} "$CONFIG_FILE"
+        chmod 644 "$CONFIG_FILE"
+        echo "Mosquitto config deployed to $CONFIG_FILE"
+      '';
+    };
+
+    # ==========================================
+    # Home Assistant Reverse Proxy Setup
+    # ==========================================
+    systemd.services.homeassistant-setup-reverse-proxy = lib.mkIf homelab.services.enableReverseProxy {
+      description = "Setup Home Assistant reverse proxy configuration";
+      before = ["podman-homeassistant.service"];
+      after = ["podman-homelab-network.service"];
+      requires = ["podman-homelab-network.service"];
+      wantedBy = ["podman-homeassistant.service"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        User = "root";
+      };
+      script = ''
+        CONFIG_FILE="${cfg.configDir}/configuration.yaml"
+        REVERSE_PROXY_CONFIG="${cfg.configDir}/reverse_proxy.yaml"
+        REVERSE_PROXY_MARKER="# Reverse proxy configuration - managed by NixOS"
+        INCLUDE_LINE="http: !include reverse_proxy.yaml"
+
+        # Copy the reverse proxy configuration file
+        # Note: This file is included via "http: !include reverse_proxy.yaml"
+        # so it should contain the CONTENTS of the http section, not the http: key itself
+        cat > "$REVERSE_PROXY_CONFIG" << 'PROXYCONFIG'
+# Reverse proxy configuration - managed by NixOS
+use_x_forwarded_for: true
+trusted_proxies:
+  - 10.88.0.0/16
+  - 10.89.0.0/16
+  - 127.0.0.1
+  - ::1
+PROXYCONFIG
+
+        # Ensure proper permissions
+        chown ${homelab.user}:${homelab.group} "$REVERSE_PROXY_CONFIG"
+        chmod 644 "$REVERSE_PROXY_CONFIG"
+
+        # Check if configuration.yaml exists
+        if [ ! -f "$CONFIG_FILE" ]; then
+          # Create new configuration.yaml with default config and include
+          echo "default_config:" > "$CONFIG_FILE"
+          echo "" >> "$CONFIG_FILE"
+          echo "$REVERSE_PROXY_MARKER" >> "$CONFIG_FILE"
+          echo "$INCLUDE_LINE" >> "$CONFIG_FILE"
+          echo "Created new configuration.yaml with reverse proxy include"
+        elif ! grep -q "reverse_proxy.yaml" "$CONFIG_FILE" 2>/dev/null; then
+          # Check if http section already exists
+          if grep -q "^http:" "$CONFIG_FILE" 2>/dev/null; then
+            # Backup original
+            cp "$CONFIG_FILE" "$CONFIG_FILE.backup.$(date +%s)"
+            # Remove existing http section and replace with include
+            sed -i '/^http:/,/^[^ ]/ { /^http:/d; /^[^ ]/!d; }' "$CONFIG_FILE"
+            # Add the include
+            echo "" >> "$CONFIG_FILE"
+            echo "$REVERSE_PROXY_MARKER" >> "$CONFIG_FILE"
+            echo "$INCLUDE_LINE" >> "$CONFIG_FILE"
+            echo "Replaced http section with reverse proxy include in configuration.yaml"
+          else
+            # Just append the include
+            echo "" >> "$CONFIG_FILE"
+            echo "$REVERSE_PROXY_MARKER" >> "$CONFIG_FILE"
+            echo "$INCLUDE_LINE" >> "$CONFIG_FILE"
+            echo "Added reverse proxy include to configuration.yaml"
+          fi
+        else
+          echo "Reverse proxy include already present in configuration.yaml"
+        fi
+
+        # Ensure proper permissions on configuration.yaml
+        chown ${homelab.user}:${homelab.group} "$CONFIG_FILE"
+        chmod 644 "$CONFIG_FILE"
+      '';
+    };
+
     # Udev rules for Zigbee USB adapter (Sonoff Zigbee 3.0 USB Dongle Plus)
     # This allows container access without privileged mode
-    # Using ACTION=="add" and KERNEL=="ttyUSB*" for proper device creation matching
     services.udev.extraRules = lib.mkIf cfg.zigbee2mqtt.enable ''
       # Sonoff Zigbee 3.0 USB Dongle Plus (CH9102 USB-Serial)
       ACTION=="add", SUBSYSTEM=="tty", KERNEL=="ttyUSB*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d4", MODE="0666", GROUP="dialout", SYMLINK+="zigbee"
@@ -143,11 +266,20 @@ in {
       autoStart = true;
 
       extraOptions = [
-        "--network=host"
+        "--network=${homelabNetwork}"
+        "--hostname=mosquitto"
+      ];
+
+      # Expose ports on host for external access
+      ports = [
+        "${toString cfg.mosquitto.port}:${toString cfg.mosquitto.port}"
+        "${toString cfg.mosquitto.websocketPort}:${toString cfg.mosquitto.websocketPort}"
       ];
 
       volumes = [
-        "${cfg.mosquitto.configDir}:/mosquitto"
+        "${cfg.mosquitto.configDir}/config:/mosquitto/config"
+        "${cfg.mosquitto.configDir}/data:/mosquitto/data"
+        "${cfg.mosquitto.configDir}/log:/mosquitto/log"
       ];
 
       environment = {
@@ -155,25 +287,50 @@ in {
       };
     };
 
-    # Create default Mosquitto config if it doesn't exist
-    # Mosquitto 1.6.9 needs a config file to work properly
-    environment.etc."mosquitto-default.conf" = lib.mkIf cfg.mosquitto.enable {
-      text = ''
-        # Mosquitto MQTT Broker Configuration
-        listener ${toString cfg.mosquitto.port}
-        listener ${toString cfg.mosquitto.websocketPort}
-        protocol websockets
+    # Ensure mosquitto container starts after network and config are ready
+    systemd.services.podman-mosquitto = lib.mkIf cfg.mosquitto.enable {
+      after = ["podman-homelab-network.service" "mosquitto-setup-config.service"];
+      requires = ["podman-homelab-network.service" "mosquitto-setup-config.service"];
+    };
 
-        # Allow anonymous connections (local network only)
-        allow_anonymous true
+    # ==========================================
+    # Zigbee2MQTT Configuration Setup
+    # ==========================================
+    # Ensure Zigbee2MQTT uses the correct MQTT broker address for container networking
+    systemd.services.zigbee2mqtt-setup-config = lib.mkIf cfg.zigbee2mqtt.enable {
+      description = "Setup Zigbee2MQTT MQTT broker configuration";
+      before = ["podman-zigbee2mqtt.service"];
+      after = ["podman-homelab-network.service"];
+      requires = ["podman-homelab-network.service"];
+      wantedBy = ["podman-zigbee2mqtt.service"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        User = "root";
+      };
+      script = ''
+        CONFIG_FILE="${cfg.zigbee2mqtt.configDir}/configuration.yaml"
+        MQTT_SERVER="mqtt://mosquitto:${toString cfg.mosquitto.port}"
 
-        # Persistence
-        persistence true
-        persistence_location /mosquitto/data/
+        if [ -f "$CONFIG_FILE" ]; then
+          # Update MQTT server address if it's set to localhost
+          if grep -q "server: mqtt://localhost" "$CONFIG_FILE" 2>/dev/null; then
+            sed -i "s|server: mqtt://localhost:[0-9]*|server: $MQTT_SERVER|g" "$CONFIG_FILE"
+            echo "Updated Zigbee2MQTT MQTT server to $MQTT_SERVER"
+          elif grep -q "server: mqtt://mosquitto" "$CONFIG_FILE" 2>/dev/null; then
+            echo "Zigbee2MQTT MQTT server already configured correctly"
+          else
+            echo "Warning: Could not find MQTT server config in $CONFIG_FILE"
+          fi
+        else
+          echo "Zigbee2MQTT config file not found at $CONFIG_FILE - it will be created on first run"
+        fi
 
-        # Logging
-        log_dest file /mosquitto/log/mosquitto.log
-        log_dest stdout
+        # Ensure proper permissions
+        if [ -f "$CONFIG_FILE" ]; then
+          chown ${homelab.user}:${homelab.group} "$CONFIG_FILE"
+          chmod 644 "$CONFIG_FILE"
+        fi
       '';
     };
 
@@ -187,7 +344,8 @@ in {
       extraOptions =
         [
           "--pull=newer"
-          "--network=host"
+          "--network=${homelabNetwork}"
+          "--hostname=zigbee2mqtt"
           # USB device access
           "--device=${cfg.zigbee2mqtt.usbDevice}:/dev/ttyUSB0"
         ]
@@ -195,6 +353,11 @@ in {
         ++ lib.optionals (lib.hasPrefix "/dev/serial/by-id/" cfg.zigbee2mqtt.usbDevice) [
           "--device=${cfg.zigbee2mqtt.usbDevice}:/dev/sonoff"
         ];
+
+      # Expose web UI on host
+      ports = [
+        "${toString cfg.zigbee2mqtt.port}:8080"
+      ];
 
       volumes = [
         "${cfg.zigbee2mqtt.configDir}:/app/data"
@@ -208,6 +371,12 @@ in {
       dependsOn = lib.optionals cfg.mosquitto.enable ["mosquitto"];
     };
 
+    # Ensure zigbee2mqtt container starts after network and config are ready
+    systemd.services.podman-zigbee2mqtt = lib.mkIf cfg.zigbee2mqtt.enable {
+      after = ["podman-homelab-network.service" "zigbee2mqtt-setup-config.service"];
+      requires = ["podman-homelab-network.service" "zigbee2mqtt-setup-config.service"];
+    };
+
     # ==========================================
     # Home Assistant Container
     # ==========================================
@@ -218,12 +387,20 @@ in {
       extraOptions =
         [
           "--pull=newer"
-          "--network=host"
+          "--network=${homelabNetwork}"
+          "--hostname=homeassistant"
         ]
         # Mount serial devices if Zigbee2MQTT is enabled (for device discovery)
         ++ lib.optionals cfg.zigbee2mqtt.enable [
           "--device=${cfg.zigbee2mqtt.usbDevice}:${cfg.zigbee2mqtt.usbDevice}"
         ];
+
+      # Expose Home Assistant on localhost for Caddy reverse proxy
+      # Use port+10000 internally to avoid conflict with Caddy listening on the public port
+      ports =
+        if homelab.services.enableReverseProxy
+        then ["127.0.0.1:${toString (cfg.port + 10000)}:8123"]
+        else ["${toString cfg.port}:8123"];
 
       volumes =
         [
@@ -239,10 +416,22 @@ in {
         TZ = homelab.timeZone;
       };
 
-      # Wait for MQTT and Zigbee2MQTT to be ready
-      dependsOn =
-        lib.optionals cfg.mosquitto.enable ["mosquitto"]
-        ++ lib.optionals cfg.zigbee2mqtt.enable ["zigbee2mqtt"];
+      # Note: We use systemd After= instead of dependsOn to avoid cascading failures
+      # Home Assistant should start after MQTT/Zigbee2MQTT but shouldn't stop if they fail
+    };
+
+    # Ensure homeassistant container starts after network and MQTT services
+    # Using After= without Requires= allows HA to keep running if other services fail
+    systemd.services.podman-homeassistant = {
+      after =
+        ["podman-homelab-network.service"]
+        ++ lib.optionals cfg.mosquitto.enable ["podman-mosquitto.service"]
+        ++ lib.optionals cfg.zigbee2mqtt.enable ["podman-zigbee2mqtt.service"];
+      requires = ["podman-homelab-network.service"];
+      # Use Wants instead of Requires for MQTT services - HA can run without them
+      wants =
+        lib.optionals cfg.mosquitto.enable ["podman-mosquitto.service"]
+        ++ lib.optionals cfg.zigbee2mqtt.enable ["podman-zigbee2mqtt.service"];
     };
 
     # ==========================================
@@ -264,7 +453,12 @@ in {
     services.caddy.virtualHosts = lib.mkIf homelab.services.enableReverseProxy {
       "http://${homelab.hostname}:${toString cfg.port}" = {
         extraConfig = ''
-          reverse_proxy http://127.0.0.1:${toString cfg.port}
+          reverse_proxy http://127.0.0.1:${toString (cfg.port + 10000)} {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+          }
         '';
       };
     };

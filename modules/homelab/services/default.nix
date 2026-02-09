@@ -55,5 +55,27 @@ in {
 
     # Allow DNS in podman network
     networking.firewall.interfaces.podman0.allowedUDPPorts = [53];
+
+    # Create a shared network for homelab containers
+    # This allows containers to communicate by name (DNS resolution)
+    systemd.services.podman-homelab-network = {
+      description = "Create homelab podman network";
+      after = ["podman.service"];
+      wantedBy = ["multi-user.target"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+      path = [pkgs.podman];
+      script = ''
+        # Create network if it doesn't exist
+        if ! podman network exists homelab; then
+          podman network create homelab
+          echo "Created homelab network"
+        else
+          echo "homelab network already exists"
+        fi
+      '';
+    };
   };
 }

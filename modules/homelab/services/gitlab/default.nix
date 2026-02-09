@@ -55,6 +55,24 @@ in {
         default = config.sops.secrets.gitlab_jws_key.path;
         description = "Path to GitLab JWS private key file";
       };
+
+      activeRecordPrimaryKeyFile = lib.mkOption {
+        type = lib.types.path;
+        default = config.sops.secrets.gitlab_active_record_primary_key.path;
+        description = "Path to GitLab Active Record primary key file";
+      };
+
+      activeRecordDeterministicKeyFile = lib.mkOption {
+        type = lib.types.path;
+        default = config.sops.secrets.gitlab_active_record_deterministic_key.path;
+        description = "Path to GitLab Active Record deterministic key file";
+      };
+
+      activeRecordSaltFile = lib.mkOption {
+        type = lib.types.path;
+        default = config.sops.secrets.gitlab_active_record_salt.path;
+        description = "Path to GitLab Active Record salt file";
+      };
     };
 
     # Homepage dashboard integration
@@ -89,6 +107,9 @@ in {
         otpFile = cfg.secrets.otpFile;
         dbFile = cfg.secrets.dbFile;
         jwsFile = cfg.secrets.jwsFile;
+        activeRecordPrimaryKeyFile = cfg.secrets.activeRecordPrimaryKeyFile;
+        activeRecordDeterministicKeyFile = cfg.secrets.activeRecordDeterministicKeyFile;
+        activeRecordSaltFile = cfg.secrets.activeRecordSaltFile;
       };
     };
 
