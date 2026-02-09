@@ -25,14 +25,14 @@
   };
 
   networking.networkmanager.enable = true;
-  
+
   # Firewall configuration - allow local network and Tailscale
   networking.firewall = {
     enable = true;
     # Trust Tailscale interface - all Tailscale traffic allowed
-    trustedInterfaces = [ "tailscale0" ];
+    trustedInterfaces = ["tailscale0"];
     # Allow Tailscale UDP for connection establishment
-    allowedUDPPorts = [ 41641 ];
+    allowedUDPPorts = [41641];
     # Note: HTTP port 80 opened by homelab module when reverse proxy enabled
   };
 
