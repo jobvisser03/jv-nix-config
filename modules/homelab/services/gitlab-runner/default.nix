@@ -78,6 +78,13 @@ in {
     # We use Podman with dockerSocket instead
     virtualisation.docker.enable = lib.mkForce false;
 
+    # Ensure gitlab-runner starts after podman socket is ready and has access
+    systemd.services.gitlab-runner = {
+      after = ["podman.socket"];
+      requires = ["podman.socket"];
+      serviceConfig.SupplementaryGroups = ["podman"];
+    };
+
     # Create a combined auth config file that includes both URL and token
     # The token file from sops contains only CI_SERVER_TOKEN
     # We need to add CI_SERVER_URL for the registration to work
@@ -119,6 +126,11 @@ in {
             "/nix/var/nix/daemon-socket:/nix/var/nix/daemon-socket:ro"
           ];
           dockerDisableCache = true;
+          registrationFlags = [
+            # Use Podman socket directly instead of Docker socket
+            "--docker-host"
+            "unix:///run/podman/podman.sock"
+          ];
           preBuildScript = pkgs.writeScript "setup-nix-container" ''
             mkdir -p -m 0755 /nix/var/log/nix/drvs
             mkdir -p -m 0755 /nix/var/nix/gcroots
