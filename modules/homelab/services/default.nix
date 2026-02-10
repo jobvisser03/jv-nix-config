@@ -25,6 +25,7 @@ in {
     ./homepage
     ./radicale
     ./homeassistant
+    ./paperless-ngx
     ./rclone
   ];
 

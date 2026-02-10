@@ -87,6 +87,12 @@
       gitlab_runner_registration = {
         mode = "0444";
       };
+
+      # Paperless-ngx admin password
+      # Used as the initial admin user password
+      paperless_admin_password = {
+        mode = "0444";
+      };
     };
   };
 }

@@ -81,6 +81,11 @@
       passwordFile = config.sops.secrets.radicale_htpasswd.path;
     };
 
+    services.paperless = {
+      enable = true;
+      passwordFile = config.sops.secrets.paperless_admin_password.path;
+    };
+
     services.homeassistant = {
       enable = true;
       zigbee2mqtt = {
