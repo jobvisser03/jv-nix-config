@@ -31,6 +31,7 @@
       "keepassxc"
       "slack"
       "obs"
+      "opencode-desktop"
     ];
     taps = ["hashicorp/tap"];
   };
