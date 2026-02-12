@@ -49,11 +49,7 @@
     };
   };
 
-  users.users.job = {
-    isNormalUser = true;
-    extraGroups = ["wheel" "video" "audio" "networkmanager"];
-    shell = pkgs.zsh;
-  };
+
 
   services.openssh.enable = true;
 
