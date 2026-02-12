@@ -10,6 +10,8 @@ in {
   wayland.windowManager.hyprland = {
     systemd.enable = false;
     enable = true;
+    package = null;
+    portalPackage = null;
     extraConfig = ''
       bind = , Print, exec, grim -g "$(slurp)" - | wl-copy | dunstify "Screenshot of the region copied" -t 1000 # screenshot of a region
       	bind = SUPER, Print, exec, grim -g "$(slurp)" - | wl-copy && wl-paste > ~/Pictures/Screenshots/Screenshot-$(date +%F_%T).png | dunstify "Screenshot of whole screen saved" -t 1000 # screenshot of the whole screen
@@ -37,8 +39,8 @@ in {
       # KEYBOARD AND TOUCHPAD
       input = {
         kb_layout = "nl";
-        # Swaps Left Super with Left Ctrl
-        kb_options = ctrl:swap_lwin_lctl;
+        # Swaps Left Super with Left Ctrl, and Caps with Escape
+        kb_options = "ctrl:swap_lwin_lctl,caps:swapescape";
         follow_mouse = 1;
         touchpad = {
           tap-and-drag = true;
@@ -49,6 +51,11 @@ in {
         repeat_rate = 50;
         accel_profile = "adaptive";
       };
+
+      env = [
+        "ELECTRON_OZONE_PLATFORM_HINT,auto"
+        "ELECTRON_ENABLE_WAYLAND,1"
+      ];
 
       ecosystem = {
         no_donation_nag = true;
@@ -65,7 +72,7 @@ in {
       # DECORATION
       decoration = {
         rounding = 5;
-        active_opacity = 0.9;
+        active_opacity = 0.99;
         inactive_opacity = 0.9;
         fullscreen_opacity = 0.9;
         blur = {
@@ -95,11 +102,6 @@ in {
         ];
       };
 
-      # GESTURES
-      # gestures = {
-      #   workspace_swipe = true;
-      # };
-
       # MASTER
       master = {
         new_status = "master";
@@ -118,16 +120,18 @@ in {
       bind = [
         # PROGRAM BINDS
         "$mod, Q, exec, kitty"
+        "$mod, T, exec, kitty"
         "$mod, C, killactive"
         "$mod, M, exit"
         "$mod, E, exec, nautilus"
-        "$mod, F, togglefloating"
+        "$mod, F, exec, firefox"
+        "$mod SHIFT, F, togglefloating"
         "$mod, R, exec, rofi -show drun"
+        "$mod, D, exec, rofi -show drun"
         "$mod, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
         "$mod, P, pseudo, #dwindle"
         "$mod, J, togglesplit, #dwindle"
-
-        # HYPRSHOT
+        "$mod SHIFT, Q, exit"
 
         # MOVEFOCUS
         "$mod, left, movefocus, l"
@@ -161,7 +165,6 @@ in {
 
         # SPECIAL WORKSPACE
         "$mod, S, togglespecialworkspace, magic"
-        #"$mod SHIFT, S movetoworkspace, special:magic"
 
         # SCROLL WORKSPACES
         "$mod, mouse_down, workspace, e+1"

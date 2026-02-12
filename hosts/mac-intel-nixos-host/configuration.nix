@@ -6,6 +6,7 @@
   lib,
   pkgs,
   inputs,
+  username,
   ...
 }: {
   imports = [
@@ -66,7 +67,7 @@
   };
 
   # Host-specific user packages
-  users.users.job.packages = with pkgs; [
+  users.users.${username}.packages = with pkgs; [
     tree
   ];
 

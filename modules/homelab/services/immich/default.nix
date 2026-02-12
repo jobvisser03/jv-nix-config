@@ -9,14 +9,18 @@
 
   # Convert mount paths to systemd unit names for rclone service dependencies
   # e.g., "pcloud-photos" -> "rclone-pcloud-photos.service"
-  externalLibraryServices = map (dir:
-    let
-      # Find which rclone mount corresponds to this directory
-      matchingMounts = lib.filterAttrs (_: mount: mount.mountpoint == dir) config.homelab.services.rclone.mounts;
-      mountNames = lib.attrNames matchingMounts;
-    in
-      if mountNames != [] then "rclone-${lib.head mountNames}.service" else null
-  ) cfg.externalLibraryDirs;
+  externalLibraryServices =
+    map (
+      dir: let
+        # Find which rclone mount corresponds to this directory
+        matchingMounts = lib.filterAttrs (_: mount: mount.mountpoint == dir) config.homelab.services.rclone.mounts;
+        mountNames = lib.attrNames matchingMounts;
+      in
+        if mountNames != []
+        then "rclone-${lib.head mountNames}.service"
+        else null
+    )
+    cfg.externalLibraryDirs;
 
   # Filter out nulls (directories that aren't rclone mounts)
   rcloneServiceDeps = lib.filter (x: x != null) externalLibraryServices;
@@ -79,7 +83,7 @@ in {
     services.immich = {
       enable = true;
       # Use internal port when reverse proxy is enabled to avoid port conflict
-      port = 
+      port =
         if homelab.services.enableReverseProxy
         then cfg.port + 10000
         else cfg.port;

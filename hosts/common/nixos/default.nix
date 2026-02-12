@@ -3,6 +3,7 @@
   config,
   pkgs,
   lib,
+  username,
   ...
 }: {
   time.timeZone = lib.mkDefault "Europe/Amsterdam";
@@ -30,7 +31,7 @@
   # Default greetd initial session for Hyprland
   services.greetd.settings.initial_session = {
     command = lib.mkDefault "Hyprland";
-    user = lib.mkDefault "job";
+    user = lib.mkDefault username;
   };
 
   # Tailscale VPN for secure external access
@@ -39,7 +40,7 @@
     useRoutingFeatures = lib.mkDefault "client";
   };
 
-  users.users.job = {
+  users.users.${username} = {
     isNormalUser = lib.mkDefault true;
     extraGroups = lib.mkDefault ["wheel" "video" "audio" "networkmanager"];
     shell = lib.mkForce pkgs.zsh;

@@ -3,6 +3,7 @@
   pkgs,
   lib,
   inputs,
+  username,
   ...
 }: {
   imports = [
@@ -48,8 +49,6 @@
       workstation = true;
     };
   };
-
-
 
   services.openssh.enable = true;
 
@@ -111,7 +110,7 @@
         };
         pcloud-keepass = {
           remote = "pcloud:keepass-vault";
-          mountpoint = "/home/job/pcloud/keepass-vault";
+          mountpoint = "/home/${username}/pcloud/keepass-vault";
           cacheMode = "writes";
           readOnly = false;
           uid = 1000;

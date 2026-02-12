@@ -142,34 +142,34 @@ in {
         User = "root";
       };
       script = ''
-        CONFIG_FILE="${cfg.mosquitto.configDir}/config/mosquitto.conf"
+                CONFIG_FILE="${cfg.mosquitto.configDir}/config/mosquitto.conf"
 
-        # Create Mosquitto config
-        cat > "$CONFIG_FILE" << 'MQTTCONFIG'
-# Mosquitto MQTT Broker Configuration - managed by NixOS
-# Listen on all interfaces for container networking
-listener ${toString cfg.mosquitto.port} 0.0.0.0
+                # Create Mosquitto config
+                cat > "$CONFIG_FILE" << 'MQTTCONFIG'
+        # Mosquitto MQTT Broker Configuration - managed by NixOS
+        # Listen on all interfaces for container networking
+        listener ${toString cfg.mosquitto.port} 0.0.0.0
 
-# WebSocket listener
-listener ${toString cfg.mosquitto.websocketPort} 0.0.0.0
-protocol websockets
+        # WebSocket listener
+        listener ${toString cfg.mosquitto.websocketPort} 0.0.0.0
+        protocol websockets
 
-# Allow anonymous connections (local network only)
-allow_anonymous true
+        # Allow anonymous connections (local network only)
+        allow_anonymous true
 
-# Persistence
-persistence true
-persistence_location /mosquitto/data/
+        # Persistence
+        persistence true
+        persistence_location /mosquitto/data/
 
-# Logging
-log_dest file /mosquitto/log/mosquitto.log
-log_dest stdout
-MQTTCONFIG
+        # Logging
+        log_dest file /mosquitto/log/mosquitto.log
+        log_dest stdout
+        MQTTCONFIG
 
-        # Ensure proper permissions
-        chown ${homelab.user}:${homelab.group} "$CONFIG_FILE"
-        chmod 644 "$CONFIG_FILE"
-        echo "Mosquitto config deployed to $CONFIG_FILE"
+                # Ensure proper permissions
+                chown ${homelab.user}:${homelab.group} "$CONFIG_FILE"
+                chmod 644 "$CONFIG_FILE"
+                echo "Mosquitto config deployed to $CONFIG_FILE"
       '';
     };
 
@@ -188,62 +188,62 @@ MQTTCONFIG
         User = "root";
       };
       script = ''
-        CONFIG_FILE="${cfg.configDir}/configuration.yaml"
-        REVERSE_PROXY_CONFIG="${cfg.configDir}/reverse_proxy.yaml"
-        REVERSE_PROXY_MARKER="# Reverse proxy configuration - managed by NixOS"
-        INCLUDE_LINE="http: !include reverse_proxy.yaml"
+                CONFIG_FILE="${cfg.configDir}/configuration.yaml"
+                REVERSE_PROXY_CONFIG="${cfg.configDir}/reverse_proxy.yaml"
+                REVERSE_PROXY_MARKER="# Reverse proxy configuration - managed by NixOS"
+                INCLUDE_LINE="http: !include reverse_proxy.yaml"
 
-        # Copy the reverse proxy configuration file
-        # Note: This file is included via "http: !include reverse_proxy.yaml"
-        # so it should contain the CONTENTS of the http section, not the http: key itself
-        cat > "$REVERSE_PROXY_CONFIG" << 'PROXYCONFIG'
-# Reverse proxy configuration - managed by NixOS
-use_x_forwarded_for: true
-trusted_proxies:
-  - 10.88.0.0/16
-  - 10.89.0.0/16
-  - 127.0.0.1
-  - ::1
-PROXYCONFIG
+                # Copy the reverse proxy configuration file
+                # Note: This file is included via "http: !include reverse_proxy.yaml"
+                # so it should contain the CONTENTS of the http section, not the http: key itself
+                cat > "$REVERSE_PROXY_CONFIG" << 'PROXYCONFIG'
+        # Reverse proxy configuration - managed by NixOS
+        use_x_forwarded_for: true
+        trusted_proxies:
+          - 10.88.0.0/16
+          - 10.89.0.0/16
+          - 127.0.0.1
+          - ::1
+        PROXYCONFIG
 
-        # Ensure proper permissions
-        chown ${homelab.user}:${homelab.group} "$REVERSE_PROXY_CONFIG"
-        chmod 644 "$REVERSE_PROXY_CONFIG"
+                # Ensure proper permissions
+                chown ${homelab.user}:${homelab.group} "$REVERSE_PROXY_CONFIG"
+                chmod 644 "$REVERSE_PROXY_CONFIG"
 
-        # Check if configuration.yaml exists
-        if [ ! -f "$CONFIG_FILE" ]; then
-          # Create new configuration.yaml with default config and include
-          echo "default_config:" > "$CONFIG_FILE"
-          echo "" >> "$CONFIG_FILE"
-          echo "$REVERSE_PROXY_MARKER" >> "$CONFIG_FILE"
-          echo "$INCLUDE_LINE" >> "$CONFIG_FILE"
-          echo "Created new configuration.yaml with reverse proxy include"
-        elif ! grep -q "reverse_proxy.yaml" "$CONFIG_FILE" 2>/dev/null; then
-          # Check if http section already exists
-          if grep -q "^http:" "$CONFIG_FILE" 2>/dev/null; then
-            # Backup original
-            cp "$CONFIG_FILE" "$CONFIG_FILE.backup.$(date +%s)"
-            # Remove existing http section and replace with include
-            sed -i '/^http:/,/^[^ ]/ { /^http:/d; /^[^ ]/!d; }' "$CONFIG_FILE"
-            # Add the include
-            echo "" >> "$CONFIG_FILE"
-            echo "$REVERSE_PROXY_MARKER" >> "$CONFIG_FILE"
-            echo "$INCLUDE_LINE" >> "$CONFIG_FILE"
-            echo "Replaced http section with reverse proxy include in configuration.yaml"
-          else
-            # Just append the include
-            echo "" >> "$CONFIG_FILE"
-            echo "$REVERSE_PROXY_MARKER" >> "$CONFIG_FILE"
-            echo "$INCLUDE_LINE" >> "$CONFIG_FILE"
-            echo "Added reverse proxy include to configuration.yaml"
-          fi
-        else
-          echo "Reverse proxy include already present in configuration.yaml"
-        fi
+                # Check if configuration.yaml exists
+                if [ ! -f "$CONFIG_FILE" ]; then
+                  # Create new configuration.yaml with default config and include
+                  echo "default_config:" > "$CONFIG_FILE"
+                  echo "" >> "$CONFIG_FILE"
+                  echo "$REVERSE_PROXY_MARKER" >> "$CONFIG_FILE"
+                  echo "$INCLUDE_LINE" >> "$CONFIG_FILE"
+                  echo "Created new configuration.yaml with reverse proxy include"
+                elif ! grep -q "reverse_proxy.yaml" "$CONFIG_FILE" 2>/dev/null; then
+                  # Check if http section already exists
+                  if grep -q "^http:" "$CONFIG_FILE" 2>/dev/null; then
+                    # Backup original
+                    cp "$CONFIG_FILE" "$CONFIG_FILE.backup.$(date +%s)"
+                    # Remove existing http section and replace with include
+                    sed -i '/^http:/,/^[^ ]/ { /^http:/d; /^[^ ]/!d; }' "$CONFIG_FILE"
+                    # Add the include
+                    echo "" >> "$CONFIG_FILE"
+                    echo "$REVERSE_PROXY_MARKER" >> "$CONFIG_FILE"
+                    echo "$INCLUDE_LINE" >> "$CONFIG_FILE"
+                    echo "Replaced http section with reverse proxy include in configuration.yaml"
+                  else
+                    # Just append the include
+                    echo "" >> "$CONFIG_FILE"
+                    echo "$REVERSE_PROXY_MARKER" >> "$CONFIG_FILE"
+                    echo "$INCLUDE_LINE" >> "$CONFIG_FILE"
+                    echo "Added reverse proxy include to configuration.yaml"
+                  fi
+                else
+                  echo "Reverse proxy include already present in configuration.yaml"
+                fi
 
-        # Ensure proper permissions on configuration.yaml
-        chown ${homelab.user}:${homelab.group} "$CONFIG_FILE"
-        chmod 644 "$CONFIG_FILE"
+                # Ensure proper permissions on configuration.yaml
+                chown ${homelab.user}:${homelab.group} "$CONFIG_FILE"
+                chmod 644 "$CONFIG_FILE"
       '';
     };
 

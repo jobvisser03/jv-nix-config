@@ -1,6 +1,4 @@
-{
-  ...
-}: {
+{...}: {
   programs = {
     awscli.enable = true;
     bat.enable = true;

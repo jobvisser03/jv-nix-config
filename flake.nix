@@ -50,16 +50,46 @@
     nixos-hardware,
     stylix,
     ...
-  } @ inputs: {
-    formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
+  } @ inputs: let
+    # Centralized user configuration
+    users = {
+      personal = {
+        username = "job";
+        homeDirectory = {
+          linux = "/home/job";
+          darwin = "/Users/job";
+        };
+      };
+      work = {
+        username = "job.visser";
+        homeDirectory = {
+          darwin = "/Users/job.visser";
+        };
+      };
+    };
+  in {
+    formatter = {
+      x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
+      aarch64-darwin = nixpkgs.legacyPackages.aarch64-darwin.alejandra;
+      x86_64-darwin = nixpkgs.legacyPackages.x86_64-darwin.alejandra;
+    };
 
     darwinConfigurations."mac-intel-host" = darwin.lib.darwinSystem {
+      specialArgs = {
+        inherit inputs;
+        username = users.personal.username;
+      };
       modules = [
         ./hosts/common/darwin
         ./hosts/mac-intel-host/system.nix
       ];
     };
+
     darwinConfigurations."mac-apple-silicon-host" = darwin.lib.darwinSystem {
+      specialArgs = {
+        inherit inputs;
+        username = users.work.username;
+      };
       modules = [
         ./hosts/common/darwin
         ./hosts/mac-apple-silicon-host/system.nix
@@ -68,42 +98,48 @@
 
     nixosConfigurations.mac-intel-nixos-host = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = {inherit inputs;};
+      specialArgs = {
+        inherit inputs;
+        username = users.personal.username;
+      };
       modules = [
         inputs.stylix.nixosModules.stylix
         ./hosts/mac-intel-nixos-host/configuration.nix
         nixos-hardware.nixosModules.apple-t2
         inputs.home-manager.nixosModules.home-manager
-        {
+        ({config, ...}: {
           home-manager.useGlobalPkgs = false;
           home-manager.useUserPackages = true;
           home-manager.extraSpecialArgs = {inherit inputs;};
-          home-manager.users.job.imports = [./home/shared-home.nix ./home/home-nixos.nix];
+          home-manager.users.${users.personal.username}.imports = [./home/shared-home.nix ./home/home-nixos.nix];
           home-manager.backupFileExtension = "hm-backup";
-        }
+        })
       ];
     };
 
     nixosConfigurations.linux-larkbox-host = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = {inherit inputs;};
+      specialArgs = {
+        inherit inputs;
+        username = users.personal.username;
+      };
       modules = [
         inputs.sops-nix.nixosModules.sops
         inputs.stylix.nixosModules.stylix
         ./hosts/linux-larkbox-host/configuration.nix
         nixos-hardware.nixosModules.aoostar-r1-n100
         inputs.home-manager.nixosModules.home-manager
-        {
+        ({config, ...}: {
           home-manager.useGlobalPkgs = false;
           home-manager.useUserPackages = true;
           home-manager.extraSpecialArgs = {inherit inputs;};
-          home-manager.users.job.imports = [
+          home-manager.users.${users.personal.username}.imports = [
             ./home/shared-home.nix
             ./home/home-nixos.nix
             ./hosts/linux-larkbox-host/home.nix
           ];
           home-manager.backupFileExtension = "hm-backup";
-        }
+        })
       ];
     };
 
@@ -115,8 +151,8 @@
           ./home/shared-home.nix
           ./home/home-mac.nix
           {
-            home.username = "job.visser";
-            home.homeDirectory = "/Users/job.visser";
+            home.username = users.work.username;
+            home.homeDirectory = users.work.homeDirectory.darwin;
           }
         ];
         extraSpecialArgs = {inherit inputs;};
@@ -128,8 +164,8 @@
           ./home/shared-home.nix
           ./home/home-mac.nix
           {
-            home.username = "job";
-            home.homeDirectory = "/Users/job";
+            home.username = users.personal.username;
+            home.homeDirectory = users.personal.homeDirectory.darwin;
           }
         ];
         extraSpecialArgs = {inherit inputs;};

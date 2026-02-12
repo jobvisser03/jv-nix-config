@@ -102,12 +102,12 @@ in {
       enable = true;
       databasePasswordFile = cfg.secrets.databasePasswordFile;
       initialRootPasswordFile = cfg.secrets.initialRootPasswordFile;
-      
+
       # Configure GitLab to know its external URL
       host = homelab.hostname;
       port = cfg.port;
       https = false;
-      
+
       secrets = {
         secretFile = cfg.secrets.secretFile;
         otpFile = cfg.secrets.otpFile;

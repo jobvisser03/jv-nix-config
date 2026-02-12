@@ -109,7 +109,7 @@
   gmc = "git merge --continue";
 
   grb = "git rebase";
-  grba = "gir rebase --abort";
+  grba = "git rebase --abort";
   grbc = "git rebase --continue";
   grbi = "git rebase --interactive";
 

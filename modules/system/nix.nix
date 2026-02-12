@@ -1,12 +1,16 @@
-{config, ...}: {
+{
+  config,
+  username,
+  ...
+}: {
   nix.settings = {
     experimental-features = [
       "nix-command"
       "flakes"
     ];
 
-    # Allow job user to use nix commands
-    trusted-users = ["root" config.users.users.job.name "job.visser"];
+    # Allow the configured user to use nix commands
+    trusted-users = ["root" username];
 
     # Enable builders to use substitutes
     builders-use-substitutes = true;

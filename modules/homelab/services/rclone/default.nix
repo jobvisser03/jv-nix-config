@@ -122,75 +122,74 @@ in {
     };
 
     # Create a systemd service for each mount
-    systemd.services =
-      lib.mapAttrs' (name: mount: let
-        # Convert mount paths to systemd unit names using systemd-escape
-        # e.g., /mnt/usb-drive -> mnt-usb\x2ddrive.mount
-        pathToUnit = path: let
-          # Remove leading slash, replace / with -, escape special chars like - to \x2d
-          cleaned = lib.removePrefix "/" path;
-          # Systemd escapes - as \x2d in path components (but not the separators)
-          parts = lib.splitString "/" cleaned;
-          escapedParts = map (part: builtins.replaceStrings ["-"] ["\\x2d"] part) parts;
-          escaped = lib.concatStringsSep "-" escapedParts;
-        in "${escaped}.mount";
-        requiredMountUnits = map pathToUnit mount.requiredMounts;
-      in
-        lib.nameValuePair "rclone-${name}" {
-          description = "rclone mount: ${name} (${mount.remote} -> ${mount.mountpoint})";
-          after = ["network-online.target" "sops-nix.service"] ++ requiredMountUnits;
-          wants = ["network-online.target"];
-          requires = requiredMountUnits;
-          # Pulled in via rclone-mounts.target which is wanted by multi-user.target
-          wantedBy = [];
-          partOf = ["rclone-mounts.target"];
+    systemd.services = lib.mapAttrs' (name: mount: let
+      # Convert mount paths to systemd unit names using systemd-escape
+      # e.g., /mnt/usb-drive -> mnt-usb\x2ddrive.mount
+      pathToUnit = path: let
+        # Remove leading slash, replace / with -, escape special chars like - to \x2d
+        cleaned = lib.removePrefix "/" path;
+        # Systemd escapes - as \x2d in path components (but not the separators)
+        parts = lib.splitString "/" cleaned;
+        escapedParts = map (part: builtins.replaceStrings ["-"] ["\\x2d"] part) parts;
+        escaped = lib.concatStringsSep "-" escapedParts;
+      in "${escaped}.mount";
+      requiredMountUnits = map pathToUnit mount.requiredMounts;
+    in
+      lib.nameValuePair "rclone-${name}" {
+        description = "rclone mount: ${name} (${mount.remote} -> ${mount.mountpoint})";
+        after = ["network-online.target" "sops-nix.service"] ++ requiredMountUnits;
+        wants = ["network-online.target"];
+        requires = requiredMountUnits;
+        # Pulled in via rclone-mounts.target which is wanted by multi-user.target
+        wantedBy = [];
+        partOf = ["rclone-mounts.target"];
 
-          # Wait for sops-nix to create the config file before starting
-          # This prevents the service from failing during nixos-rebuild switch
-          unitConfig = {
-            ConditionPathExists = cfg.configFile;
-          };
+        # Wait for sops-nix to create the config file before starting
+        # This prevents the service from failing during nixos-rebuild switch
+        unitConfig = {
+          ConditionPathExists = cfg.configFile;
+        };
 
-          serviceConfig = {
-            Type = "notify";
-            # Unmount any stale FUSE mount before starting (ignore errors if not mounted)
-            ExecStartPre = [
-              "${pkgs.coreutils}/bin/mkdir -p ${mount.mountpoint}"
-              "-${pkgs.fuse}/bin/fusermount -uz ${mount.mountpoint}"
-            ];
-            ExecStart = let
-              uidArg =
-                if mount.uid != null
-                then "--uid ${toString mount.uid}"
-                else "";
-              gidArg =
-                if mount.gid != null
-                then "--gid ${toString mount.gid}"
-                else "";
-              readOnlyArg =
-                if mount.readOnly
-                then "--read-only"
-                else "";
-              extraArgsStr = lib.concatStringsSep " " mount.extraArgs;
-            in ''
-              ${pkgs.rclone}/bin/rclone mount \
-                --config=${cfg.configFile} \
-                --vfs-cache-mode ${mount.cacheMode} \
-                --allow-other \
-                --allow-non-empty \
-                ${uidArg} \
-                ${gidArg} \
-                ${readOnlyArg} \
-                ${extraArgsStr} \
-                ${mount.remote} ${mount.mountpoint}
-            '';
-            ExecStop = "${pkgs.fuse}/bin/fusermount -uz ${mount.mountpoint}";
-            Restart = "on-failure";
-            RestartSec = "10s";
-            # Give rclone time to establish connection
-            TimeoutStartSec = "60s";
-          };
-        })
-      cfg.mounts;
+        serviceConfig = {
+          Type = "notify";
+          # Unmount any stale FUSE mount before starting (ignore errors if not mounted)
+          ExecStartPre = [
+            "${pkgs.coreutils}/bin/mkdir -p ${mount.mountpoint}"
+            "-${pkgs.fuse}/bin/fusermount -uz ${mount.mountpoint}"
+          ];
+          ExecStart = let
+            uidArg =
+              if mount.uid != null
+              then "--uid ${toString mount.uid}"
+              else "";
+            gidArg =
+              if mount.gid != null
+              then "--gid ${toString mount.gid}"
+              else "";
+            readOnlyArg =
+              if mount.readOnly
+              then "--read-only"
+              else "";
+            extraArgsStr = lib.concatStringsSep " " mount.extraArgs;
+          in ''
+            ${pkgs.rclone}/bin/rclone mount \
+              --config=${cfg.configFile} \
+              --vfs-cache-mode ${mount.cacheMode} \
+              --allow-other \
+              --allow-non-empty \
+              ${uidArg} \
+              ${gidArg} \
+              ${readOnlyArg} \
+              ${extraArgsStr} \
+              ${mount.remote} ${mount.mountpoint}
+          '';
+          ExecStop = "${pkgs.fuse}/bin/fusermount -uz ${mount.mountpoint}";
+          Restart = "on-failure";
+          RestartSec = "10s";
+          # Give rclone time to establish connection
+          TimeoutStartSec = "60s";
+        };
+      })
+    cfg.mounts;
   };
 }

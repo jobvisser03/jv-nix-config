@@ -25,7 +25,7 @@ in {
       description = ''
         Path to file containing the runner authentication token.
         Should contain: CI_SERVER_TOKEN=glrt-xxxxxxxxxxxxxxxxxxxx
-        
+
         Get token from GitLab: Admin > CI/CD > Runners > New instance runner
         Configure tags, protected status, etc. in GitLab UI when creating the runner.
       '';
