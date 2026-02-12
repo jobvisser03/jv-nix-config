@@ -57,14 +57,6 @@
 
   services.openssh.enable = true;
 
-  programs.vscodeRemoteSSH.enable = true;
-  programs.hyprland.enable = true;
-
-  services.greetd.settings.initial_session = {
-    command = "Hyprland";
-    user = "job";
-  };
-
   powerManagement.desktopMode = true;
   hardware.graphics.enable = true;
 

@@ -24,6 +24,15 @@
 
   programs.vscodeRemoteSSH.enable = lib.mkDefault true;
 
+  # Hyprland window manager
+  programs.hyprland.enable = lib.mkDefault true;
+
+  # Default greetd initial session for Hyprland
+  services.greetd.settings.initial_session = {
+    command = lib.mkDefault "Hyprland";
+    user = lib.mkDefault "job";
+  };
+
   # Tailscale VPN for secure external access
   services.tailscale = {
     enable = lib.mkDefault true;

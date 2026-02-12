@@ -12,6 +12,9 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
 
+    # Common NixOS configuration (shared with larkbox)
+    ../common/nixos
+
     # Common system modules
     ../../modules/system
 
@@ -21,12 +24,6 @@
 
   # Host-specific configuration
   networking.hostName = "job-mac-nixos";
-
-  # Time zone
-  time.timeZone = "Europe/Amsterdam";
-
-  # Locale
-  i18n.defaultLocale = "en_US.UTF-8";
 
   # Use the systemd-boot EFI boot loader.
   boot.loader = {
@@ -62,36 +59,16 @@
     }))
   ];
 
-  # Network configuration
-  networking.networkmanager.enable = true;
-
-  # Enable Avahi for mDNS (resolves .local hostnames like larkbox.local)
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-  };
-
   # Host-specific hardware settings
   hardware = {
     # Disable nvidia modesetting for this host
     nvidia.modesetting.enable = false;
   };
 
-  # Define user account specific to this host
-  users.users.job = {
-    isNormalUser = true;
-    extraGroups = ["wheel" "video" "audio" "networkmanager"];
-    packages = with pkgs; [
-      tree
-    ];
-    shell = pkgs.zsh;
-  };
-
-  # Host-specific greetd initial session
-  services.greetd.settings.initial_session = {
-    command = "Hyprland";
-    user = "job";
-  };
+  # Host-specific user packages
+  users.users.job.packages = with pkgs; [
+    tree
+  ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
