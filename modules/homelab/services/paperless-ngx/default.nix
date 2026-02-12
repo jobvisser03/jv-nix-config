@@ -91,6 +91,15 @@ in {
       };
     };
 
+    # Ensure paperless directories exist with correct ownership
+    # Using 'd' to create if missing, 'Z' to fix ownership recursively on existing dirs
+    systemd.tmpfiles.rules = [
+      "d ${cfg.mediaDir} 0755 ${homelab.user} ${homelab.group} -"
+      "d ${cfg.consumptionDir} 0755 ${homelab.user} ${homelab.group} -"
+      "Z ${cfg.mediaDir} 0755 ${homelab.user} ${homelab.group} -"
+      "Z ${cfg.consumptionDir} 0755 ${homelab.user} ${homelab.group} -"
+    ];
+
     # Open firewall for access
     networking.firewall.allowedTCPPorts = [cfg.port];
   };

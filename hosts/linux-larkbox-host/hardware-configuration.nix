@@ -30,7 +30,8 @@
 
   fileSystems."/mnt/usb-drive" = {
     device = "/dev/disk/by-label/Backup\\x20Plus";
-    fsType = "auto";
+    fsType = "exfat";
+    options = ["uid=992" "gid=987" "dmask=0002" "fmask=0002"];
   };
 
   swapDevices = [];
