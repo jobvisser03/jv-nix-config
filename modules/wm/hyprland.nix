@@ -193,7 +193,7 @@ in {
         "opaque on, match:class ^(zathura)$"
         "opaque on, match:class ^(libreoffice-writer)$"
         "opaque on, match:class ^(libreoffice-impress)$"
-        "suppressevent maximize, match:class ^(librewolf)$"
+        "suppress_event maximize, match:class ^(librewolf)$"
       ];
     };
   };
