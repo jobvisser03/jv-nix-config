@@ -15,8 +15,8 @@
     polarity = "dark";
     fonts = {
       sizes = {
-        desktop = 12;
-        applications = 12;
+        desktop = 18;
+        applications = 18;
       };
     };
     cursor = {

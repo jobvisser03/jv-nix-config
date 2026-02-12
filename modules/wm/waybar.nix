@@ -32,7 +32,7 @@ in {
         border: ${border.width} solid ${color.blu};
         border-radius: ${border.radius};
         color: ${color.blu};
-        font-size: 24px;
+        font-size: 16px;
         padding-left: 6px;
         padding-right: 12px;
         background-color: ${color.bg};

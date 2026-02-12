@@ -28,7 +28,7 @@ in {
 
       # MONITOR
       monitor = [
-        ", preferred, auto, 1.2"
+        ", preferred, auto, 1.33"
         "HDMI-A-1,preferred,auto, 1, mirror, eDP-1"
       ];
 
@@ -38,16 +38,16 @@ in {
 
       # KEYBOARD AND TOUCHPAD
       input = {
-        kb_layout = "nl";
+        kb_layout = "us";
         # Swaps Left Super with Left Ctrl, and Caps with Escape
-        kb_options = "ctrl:swap_lwin_lctl,caps:swapescape";
+        kb_options = "caps:swapescape";
         follow_mouse = 1;
         touchpad = {
           tap-and-drag = true;
-          natural_scroll = true;
+          natural_scroll = false;
         };
-        sensitivity = -1;
-        repeat_delay = 20;
+        sensitivity = 0.7;
+        repeat_delay = 300;
         repeat_rate = 50;
         accel_profile = "adaptive";
       };
@@ -128,8 +128,6 @@ in {
         "$mod SHIFT, F, togglefloating"
         "$mod, R, exec, rofi -show drun"
         "$mod, D, exec, rofi -show drun"
-        "$mod, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
-        "$mod, P, pseudo, #dwindle"
         "$mod, J, togglesplit, #dwindle"
         "$mod SHIFT, Q, exit"
 
@@ -162,22 +160,6 @@ in {
         "$mod SHIFT, 8, movetoworkspace, 8"
         "$mod SHIFT, 9, movetoworkspace, 9"
         "$mod SHIFT, 0, movetoworkspace, 10"
-
-        # SPECIAL WORKSPACE
-        "$mod, S, togglespecialworkspace, magic"
-
-        # SCROLL WORKSPACES
-        "$mod, mouse_down, workspace, e+1"
-        "$mod, mouse_up, workspace, e-1"
-
-        # SOUND
-        ",XF86AudioRaiseVolume, exec, pamixer -i 5"
-        ",XF86AudioLowerVolume, exec, pamixer -d 5"
-        ",XF86AudioMute, exec, pamixer -t"
-
-        # BRIGHTNESS
-        ",XF86MonBrightnessUp, exec, brightnessctl set +5%"
-        ",XF86MonBrightnessDown, exec, brightnessctl set 5%-"
       ];
 
       bindm = [
@@ -188,12 +170,6 @@ in {
       windowrule = [
         "opaque on, match:class ^(Emulator)$"
         "float on, match:class ^(Emulator)$"
-        "opaque on, match:class ^(brave-browser)$"
-        "opaque on, match:class ^(librewolf)$"
-        "opaque on, match:class ^(zathura)$"
-        "opaque on, match:class ^(libreoffice-writer)$"
-        "opaque on, match:class ^(libreoffice-impress)$"
-        "suppress_event maximize, match:class ^(librewolf)$"
       ];
     };
   };
