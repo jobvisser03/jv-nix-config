@@ -42,7 +42,7 @@
   users.users.job = {
     isNormalUser = lib.mkDefault true;
     extraGroups = lib.mkDefault ["wheel" "video" "audio" "networkmanager"];
-    shell = lib.mkDefault pkgs.zsh;
+    shell = lib.mkForce pkgs.zsh;
   };
 
   system.stateVersion = lib.mkDefault "25.11";
