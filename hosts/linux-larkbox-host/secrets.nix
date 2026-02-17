@@ -93,6 +93,18 @@
       paperless_admin_password = {
         mode = "0444";
       };
+
+      # Spotify OAuth credentials for spotify-player daemon
+      # To set up:
+      # 1. SSH to larkbox and run: spotify_player authenticate
+      # 2. Complete OAuth in browser
+      # 3. Copy ~/.cache/spotify-player/credentials.json content
+      # 4. Add to secrets/larkbox.yaml: sops secrets/larkbox.yaml
+      # 5. Uncomment credentialsFile in configuration.nix
+      spotify_credentials = {
+        mode = "0400";
+        path = "/run/secrets/spotify-player/credentials.json";
+      };
     };
   };
 }

@@ -27,6 +27,7 @@ in {
     ./homeassistant
     ./paperless-ngx
     ./rclone
+    ./spotify-player
   ];
 
   config = lib.mkIf (cfg.enable && cfg.services.enable) {

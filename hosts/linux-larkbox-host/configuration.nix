@@ -70,7 +70,7 @@
       enable = true;
       externalLibraryDirs = [
         "/mnt/usb-drive/PHOTOS-PCLOUD"
-        "/mnt/usb-drive/SMARTPHONE-PHOTOS-PCLOUD"
+        "[REDACTED]"
       ];
     };
 
@@ -108,7 +108,7 @@
         };
         pcloud-smartphone-photos = {
           remote = "pcloud:'Automatic Upload'";
-          mountpoint = "/mnt/usb-drive/SMARTPHONE-PHOTOS-PCLOUD";
+          mountpoint = "[REDACTED]";
           cacheMode = "minimal";
           readOnly = true;
           requiredMounts = ["/mnt/usb-drive"];
@@ -122,6 +122,13 @@
           gid = 100;
         };
       };
+    };
+
+    # Spotify Connect speaker - always-on Spotify playback
+    services.spotify-player = {
+      enable = true;
+      # Credentials will be set up after first manual authentication
+      # credentialsFile = config.sops.secrets.spotify_credentials.path;
     };
   };
 
