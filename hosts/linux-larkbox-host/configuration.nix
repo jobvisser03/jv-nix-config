@@ -70,7 +70,7 @@
       enable = true;
       externalLibraryDirs = [
         "/mnt/usb-drive/PHOTOS-PCLOUD"
-        "[REDACTED]"
+        "/mnt/usb-drive/SMARTPHONE-PHOTOS-PCLOUD"
       ];
     };
 
@@ -108,7 +108,7 @@
         };
         pcloud-smartphone-photos = {
           remote = "pcloud:'Automatic Upload'";
-          mountpoint = "[REDACTED]";
+          mountpoint = "/mnt/usb-drive/SMARTPHONE-PHOTOS-PCLOUD";
           cacheMode = "minimal";
           readOnly = true;
           requiredMounts = ["/mnt/usb-drive"];
