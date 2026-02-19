@@ -102,6 +102,9 @@
       # 4. Add to secrets/larkbox.yaml: sops secrets/larkbox.yaml
       # 5. Uncomment credentialsFile in configuration.nix
       spotify_credentials = {
+        # Must be readable by root for preStart script to copy it
+        owner = "root";
+        group = "root";
         mode = "0400";
         path = "/run/secrets/spotify-player/credentials.json";
       };
