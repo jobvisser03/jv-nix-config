@@ -16,6 +16,12 @@
     ../../modules/homelab
   ];
 
+  # Enable sudo for wheel group members (job user)
+  security.sudo = {
+    enable = true;
+    wheelNeedsPassword = true;
+  };
+
   networking.hostName = "larkbox";
   time.timeZone = "Europe/Amsterdam";
   i18n.defaultLocale = "en_US.UTF-8";

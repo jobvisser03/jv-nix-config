@@ -103,8 +103,7 @@
       # 5. Uncomment credentialsFile in configuration.nix
       spotify_credentials = {
         # Must be readable by root for preStart script to copy it
-        owner = "root";
-        group = "root";
+        group = "users";
         mode = "0400";
         path = "/run/secrets/spotify-player/credentials.json";
       };

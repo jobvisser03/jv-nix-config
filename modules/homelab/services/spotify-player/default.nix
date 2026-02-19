@@ -151,6 +151,7 @@ in {
           "/home/${username}/.cache/spotify-player"
           "/home/${username}/.config/spotify-player"
         ];
+        BindReadOnlyPaths = lib.optionals (cfg.credentialsFile != null) [cfg.credentialsFile];
         PrivateTmp = true;
       };
 
