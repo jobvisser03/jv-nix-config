@@ -127,8 +127,7 @@
     # Spotify Connect speaker - always-on Spotify playback
     services.spotify-player = {
       enable = true;
-      # Credentials will be set up after first manual authentication
-      # credentialsFile = config.sops.secrets.spotify_credentials.path;
+      credentialsFile = config.sops.secrets.spotify_credentials.path;
     };
   };
 
