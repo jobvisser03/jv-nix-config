@@ -1,0 +1,44 @@
+# Nix settings for NixOS - flakes, caches, trusted users
+{lib, ...}: {
+  flake.modules.nixos.nix-settings = {
+    config,
+    pkgs,
+    ...
+  }: {
+    nix.settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+
+      # Allow wheel group users to use nix commands
+      trusted-users = ["root" "@wheel"];
+
+      # Enable builders to use substitutes
+      builders-use-substitutes = true;
+
+      # Comprehensive list of substituters
+      substituters = [
+        "https://cache.nixos.org"
+        "https://cache.soopy.moe"
+        "https://nix-community.cachix.org"
+        "https://nixpkgs-unfree.cachix.org"
+      ];
+
+      # Mark additional substituters as trusted
+      trusted-substituters = [
+        "https://cache.soopy.moe"
+        "https://nix-community.cachix.org"
+        "https://nixpkgs-unfree.cachix.org"
+      ];
+
+      # Public keys for all substituters
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "cache.soopy.moe-1:0RZVsQeR+GOh0VQI9rvnHz55nVXkFardDqfm4+afjPo="
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        "nixpkgs-unfree.cachix.org-1:hqvoInulhbV4nJ9yJOEr+4wxhDV4xq2d1DK7S6Nj6rs="
+      ];
+    };
+  };
+}
