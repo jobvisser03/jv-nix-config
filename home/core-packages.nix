@@ -11,6 +11,7 @@
     material-design-icons
     nerd-fonts.caskaydia-cove
     nerd-fonts.fantasque-sans-mono
+    nerd-fonts.sauce-code-pro
     nil
     rsync
     nodejs_22
