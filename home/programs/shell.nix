@@ -87,12 +87,6 @@
               }
             ];
           }
-          # {
-          # 	type = "prompt";
-          # 	alignment = "right";
-          # 	segments = [
-          # 	];
-          # }
           {
             type = "prompt";
             newline = true;
@@ -114,9 +108,20 @@
             # alignment = "right";
             segments = [
               {
-                # template = "❄️nix-{{ .Type }}";
-                template = "  {{ .HostName }}";
+                template = "❄️ nix-{{ .Type }}";
                 type = "nix-shell";
+              }
+              {
+                type = "session";
+                style = "plain";
+                template = "{{ if .SSHSession }} {{ end }}  {{ .HostName }}";
+              }
+              {
+                type = "python";
+                style = "plain";
+                foreground = "#ffd43b";
+                background = "#306998";
+                template = "  {{ .Full }} ";
               }
               {
                 type = "executiontime";

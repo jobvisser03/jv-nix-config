@@ -8,7 +8,7 @@ config:set_strict_mode(true)
 
 -- config.font = wezterm.font 'CaskaydiaCove Nerd Font'
 config.font = wezterm.font 'SauceCodePro Nerd Font'
-config.font_size = 15
+config.font_size = 16
 -- config.color_scheme = 'Catppuccin Mocha (Gogh)'
 -- config.color_scheme = 'Earthsong (Gogh)'
 config.color_scheme = 'Cobalt Neon (Gogh)'
@@ -28,7 +28,7 @@ config.window_decorations = 'INTEGRATED_BUTTONS|RESIZE'
 config.window_frame = {
   -- font = wezterm.font { family = 'CaskaydiaCove Nerd Font', weight = 'Bold' },
   font = wezterm.font { family = 'SauceCodePro Nerd Font', weight = 'Bold' },
-  font_size = 14.0,
+  font_size = 16.0,
   active_titlebar_bg = TITLEBAR_COLOR,
   inactive_titlebar_bg = TITLEBAR_COLOR,
 }
