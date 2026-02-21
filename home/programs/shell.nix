@@ -105,23 +105,25 @@
           }
           {
             type = "rprompt";
-            # alignment = "right";
             segments = [
-              # {
-              #   template = "❄️ nix-{{ .Type }}";
-              #   type = "nix-shell";
-              # }
+              {
+                type = "nix-shell";
+                template = "{{ if .Env.name }} {{ if eq .Type \"pure\" }} {{ end }}{{ .Env.name }}{{ end }}";
+              }
               {
                 type = "session";
                 style = "plain";
-                template = "{{ if .SSHSession }} {{ end }}  {{ .HostName }}";
+                template = "{{ if .SSHSession }}  {{ end }}   {{ .HostName }}";
               }
               {
                 type = "python";
                 style = "plain";
                 foreground = "#ffd43b";
                 background = "#306998";
-                template = "  {{ .Full }} ";
+                template = builtins.concatStringsSep "" [
+                  "  {{ .Full }}"
+                  "{{ if .Venv }} ({{ .Venv }}){{ end }}"
+                ];
               }
               {
                 type = "executiontime";
