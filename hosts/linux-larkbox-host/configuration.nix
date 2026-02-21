@@ -19,7 +19,7 @@
   # Enable sudo for wheel group members (job user)
   security.sudo = {
     enable = true;
-    wheelNeedsPassword = true;
+    wheelNeedsPassword = false;
   };
 
   networking.hostName = "larkbox";
