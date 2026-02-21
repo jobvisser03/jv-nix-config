@@ -164,9 +164,6 @@ in {
       '';
     };
 
-    # Add user to audio group
-    users.users.${username}.extraGroups = ["audio"];
-
     # Avahi is already enabled on larkbox for mDNS discovery
     # Spotify Connect uses mDNS (UDP 5353) which is handled by Avahi
 
