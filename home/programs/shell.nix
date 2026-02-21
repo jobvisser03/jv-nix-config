@@ -118,8 +118,8 @@
               {
                 type = "python";
                 style = "plain";
-                foreground = "#ffd43b";
-                background = "#306998";
+                # foreground = "#ffd43b";
+                # background = "#306998";
                 template = builtins.concatStringsSep "" [
                   "  {{ .Full }}"
                   "{{ if .Venv }} ({{ .Venv }}){{ end }}"
