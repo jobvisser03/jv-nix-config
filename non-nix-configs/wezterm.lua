@@ -10,7 +10,8 @@ config:set_strict_mode(true)
 config.font = wezterm.font 'SauceCodePro Nerd Font'
 config.font_size = 15
 -- config.color_scheme = 'Catppuccin Mocha (Gogh)'
-config.color_scheme = 'Earthsong (Gogh)'
+-- config.color_scheme = 'Earthsong (Gogh)'
+config.color_scheme = 'Cobalt Neon (Gogh)'
 config.colors = {
   split = wezterm.color.get_builtin_schemes()[config.color_scheme].ansi[2],
 }
