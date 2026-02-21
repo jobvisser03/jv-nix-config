@@ -107,10 +107,10 @@
             type = "rprompt";
             # alignment = "right";
             segments = [
-              {
-                template = "❄️ nix-{{ .Type }}";
-                type = "nix-shell";
-              }
+              # {
+              #   template = "❄️ nix-{{ .Type }}";
+              #   type = "nix-shell";
+              # }
               {
                 type = "session";
                 style = "plain";
