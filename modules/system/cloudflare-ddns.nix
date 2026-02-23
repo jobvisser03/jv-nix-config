@@ -1,8 +1,12 @@
-{ config, lib, pkgs, ... }:
-let
-  cfg = config.services.cloudflare-ddns;
-in
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  service = "cloudflare-ddns";
+  cfg = config.services.cloudflare-ddns;
+in {
   options.services.cloudflare-ddns = {
     enable = lib.mkEnableOption "Cloudflare Dynamic DNS updater";
 
@@ -84,7 +88,7 @@ in
 
     systemd.timers.${service} = {
       description = "Cloudflare DDNS";
-      wantedBy = [ "timers.target" ];
+      wantedBy = ["timers.target"];
       timerConfig = {
         OnCalendar = cfg.onCalendar;
         Unit = "${service}.service";
