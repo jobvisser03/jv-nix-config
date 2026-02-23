@@ -25,6 +25,7 @@ in {
   };
 
   imports = [
+    ./cloudflare-ddns
     ./gitlab
     ./gitlab-runner
     ./immich
@@ -39,10 +40,11 @@ in {
 
   config = lib.mkIf (cfg.enable && cfg.services.enable) {
     # Open firewall for HTTP/HTTPS when reverse proxy is enabled
-    networking.firewall.allowedTCPPorts =
-      lib.mkIf cfg.services.enableReverseProxy (
-        if cfg.services.enablePublicHttps then [80 443] else [80]
-      );
+    networking.firewall.allowedTCPPorts = lib.mkIf cfg.services.enableReverseProxy (
+      if cfg.services.enablePublicHttps
+      then [80 443]
+      else [80]
+    );
 
     # Caddy reverse proxy
     services.caddy = lib.mkIf cfg.services.enableReverseProxy {
