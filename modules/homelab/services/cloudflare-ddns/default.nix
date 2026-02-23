@@ -90,7 +90,7 @@ in {
       description = "Cloudflare DDNS";
       wantedBy = ["timers.target"];
       timerConfig = {
-        OnCalendar = cfg.onCalendar;
+        OnUnitActiveSec = cfg.interval;
         Unit = "${service}.service";
       };
     };
