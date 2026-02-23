@@ -146,7 +146,7 @@
       zoneId = "8d43a62314697fa92a98e8b77e771434";
       recordName = "homelab.dutchdataworks.nl";
       tokenFile = config.sops.secrets.cloudflare_ddns_token.path;
-      onCalendar = "minutely";
+      # onCalendar = "minutely";
     };
   };
 
