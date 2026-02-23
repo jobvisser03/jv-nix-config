@@ -17,7 +17,7 @@ in {
 
     recordName = lib.mkOption {
       type = lib.types.str;
-      description = "Fully qualified DNS record name to update (e.g. home.dutchdataworks.nl)";
+      description = "Fully qualified DNS record name to update (e.g. homelab.dutchdataworks.nl)";
     };
 
     tokenFile = lib.mkOption {
@@ -25,10 +25,10 @@ in {
       description = "Path to file containing Cloudflare API token";
     };
 
-    interval = lib.mkOption {
+    onCalendar = lib.mkOption {
       type = lib.types.str;
-      default = "5min";
-      description = "How often to run the DDNS update (systemd timer OnUnitActiveSec)";
+      default = "hourly";
+      description = "systemd OnCalendar schedule for DDNS updates (e.g. 'hourly', 'minutely', '*/5')";
     };
   };
 
@@ -92,6 +92,16 @@ in {
       timerConfig = {
         OnUnitActiveSec = cfg.interval;
         Unit = "${service}.service";
+      };
+    };
+
+    # Ensure the DDNS hostname itself does not proxy to any internal service.
+    # Requests to homelab.dutchdataworks.nl will return 404 "Not available".
+    services.caddy.virtualHosts = lib.mkIf (config.homelab.enable && config.homelab.services.enableReverseProxy) {
+      "${cfg.recordName}" = {
+        extraConfig = ''
+          respond "Not available" 404
+        '';
       };
     };
   };

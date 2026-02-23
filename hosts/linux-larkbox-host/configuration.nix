@@ -71,7 +71,7 @@
     domain = "dutchdataworks.nl";
 
     # GitLab - Web-based Git repository management
-    services.gitlab.enable = false;
+    services.gitlab.enable = true;
 
     # GitLab Runner - CI/CD job executor
     services.gitlab-runner.enable = false;
@@ -146,7 +146,6 @@
       zoneId = "8d43a62314697fa92a98e8b77e771434";
       recordName = "homelab.dutchdataworks.nl";
       tokenFile = config.sops.secrets.cloudflare_ddns_token.path;
-      # onCalendar = "minutely";
     };
   };
 
