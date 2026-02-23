@@ -5,9 +5,9 @@
   ...
 }: let
   service = "cloudflare-ddns";
-  cfg = config.services.cloudflare-ddns;
+  cfg = config.homelab.services.cloudflare-ddns;
 in {
-  options.services.cloudflare-ddns = {
+  options.homelab.services.cloudflare-ddns = {
     enable = lib.mkEnableOption "Cloudflare Dynamic DNS updater";
 
     zoneId = lib.mkOption {
