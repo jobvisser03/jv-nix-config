@@ -28,7 +28,6 @@ in {
     onCalendar = lib.mkOption {
       type = lib.types.str;
       default = "hourly";
-      description = "systemd OnCalendar schedule for DDNS updates (e.g. 'hourly', 'minutely', '*/5')";
     };
   };
 
@@ -90,7 +89,7 @@ in {
       description = "Cloudflare DDNS";
       wantedBy = ["timers.target"];
       timerConfig = {
-        OnUnitActiveSec = cfg.interval;
+        OnUnitActiveSec = cfg.onCalendar;
         Unit = "${service}.service";
       };
     };
