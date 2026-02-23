@@ -235,21 +235,6 @@ in {
       ];
     };
 
-    # Caddy reverse proxy - serve dashboard at root
-    # Use catch-all to handle hostname, IPs, and Tailscale addresses
-    services.caddy.virtualHosts = lib.mkIf homelab.services.enableReverseProxy {
-      "http://:80" = {
-        extraConfig = ''
-          reverse_proxy http://127.0.0.1:${toString cfg.port} {
-            header_up Host {host}
-            header_up X-Real-IP {remote_host}
-            header_up X-Forwarded-For {remote_host}
-            header_up X-Forwarded-Proto {scheme}
-          }
-        '';
-      };
-    };
-
     # Set up environment variables
     # Homepage uses HOMEPAGE_FILE_* convention to read secrets from files
     systemd.services.homepage-dashboard.environment =
