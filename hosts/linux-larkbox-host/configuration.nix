@@ -143,8 +143,8 @@
     # Cloudflare DDNS updater for home.dutchdataworks.nl
     services.cloudflare-ddns = {
       enable = true;
-      zoneId = "REPLACE_WITH_CLOUDFLARE_ZONE_ID";
-      recordName = "home.dutchdataworks.nl";
+      zoneId = "8d43a62314697fa92a98e8b77e771434";
+      recordName = "homelab.dutchdataworks.nl";
       tokenFile = config.sops.secrets.cloudflare_ddns_token.path;
       onCalendar = "minutely";
     };
