@@ -65,6 +65,10 @@
     enable = true;
     services.enable = true;
     services.enableReverseProxy = true;
+    services.enablePublicHttps = true;
+
+    # Public domain for external access
+    domain = "dutchdataworks.nl";
 
     # GitLab - Web-based Git repository management
     services.gitlab.enable = false;
@@ -134,6 +138,15 @@
     services.spotify-player = {
       enable = true;
       credentialsFile = config.sops.secrets.spotify_credentials.path;
+    };
+
+    # Cloudflare DDNS updater for home.dutchdataworks.nl
+    services.cloudflare-ddns = {
+      enable = true;
+      zoneId = "REPLACE_WITH_CLOUDFLARE_ZONE_ID";
+      recordName = "home.dutchdataworks.nl";
+      tokenFile = config.sops.secrets.cloudflare_ddns_token.path;
+      onCalendar = "minutely";
     };
   };
 

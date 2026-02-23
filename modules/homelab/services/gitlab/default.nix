@@ -98,36 +98,54 @@ in {
 
   config = lib.mkIf cfg.enable {
     # GitLab service configuration
-    services.gitlab = {
-      enable = true;
-      databasePasswordFile = cfg.secrets.databasePasswordFile;
-      initialRootPasswordFile = cfg.secrets.initialRootPasswordFile;
+    services.gitlab =
+      let
+        # Use public domain when configured, otherwise fall back to local hostname
+        externalHost =
+          if homelab.domain != null
+          then "gitlab." + homelab.domain
+          else homelab.hostname;
+        useHttps = homelab.services.enablePublicHttps && homelab.domain != null;
+      in {
+        enable = true;
+        databasePasswordFile = cfg.secrets.databasePasswordFile;
+        initialRootPasswordFile = cfg.secrets.initialRootPasswordFile;
 
-      # Configure GitLab to know its external URL
-      host = homelab.hostname;
-      port = cfg.port;
-      https = false;
+        host = externalHost;
+        port = if useHttps then 443 else cfg.port;
+        https = useHttps;
 
-      secrets = {
-        secretFile = cfg.secrets.secretFile;
-        otpFile = cfg.secrets.otpFile;
-        dbFile = cfg.secrets.dbFile;
-        jwsFile = cfg.secrets.jwsFile;
-        activeRecordPrimaryKeyFile = cfg.secrets.activeRecordPrimaryKeyFile;
-        activeRecordDeterministicKeyFile = cfg.secrets.activeRecordDeterministicKeyFile;
-        activeRecordSaltFile = cfg.secrets.activeRecordSaltFile;
+        secrets = {
+          secretFile = cfg.secrets.secretFile;
+          otpFile = cfg.secrets.otpFile;
+          dbFile = cfg.secrets.dbFile;
+          jwsFile = cfg.secrets.jwsFile;
+          activeRecordPrimaryKeyFile = cfg.secrets.activeRecordPrimaryKeyFile;
+          activeRecordDeterministicKeyFile = cfg.secrets.activeRecordDeterministicKeyFile;
+          activeRecordSaltFile = cfg.secrets.activeRecordSaltFile;
+        };
       };
-    };
 
     # Caddy reverse proxy
     # GitLab uses a Unix socket at /run/gitlab/gitlab-workhorse.socket
-    services.caddy.virtualHosts = lib.mkIf homelab.services.enableReverseProxy {
-      "http://${homelab.hostname}:${toString cfg.port}" = {
-        extraConfig = ''
-          reverse_proxy unix//run/gitlab/gitlab-workhorse.socket
-        '';
-      };
-    };
+    services.caddy.virtualHosts = lib.mkIf homelab.services.enableReverseProxy (
+      {
+        # Internal HTTP access via hostname:port (LAN/Tailscale)
+        "http://${homelab.hostname}:${toString cfg.port}" = {
+          extraConfig = ''
+            reverse_proxy unix//run/gitlab/gitlab-workhorse.socket
+          '';
+        };
+      }
+      // (lib.optionalAttrs (homelab.domain != null) {
+        # Public HTTPS vhost; Caddy will obtain certificates via ACME
+        "gitlab.${homelab.domain}" = {
+          extraConfig = ''
+            reverse_proxy unix//run/gitlab/gitlab-workhorse.socket
+          '';
+        };
+      })
+    );
 
     # Open firewall for GitLab access on local network
     networking.firewall.allowedTCPPorts = [cfg.port];

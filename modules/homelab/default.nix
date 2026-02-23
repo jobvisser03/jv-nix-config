@@ -9,6 +9,13 @@ in {
   options.homelab = {
     enable = lib.mkEnableOption "Enable homelab services and configuration";
 
+    # Public domain for externally exposed services (e.g. dutchdataworks.nl)
+    domain = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = "Public DNS domain used for external access to homelab services (e.g., dutchdataworks.nl)";
+    };
+
     # Storage paths
     mounts = {
       photos = lib.mkOption {

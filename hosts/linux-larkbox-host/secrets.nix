@@ -107,6 +107,12 @@
         mode = "0400";
         path = "/run/secrets/spotify-player/credentials.json";
       };
+
+      # Cloudflare DDNS API token
+      # Token must have Zone:DNS:Read and Zone:DNS:Edit for dutchdataworks.nl
+      cloudflare_ddns_token = {
+        mode = "0400";
+      };
     };
   };
 }

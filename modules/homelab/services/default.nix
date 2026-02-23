@@ -15,6 +15,13 @@ in {
       default = true;
       description = "Enable Caddy as reverse proxy for services";
     };
+
+    # Enable public HTTPS for external access via Caddy and Let's Encrypt
+    enablePublicHttps = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable public HTTPS termination on this host (opens ports 80/443 and lets Caddy obtain certificates)";
+    };
   };
 
   imports = [
@@ -31,16 +38,19 @@ in {
   ];
 
   config = lib.mkIf (cfg.enable && cfg.services.enable) {
-    # Open firewall for HTTP (local network + Tailscale, no HTTPS needed)
-    # Tailscale interface is trusted, so this allows both local and remote (via Tailscale) access
-    networking.firewall.allowedTCPPorts = lib.mkIf cfg.services.enableReverseProxy [80];
+    # Open firewall for HTTP/HTTPS when reverse proxy is enabled
+    networking.firewall.allowedTCPPorts =
+      lib.mkIf cfg.services.enableReverseProxy (
+        if cfg.services.enablePublicHttps then [80 443] else [80]
+      );
 
-    # Caddy reverse proxy (HTTP only, encrypted via Tailscale tunnel when accessing remotely)
+    # Caddy reverse proxy
     services.caddy = lib.mkIf cfg.services.enableReverseProxy {
       enable = true;
-      globalConfig = ''
-        # HTTP only - no automatic HTTPS
-        # Encryption provided by Tailscale tunnel for remote access
+
+      # When public HTTPS is disabled we turn off automatic HTTPS and keep Caddy HTTP-only
+      # (for LAN/Tailscale access). When enabled, we let Caddy manage HTTPS with ACME.
+      globalConfig = lib.mkIf (!cfg.services.enablePublicHttps) ''
         auto_https off
       '';
     };

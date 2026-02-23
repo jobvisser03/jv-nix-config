@@ -118,20 +118,31 @@ in {
     };
 
     # Caddy reverse proxy
-    services.caddy.virtualHosts = lib.mkIf homelab.services.enableReverseProxy {
-      "http://${homelab.hostname}:${toString cfg.port}" = {
-        extraConfig = ''
-          reverse_proxy http://127.0.0.1:${toString (cfg.port + 10000)}
-        '';
-      };
-      # Also serve at /photos path on main hostname
-      "http://${homelab.hostname}/photos/*" = {
-        extraConfig = ''
-          uri strip_prefix /photos
-          reverse_proxy http://127.0.0.1:${toString (cfg.port + 10000)}
-        '';
-      };
-    };
+    services.caddy.virtualHosts = lib.mkIf homelab.services.enableReverseProxy (
+      {
+        # Internal HTTP access via hostname:port (LAN/Tailscale)
+        "http://${homelab.hostname}:${toString cfg.port}" = {
+          extraConfig = ''
+            reverse_proxy http://127.0.0.1:${toString (cfg.port + 10000)}
+          '';
+        };
+        # Also serve at /photos path on main hostname
+        "http://${homelab.hostname}/photos/*" = {
+          extraConfig = ''
+            uri strip_prefix /photos
+            reverse_proxy http://127.0.0.1:${toString (cfg.port + 10000)}
+          '';
+        };
+      }
+      // (lib.optionalAttrs (homelab.domain != null) {
+        # Public HTTPS vhost for external access
+        "photos.${homelab.domain}" = {
+          extraConfig = ''
+            reverse_proxy http://127.0.0.1:${toString (cfg.port + 10000)}
+          '';
+        };
+      })
+    );
 
     # Open firewall for access (Caddy when enabled, direct when disabled)
     networking.firewall.allowedTCPPorts = [cfg.port];
