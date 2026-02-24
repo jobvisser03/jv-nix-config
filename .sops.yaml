@@ -9,6 +9,10 @@ keys:
   # ssh-keyscan larkbox.local 2>/dev/null | grep ed25519 | ssh-to-age
   - &larkbox age1pgyawfqrlvzwks4y2dq2u486lyz47qwu3uyt5ftazn3at70pxs0q9xwj6u
 
+  # Mac Intel NixOS host key
+  # Run: ssh-keyscan job-mac-nixos 2>/dev/null | grep ed25519 | ssh-to-age
+  - &mac_intel_nixos age1ughl3lhzhd07xw7xsrhk6zdzlqtg40mzeftu08pdv9c4vml5556qld9znq
+
   # Personal key for editing secrets (not for host decryption)
   - &personal age188usuuflnprxceyxxa4c79hgajgyzjzsuwrlpn0rntdfm4ujsv2swfx743
 
@@ -23,6 +27,13 @@ creation_rules:
           - *larkbox
           - *personal
 
+  # Mac Intel NixOS-specific secrets
+  - path_regex: secrets/mac-intel-nixos\.yaml$
+    key_groups:
+      - age:
+          - *mac_intel_nixos
+          - *personal
+
   # Shared secrets (all hosts can decrypt)
   # Add more host keys here when you have multiple hosts
   - path_regex: secrets/shared\.yaml$
@@ -30,4 +41,4 @@ creation_rules:
       - age:
           - *larkbox
           - *personal
-          # - *newhost
+          - *mac_intel_nixos

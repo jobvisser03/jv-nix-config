@@ -21,6 +21,13 @@
 
     # Profiles
     ../../profiles/default.nix
+
+    # Secrets management
+    ../../modules/sops
+    ./secrets.nix
+
+    # Homelab services (rclone only)
+    ../../modules/homelab
   ];
 
   # Host-specific configuration
@@ -64,6 +71,34 @@
   hardware = {
     # Disable nvidia modesetting for this host
     nvidia.modesetting.enable = false;
+  };
+
+  # Homelab - rclone cloud storage mounts only
+  homelab = {
+    enable = true;
+    services.enable = false;
+    services.rclone = {
+      enable = true;
+      configFile = config.sops.secrets.rclone_config.path;
+      mounts = {
+        pcloud-keepass = {
+          remote = "pcloud:keepass-vault";
+          mountpoint = "/home/${username}/pcloud/keepass-vault";
+          cacheMode = "writes";
+          readOnly = false;
+          uid = 1000;
+          gid = 100;
+        };
+        pcloud-persoonlijk-job = {
+          remote = "pcloud:Persoonlijk Job";
+          mountpoint = "/home/${username}/pcloud/persoonlijk-job";
+          cacheMode = "writes";
+          readOnly = false;
+          uid = 1000;
+          gid = 100;
+        };
+      };
+    };
   };
 
   # Host-specific user packages
