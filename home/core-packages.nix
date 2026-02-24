@@ -18,6 +18,7 @@
     devenv
     neofetch
     vim
+    helix
     hurl
     wezterm
     speedtest-cli

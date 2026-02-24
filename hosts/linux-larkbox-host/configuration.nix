@@ -13,6 +13,11 @@
     ../../profiles
     ../../modules/sops
     ./secrets.nix
+
+    # Standalone rclone module for cloud storage mounts
+    ../../modules/rclone
+
+    # Homelab services (gitlab, immich, etc.)
     ../../modules/homelab
   ];
 
@@ -105,35 +110,6 @@
       mosquitto.enable = true;
     };
 
-    services.rclone = {
-      enable = true;
-      configFile = config.sops.secrets.rclone_config.path;
-      mounts = {
-        pcloud-photos = {
-          remote = "pcloud:PHOTOS";
-          mountpoint = "/mnt/usb-drive/PHOTOS-PCLOUD";
-          cacheMode = "minimal";
-          readOnly = true;
-          requiredMounts = ["/mnt/usb-drive"];
-        };
-        pcloud-smartphone-photos = {
-          remote = "pcloud:'Automatic Upload'";
-          mountpoint = "/mnt/usb-drive/SMARTPHONE-PHOTOS-PCLOUD";
-          cacheMode = "minimal";
-          readOnly = true;
-          requiredMounts = ["/mnt/usb-drive"];
-        };
-        pcloud-keepass = {
-          remote = "pcloud:keepass-vault";
-          mountpoint = "/home/${username}/pcloud/keepass-vault";
-          cacheMode = "writes";
-          readOnly = false;
-          uid = 1000;
-          gid = 100;
-        };
-      };
-    };
-
     # Spotify Connect speaker - always-on Spotify playback
     services.spotify-player = {
       enable = true;
@@ -146,6 +122,36 @@
       zoneId = "8d43a62314697fa92a98e8b77e771434";
       recordName = "homelab.dutchdataworks.nl";
       tokenFile = config.sops.secrets.cloudflare_ddns_token.path;
+    };
+  };
+
+  # Rclone cloud storage mounts (standalone module)
+  services.rclone = {
+    enable = true;
+    configFile = config.sops.secrets.rclone_config.path;
+    mounts = {
+      pcloud-photos = {
+        remote = "pcloud:PHOTOS";
+        mountpoint = "/mnt/usb-drive/PHOTOS-PCLOUD";
+        cacheMode = "minimal";
+        readOnly = true;
+        requiredMounts = ["/mnt/usb-drive"];
+      };
+      pcloud-smartphone-photos = {
+        remote = "pcloud:'Automatic Upload'";
+        mountpoint = "/mnt/usb-drive/SMARTPHONE-PHOTOS-PCLOUD";
+        cacheMode = "minimal";
+        readOnly = true;
+        requiredMounts = ["/mnt/usb-drive"];
+      };
+      pcloud-keepass = {
+        remote = "pcloud:keepass-vault";
+        mountpoint = "/home/${username}/pcloud/keepass-vault";
+        cacheMode = "writes";
+        readOnly = false;
+        uid = 1000;
+        gid = 100;
+      };
     };
   };
 

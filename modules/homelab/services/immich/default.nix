@@ -13,7 +13,7 @@
     map (
       dir: let
         # Find which rclone mount corresponds to this directory
-        matchingMounts = lib.filterAttrs (_: mount: mount.mountpoint == dir) config.homelab.services.rclone.mounts;
+        matchingMounts = lib.filterAttrs (_: mount: mount.mountpoint == dir) config.services.rclone.mounts;
         mountNames = lib.attrNames matchingMounts;
       in
         if mountNames != []

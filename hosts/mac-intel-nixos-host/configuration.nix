@@ -26,8 +26,8 @@
     ../../modules/sops
     ./secrets.nix
 
-    # Homelab services (rclone only)
-    ../../modules/homelab
+    # Standalone rclone for cloud storage mounts
+    ../../modules/rclone
   ];
 
   # Host-specific configuration
@@ -73,30 +73,26 @@
     nvidia.modesetting.enable = false;
   };
 
-  # Homelab - rclone cloud storage mounts only
-  homelab = {
+  # Rclone cloud storage mounts (standalone module)
+  services.rclone = {
     enable = true;
-    services.enable = false;
-    services.rclone = {
-      enable = true;
-      configFile = config.sops.secrets.rclone_config.path;
-      mounts = {
-        pcloud-keepass = {
-          remote = "pcloud:keepass-vault";
-          mountpoint = "/home/${username}/pcloud/keepass-vault";
-          cacheMode = "writes";
-          readOnly = false;
-          uid = 1000;
-          gid = 100;
-        };
-        pcloud-persoonlijk-job = {
-          remote = "pcloud:Persoonlijk Job";
-          mountpoint = "/home/${username}/pcloud/persoonlijk-job";
-          cacheMode = "writes";
-          readOnly = false;
-          uid = 1000;
-          gid = 100;
-        };
+    configFile = config.sops.secrets.rclone_config.path;
+    mounts = {
+      pcloud-keepass = {
+        remote = "pcloud:keepass-vault";
+        mountpoint = "/home/${username}/pcloud/keepass-vault";
+        cacheMode = "writes";
+        readOnly = false;
+        uid = 1000;
+        gid = 100;
+      };
+      pcloud-persoonlijk-job = {
+        remote = "pcloud:Persoonlijk Job";
+        mountpoint = "/home/${username}/pcloud/persoonlijk-job";
+        cacheMode = "writes";
+        readOnly = false;
+        uid = 1000;
+        gid = 100;
       };
     };
   };

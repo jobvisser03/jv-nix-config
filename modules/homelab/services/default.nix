@@ -34,7 +34,6 @@ in {
     ./radicale
     ./homeassistant
     ./paperless-ngx
-    ./rclone
     ./spotify-player
   ];
 

@@ -20,6 +20,7 @@
     docker-client
     overskride
     nautilus
+    sops
   ];
 
   stylix.enable = true;
