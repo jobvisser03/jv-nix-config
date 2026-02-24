@@ -87,7 +87,7 @@
         gid = 100;
       };
       pcloud-persoonlijk-job = {
-        remote = "pcloud:Persoonlijk Job";
+        remote = "pcloud:'Persoonlijk Job'";
         mountpoint = "/home/${username}/pcloud/persoonlijk-job";
         cacheMode = "writes";
         readOnly = false;
