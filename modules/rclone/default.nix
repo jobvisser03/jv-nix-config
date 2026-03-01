@@ -108,7 +108,7 @@ in {
 
     systemd.targets.rclone-mounts = {
       description = "All rclone mount services";
-      after = ["network-online.target" "sops-nix.service"];
+      after = ["network.target" "sops-nix.service"];
       wants = lib.mapAttrsToList (name: _: "rclone-${name}.service") cfg.mounts;
       wantedBy = ["multi-user.target"];
     };
@@ -124,8 +124,8 @@ in {
     in
       lib.nameValuePair "rclone-${name}" {
         description = "rclone mount: ${name} (${mount.remote} -> ${mount.mountpoint})";
-        after = ["network-online.target" "sops-nix.service"] ++ requiredMountUnits;
-        wants = ["network-online.target"];
+        after = ["network.target" "sops-nix.service"] ++ requiredMountUnits;
+        wants = ["network.target"];
         requires = requiredMountUnits;
         wantedBy = [];
         partOf = ["rclone-mounts.target"];

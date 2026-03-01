@@ -55,6 +55,14 @@
     timeout = 0;
   };
 
+  # Fix NetworkManager-wait-online failures - allow any interface to be ready
+  systemd.services.NetworkManager-wait-online = {
+    serviceConfig = {
+      # Allow service to succeed even if network is partial
+      ExecStart = lib.mkForce "${pkgs.networkmanager}/bin/nm-online -s -q --timeout=10";
+    };
+  };
+
   # Apple T2 specific firmware
   hardware.firmware = [
     (pkgs.stdenvNoCC.mkDerivation (final: {

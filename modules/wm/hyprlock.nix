@@ -1,40 +1,81 @@
-{...}: let
-  blu = "rgb(131, 165, 152)";
-in {
+{...}: {
   programs.hyprlock = {
     enable = true;
     settings = {
       general = {
-        grace = 1;
+        grace = 3;
+        hide_cursor = false;
+      };
+
+      background = {
+        blur_size = 4;
+        blur_passes = 2;
+        brightness = 0.6;
+      };
+
+      input-field = {
+        size = "250, 50";
+        outline_thickness = 2;
+        dots_size = 0.2;
+        dots_spacing = 0.15;
+        dots_center = true;
+        fade_on_empty = false;
+        fade_timeout = 1000;
+        placeholder_text = "Password";
+        hide_input = false;
+        rounding = 7;
+        position = "0, -50";
+        halign = "center";
+        valign = "center";
+      };
+
+      image = {
+        path = "~/.face";
+        size = 100;
+        border_color = "rgb(80, 250, 123)";
+        position = "0, 60";
+        halign = "center";
+        valign = "center";
       };
 
       label = [
         {
-          # WEEK
-          text = ''cmd[update:18000000] echo "Week $(date +'%V')"'';
-          font_size = 24;
-          position = "0, -100";
+          text = "$TIME";
+          color = "rgb(80, 250, 123)";
+          font_size = 72;
+          font_family = "Ubuntu Nerd Font";
+          position = "0, 0";
           halign = "center";
-          valign = "top";
-          color = "${blu}";
+          valign = "center";
         }
         {
-          # DAY - MONTH - YEAR
-          text = ''cmd[update:18000000] echo "$(date +'%-d %B %Y')"'';
-          font = 38;
-          position = "0, -150";
+          text = "cmd[update:3600000] echo \"$(date +'%A, %d %B %Y')\"";
+          color = "rgb(80, 250, 123)";
+          font_size = 20;
+          font_family = "Ubuntu Nerd Font";
+          position = "0, -120";
           halign = "center";
-          valign = "top";
-          color = "${blu}";
+          valign = "center";
         }
         {
-          # TIME
-          text = ''cmd[update:1000] echo "$(date +'%H:%M:%S')"'';
-          font_size = 80;
-          position = "0, 100";
+          text = "Suspend";
+          color = "rgb(80, 250, 123)";
+          font_size = 14;
+          position = "0, 10";
           halign = "center";
           valign = "bottom";
-          color = "${blu}";
+        }
+      ];
+
+      shape = [
+        {
+          color = "rgb(40, 42, 54)";
+          onclick = "systemctl suspend";
+          size = "100, 30";
+          rounding = 7;
+          position = "0, 4";
+          halign = "center";
+          valign = "bottom";
         }
       ];
     };
