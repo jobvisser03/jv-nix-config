@@ -67,25 +67,27 @@ in {
         gaps_out = 10;
         border_size = 2;
         layout = "dwindle";
+        resize_on_border = false;
       };
 
       # DECORATION
       decoration = {
-        rounding = 5;
-        active_opacity = 0.99;
-        inactive_opacity = 0.9;
-        fullscreen_opacity = 0.9;
+        rounding = 7;
+        active_opacity = 0.95;
+        inactive_opacity = 0.75;
+        fullscreen_opacity = 1.0;
         blur = {
-          enabled = false;
-          size = 8;
+          enabled = true;
+          size = 4;
           passes = 2;
           new_optimizations = true;
+          ignore_opacity = false;
         };
         shadow = {
-          enabled = false;
-          range = 15;
-          ignore_window = true;
-          render_power = 3;
+          enabled = true;
+          range = 30;
+          render_power = 2;
+          ignore_window = false;
         };
       };
 
@@ -94,11 +96,11 @@ in {
         enabled = true;
         bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
         animation = [
-          "windows, 1, 2, myBezier"
+          "windows, 1, 3, myBezier, slide"
           "windowsOut, 1, 2, default, popin 80%"
-          "border, 1, 3, default"
-          "fade, 1, 2, default"
-          "workspaces, 1, 1, default"
+          "border, 1, 2, default"
+          "fade, 1, 4, default"
+          "workspaces, 1, 2, default, slide"
         ];
       };
 
