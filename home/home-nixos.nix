@@ -21,6 +21,7 @@
     overskride
     nautilus
     sops
+    spotify
   ];
 
   stylix.enable = true;

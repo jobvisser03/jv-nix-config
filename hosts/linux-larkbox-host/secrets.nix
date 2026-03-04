@@ -104,7 +104,7 @@
       spotify_credentials = {
         # Must be readable by root for preStart script to copy it
         group = "users";
-        mode = "0400";
+        mode = "0440";
         path = "/run/secrets/spotify-player/credentials.json";
       };
 

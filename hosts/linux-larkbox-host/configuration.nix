@@ -116,6 +116,7 @@
     # Spotify Connect speaker - always-on Spotify playback
     services.spotify-player = {
       enable = true;
+      clientId = null;  # Use built-in default (ncspot's client)
       credentialsFile = config.sops.secrets.spotify_credentials.path;
     };
 

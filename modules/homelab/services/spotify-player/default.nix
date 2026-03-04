@@ -17,6 +17,7 @@
     enable_media_control = false
     enable_notify = false
     client_port = ${toString cfg.port}
+    ${lib.optionalString (cfg.clientId != null) "client_id = \"${cfg.clientId}\""}
 
     [device]
     name = "${cfg.deviceName}"
@@ -35,6 +36,15 @@ in {
       type = lib.types.port;
       default = 8080;
       description = "Port for spotify-player CLI commands";
+    };
+
+    clientId = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = ''
+        Spotify client ID. Uses built-in default if null.
+        Must match the client_id used when creating credentials.
+      '';
     };
 
     deviceName = lib.mkOption {
