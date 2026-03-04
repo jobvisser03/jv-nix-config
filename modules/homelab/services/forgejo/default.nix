@@ -57,7 +57,15 @@ in {
             if homelab.domain != null
             then "https://git.${homelab.domain}/"
             else "http://${homelab.hostname}:${toString cfg.port}/";
-          HTTP_PORT = cfg.port;
+          # Use internal port when reverse proxy is enabled to avoid conflict with Caddy
+          HTTP_PORT =
+            if homelab.services.enableReverseProxy
+            then cfg.port + 10000
+            else cfg.port;
+          HTTP_ADDR =
+            if homelab.services.enableReverseProxy
+            then "127.0.0.1"
+            else "0.0.0.0";
           SSH_PORT = lib.head config.services.openssh.ports;
         };
         log = {
@@ -75,7 +83,7 @@ in {
         # Internal HTTP access via hostname:port (LAN/Tailscale)
         "http://${homelab.hostname}:${toString cfg.port}" = {
           extraConfig = ''
-            reverse_proxy http://127.0.0.1:${toString config.services.forgejo.settings.server.HTTP_PORT}
+            reverse_proxy http://127.0.0.1:${toString (cfg.port + 10000)}
             request_body {
               max_size 10GB
             }
@@ -86,7 +94,7 @@ in {
         # Public HTTPS vhost for git.<domain>
         "git.${homelab.domain}" = {
           extraConfig = ''
-            reverse_proxy http://127.0.0.1:${toString config.services.forgejo.settings.server.HTTP_PORT}
+            reverse_proxy http://127.0.0.1:${toString (cfg.port + 10000)}
             request_body {
               max_size 10GB
             }
