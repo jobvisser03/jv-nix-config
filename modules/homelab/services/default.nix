@@ -26,6 +26,7 @@ in {
 
   imports = [
     ./cloudflare-ddns
+    ./forgejo
     ./gitlab
     ./gitlab-runner
     ./immich

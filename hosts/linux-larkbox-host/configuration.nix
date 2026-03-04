@@ -75,10 +75,13 @@
     # Public domain for external access
     domain = "dutchdataworks.nl";
 
-    # GitLab - Web-based Git repository management
-    services.gitlab.enable = true;
+    # Forgejo - A painless, self-hosted Git service (replaces GitLab)
+    services.forgejo.enable = true;
 
-    # GitLab Runner - CI/CD job executor
+    # GitLab - Web-based Git repository management (disabled)
+    services.gitlab.enable = false;
+
+    # GitLab Runner - CI/CD job executor (disabled)
     services.gitlab-runner.enable = false;
 
     services.immich = {
