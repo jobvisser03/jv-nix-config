@@ -41,7 +41,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     # Accept GIT_PROTOCOL environment variable over SSH for protocol v2 support
-    services.openssh.settings.AcceptEnv = "GIT_PROTOCOL";
+    services.openssh.settings.AcceptEnv = [ "GIT_PROTOCOL" ];
 
     services.forgejo = {
       enable = true;
