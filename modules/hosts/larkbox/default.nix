@@ -10,9 +10,9 @@
     ...
   }: {
     imports = [
-      # Hardware configuration - keep in hosts directory for now
-      ../../../hosts/linux-larkbox-host/hardware-configuration.nix
-      ../../../hosts/linux-larkbox-host/secrets.nix
+      # Hardware configuration
+      ./hardware-configuration.nix
+      ./secrets.nix
 
       # Rclone module
       ../../rclone

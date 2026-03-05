@@ -10,8 +10,8 @@
   }: {
     imports = [
       # Hardware configuration
-      ../../../hosts/mac-intel-nixos-host/hardware-configuration.nix
-      ../../../hosts/mac-intel-nixos-host/secrets.nix
+      ./hardware-configuration.nix
+      ./secrets.nix
 
       # Rclone module
       ../../rclone
@@ -39,7 +39,7 @@
     hardware.firmware = [
       (pkgs.stdenvNoCC.mkDerivation (final: {
         name = "brcm-firmware";
-        src = ../../../hosts/mac-intel-nixos-host/firmware/brcm;
+        src = ./firmware/brcm;
         installPhase = ''
           mkdir -p $out/lib/firmware/brcm
           cp ${final.src}/* "$out/lib/firmware/brcm"
