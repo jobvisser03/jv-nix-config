@@ -1,4 +1,9 @@
-{pkgs, lib, config, ...}: let
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}: let
   startupScript = pkgs.writeShellScriptBin "start" ''
     ${pkgs.waybar}/bin/waybar &
     ${pkgs.hypridle}/bin/hypridle &
@@ -8,8 +13,7 @@
   '';
   rgb = color: "rgb(${color})";
   stylix = config.lib.stylix.colors;
-in
-{
+in {
   wayland.windowManager.hyprland = {
     systemd.enable = false;
     enable = true;
@@ -167,83 +171,83 @@ in
       "$mod" = "SUPER";
       "$floatingSize" = "600 400";
 
-      bindd = [
-        # Applications submap
-        "SUPER, A, Activate applications submap, submap, applications"
-        # Open applications
-        "SUPER, RETURN, Open terminal, exec, kitty"
-        "SUPER, E, Open file manager, exec, nautilus"
-        ", XF86Calculator, Open calculator, exec, gnome-calculator"
+      bindd =
+        [
+          # Applications submap
+          "SUPER, A, Activate applications submap, submap, applications"
+          # Open applications
+          "SUPER, RETURN, Open terminal, exec, kitty"
+          "SUPER, E, Open file manager, exec, nautilus"
+          ", XF86Calculator, Open calculator, exec, gnome-calculator"
 
-        # System submap
-        "SUPER, S, Activate system submap, submap, system"
+          # System submap
+          "SUPER, S, Activate system submap, submap, system"
 
-        # Tiling controls
-        "SUPER, Q, Close focused window, killactive"
-        "SUPER, F, Fullscreen focused window, fullscreen"
-        "SUPER, W, Toggle floating, togglefloating"
-        "SUPER, P, Pin focused window, pin"
+          # Tiling controls
+          "SUPER, Q, Close focused window, killactive"
+          "SUPER, F, Fullscreen focused window, fullscreen"
+          "SUPER, W, Toggle floating, togglefloating"
+          "SUPER, P, Pin focused window, pin"
 
-        # Window grouping
-        "SUPER, G, Toggle group, togglegroup"
-        "SUPER ALT, G, Move out of group, moveoutofgroup"
-        "SUPER SHIFT, G, Lock or unlock active group, lockactivegroup, toggle"
-        "SUPER ALT, H, Move window to group on left, movewindoworgroup, l"
-        "SUPER ALT, J, Move window to group on bottom, movewindoworgroup, d"
-        "SUPER ALT, K, Move window to group on top, movewindoworgroup, u"
-        "SUPER ALT, L, Move window to group on right, movewindoworgroup, r"
-        "SUPER, TAB, Change active window in group right, changegroupactive, f"
-        "SUPER SHIFT, TAB, Change active window in group left, changegroupactive, b"
+          # Window grouping
+          "SUPER, G, Toggle group, togglegroup"
+          "SUPER ALT, G, Move out of group, moveoutofgroup"
+          "SUPER SHIFT, G, Lock or unlock active group, lockactivegroup, toggle"
+          "SUPER ALT, H, Move window to group on left, movewindoworgroup, l"
+          "SUPER ALT, J, Move window to group on bottom, movewindoworgroup, d"
+          "SUPER ALT, K, Move window to group on top, movewindoworgroup, u"
+          "SUPER ALT, L, Move window to group on right, movewindoworgroup, r"
+          "SUPER, TAB, Change active window in group right, changegroupactive, f"
+          "SUPER SHIFT, TAB, Change active window in group left, changegroupactive, b"
 
-        # Dwindle layout controls
-        "SUPER, I, Change split direction, layoutmsg, swapsplit"
+          # Dwindle layout controls
+          "SUPER, I, Change split direction, layoutmsg, swapsplit"
 
-        # Move window focus
-        "SUPER, H, Focus window to the left, movefocus, l"
-        "SUPER, J, Focus window to the bottom, movefocus, d"
-        "SUPER, K, Focus window to the top, movefocus, u"
-        "SUPER, L, Focus window to the right, movefocus, r"
+          # Move window focus
+          "SUPER, H, Focus window to the left, movefocus, l"
+          "SUPER, J, Focus window to the bottom, movefocus, d"
+          "SUPER, K, Focus window to the top, movefocus, u"
+          "SUPER, L, Focus window to the right, movefocus, r"
 
-        # Move window
-        "SUPER SHIFT, H, Move window left, swapwindow, l"
-        "SUPER SHIFT, J, Move window down, swapwindow, d"
-        "SUPER SHIFT, K, Move window up, swapwindow, u"
-        "SUPER SHIFT, L, Move window right, swapwindow, r"
+          # Move window
+          "SUPER SHIFT, H, Move window left, swapwindow, l"
+          "SUPER SHIFT, J, Move window down, swapwindow, d"
+          "SUPER SHIFT, K, Move window up, swapwindow, u"
+          "SUPER SHIFT, L, Move window right, swapwindow, r"
 
-        # Resize window
-        "SUPER CTRL, H, Increase window size to the left, resizeactive, -100 0"
-        "SUPER CTRL, J, Increase window size to the bottom, resizeactive, 0 100"
-        "SUPER CTRL, K, Increase window size to the top, resizeactive, 0 -100"
-        "SUPER CTRL, L, Increase window size to the right, resizeactive, 100 0"
+          # Resize window
+          "SUPER CTRL, H, Increase window size to the left, resizeactive, -100 0"
+          "SUPER CTRL, J, Increase window size to the bottom, resizeactive, 0 100"
+          "SUPER CTRL, K, Increase window size to the top, resizeactive, 0 -100"
+          "SUPER CTRL, L, Increase window size to the right, resizeactive, 100 0"
 
-        # Launcher
-        "SUPER, D, Open application launcher, exec, rofi -show drun"
-        "SUPER, R, Open application launcher, exec, rofi -show drun"
+          # Launcher
+          "SUPER, D, Open application launcher, exec, rofi -show drun"
+          "SUPER, R, Open application launcher, exec, rofi -show drun"
 
-        # Clipboard
-        "SUPER, V, Show clipboard history, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+          # Clipboard
+          "SUPER, V, Show clipboard history, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 
-        # Lock screen
-        "SUPER, ESCAPE, Lock screen, exec, loginctl lock-session"
+          # Lock screen
+          "SUPER, ESCAPE, Lock screen, exec, loginctl lock-session"
 
-        # Workspace switching
-        "SUPER, Prior, Switch to next workspace, workspace, r-1"
-        "SUPER, Next, Switch to previous workspace, workspace, r+1"
-        "SUPER, mouse_down, Switch to next workspace, workspace, e+1"
-        "SUPER, mouse_up, Switch to previous workspace, workspace, e-1"
-      ]
-      ++ (builtins.concatLists (
-        builtins.genList (
-          i:
-          let
-            ws = i + 1;
-          in
-          [
-            "SUPER, code:1${toString i}, Switch to workspace ${toString ws}, workspace, ${toString ws}"
-            "SUPER SHIFT, code:1${toString i}, Move focused window to workspace ${toString ws}, movetoworkspace, ${toString ws}"
-          ]
-        ) 9
-      ));
+          # Workspace switching
+          "SUPER, Prior, Switch to next workspace, workspace, r-1"
+          "SUPER, Next, Switch to previous workspace, workspace, r+1"
+          "SUPER, mouse_down, Switch to next workspace, workspace, e+1"
+          "SUPER, mouse_up, Switch to previous workspace, workspace, e-1"
+        ]
+        ++ (builtins.concatLists (
+          builtins.genList (
+            i: let
+              ws = i + 1;
+            in [
+              "SUPER, code:1${toString i}, Switch to workspace ${toString ws}, workspace, ${toString ws}"
+              "SUPER SHIFT, code:1${toString i}, Move focused window to workspace ${toString ws}, movetoworkspace, ${toString ws}"
+            ]
+          )
+          9
+        ));
 
       bindl = [
         # Audio control
@@ -262,7 +266,7 @@ in
 
       submaps = {
         applications = {
-          onDispatch = "reset";
+          #onDispatch = "reset";
           settings.bindd = [
             ", B, Open browser, exec, firefox"
             ", E, Open file manager, exec, nautilus"
@@ -274,11 +278,10 @@ in
           ];
           settings.bindr = [
             ", escape, submap, reset"
-            ", catchall, submap, reset"
           ];
         };
         system = {
-          onDispatch = "reset";
+          #onDispatch = "reset";
           settings.bindd = [
             ", O, Copy text from screen, exec, wl-ocr -nc"
             ", C, Open color picker, exec, hyprpicker -a"
@@ -290,7 +293,6 @@ in
           ];
           settings.bindr = [
             ", escape, submap, reset"
-            ", catchall, submap, reset"
           ];
         };
       };
@@ -346,12 +348,14 @@ in
         "match:class ^(Emulator)$, float true, opaque true"
       ];
 
-      layerrule = [
-        "match:namespace ^(rofi|launcher)$, animation slide, dim_around true"
-        "match:namespace ^(notifications)$, animation slide right"
-      ] ++ lib.optional (config.stylix.opacity.desktop != 1.0) [
-        "match:namespace ^(waybar|rofi|launcher|notifications)$, blur true, ignore_alpha 0"
-      ];
+      layerrule =
+        [
+          "match:namespace ^(rofi|launcher)$, animation slide, dim_around true"
+          "match:namespace ^(notifications)$, animation slide right"
+        ]
+        ++ lib.optional (config.stylix.opacity.desktop != 1.0) [
+          "match:namespace ^(waybar|rofi|launcher|notifications)$, blur true, ignore_alpha 0"
+        ];
     };
   };
 
