@@ -10,7 +10,138 @@
       ...
     }: {
       # Enable Hyprland at system level
-      programs.hyprland.enable = true;
+      programs.hyprland = {
+        enable = true;
+        withUWSM = true;
+      };
+
+      # XDG Portal configuration for Hyprland
+      xdg.portal = {
+        enable = true;
+        wlr.enable = true;
+        extraPortals = [
+          pkgs.xdg-desktop-portal-gtk
+          pkgs.xdg-desktop-portal-hyprland
+        ];
+        config = {
+          common = {
+            default = ["hyprland" "gtk"];
+          };
+          hyprland = {
+            default = ["hyprland" "gtk"];
+          };
+        };
+      };
+
+      # Required services for desktop
+      services = {
+        # Display manager
+        displayManager.defaultSession = "hyprland-uwsm";
+
+        # Greetd display manager
+        greetd = {
+          enable = true;
+          settings = {
+            default_session = {
+              command = "${pkgs.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --remember --asterisks --sessions ${config.services.displayManager.sessionData.desktops}/share/wayland-sessions";
+              user = "greeter";
+            };
+          };
+        };
+
+        # X11 keyboard configuration (used by console)
+        xserver.xkb = {
+          layout = "us";
+          options = "caps:escape";
+        };
+      };
+
+      # Console uses xkb config
+      console.useXkbConfig = true;
+
+      # Audio with PipeWire
+      services.pulseaudio.enable = false;
+      services.pipewire = {
+        enable = true;
+        alsa.enable = true;
+        alsa.support32Bit = true;
+        pulse.enable = true;
+        jack.enable = true;
+      };
+      security.rtkit.enable = true;
+
+      # Bluetooth
+      hardware.bluetooth = {
+        enable = true;
+        powerOnBoot = true;
+      };
+      services.blueman.enable = true;
+
+      # Printing
+      services.printing.enable = true;
+
+      # Touchpad
+      services.libinput.enable = true;
+
+      # Graphics
+      hardware.graphics = {
+        enable = true;
+        enable32Bit = true;
+      };
+
+      # Wayland environment variables
+      environment.sessionVariables = {
+        WLR_NO_HARDWARE_CURSORS = "1";
+        NIXOS_OZONE_WL = "1";
+        ELECTRON_OZONE_PLATFORM_HINT = "auto";
+        ELECTRON_ENABLE_WAYLAND = "1";
+      };
+
+      # Desktop packages
+      environment.systemPackages = with pkgs; [
+        # Wayland utilities
+        wl-clipboard
+        cliphist
+        brightnessctl
+        networkmanagerapplet
+
+        # Notifications
+        dunst
+        libnotify
+
+        # File manager
+        nautilus
+
+        # Desktop utilities
+        gnome-calculator
+        file-roller
+        vlc
+
+        # Polkit agent
+        polkit_gnome
+      ];
+
+      # Polkit authentication agent
+      systemd.user.services.polkit-gnome-authentication-agent-1 = {
+        description = "polkit-gnome-authentication-agent-1";
+        wantedBy = ["graphical-session.target"];
+        wants = ["graphical-session.target"];
+        after = ["graphical-session.target"];
+        serviceConfig = {
+          Type = "simple";
+          ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+          Restart = "on-failure";
+          RestartSec = 1;
+          TimeoutStopSec = 10;
+        };
+      };
+
+      # Create greeter user
+      users.users.greeter = {
+        isNormalUser = false;
+        description = "greetd greeter user";
+        extraGroups = ["video" "audio"];
+      };
     };
 
     # Home-manager hyprland configuration
@@ -22,7 +153,7 @@
     }: let
       startupScript = pkgs.writeShellScriptBin "start" ''
         ${pkgs.waybar}/bin/waybar &
-        ${pkgs.hypridle}/bin/hypridle &
+        ${pkgs.swww}/bin/swww-daemon &
         wl-paste --type text --watch cliphist store &
         wl-paste --type image --watch cliphist store &
         nm-applet --indicator &
@@ -31,15 +162,14 @@
       stylix = config.lib.stylix.colors;
     in {
       wayland.windowManager.hyprland = {
-        systemd.enable = false;
         enable = true;
         package = pkgs.hyprland;
-        portalPackage = null;
+        systemd.enable = true;
+        systemd.enableXdgAutostart = true;
 
         settings = {
           exec-once = [
             "${startupScript}/bin/start"
-            "uwsm finalize"
             "wpctl set-mute @DEFAULT_AUDIO_SINK@ 1"
           ];
 
