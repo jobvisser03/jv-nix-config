@@ -7,22 +7,50 @@
 }: {
   stylix = {
     enable = true;
-    targets = {
-      gnome.enable = false;
-    };
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
     image = ../non-nix-configs/nix-wallpaper-binary-black.png;
     polarity = "dark";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-material-dark-medium.yaml";
+
     fonts = {
       sizes = {
-        desktop = 18;
-        applications = 18;
+        desktop = 14;
+        applications = 14;
+        popups = 14;
+        terminal = 13;
+      };
+      sansSerif = {
+        name = "Ubuntu Nerd Font";
+        package = pkgs.nerd-fonts.ubuntu;
+      };
+      serif = {
+        name = "Ubuntu Nerd Font";
+        package = pkgs.nerd-fonts.ubuntu;
+      };
+      monospace = {
+        name = "Iosevka Nerd Font";
+        package = pkgs.nerd-fonts.iosevka;
       };
     };
+
     cursor = {
-      package = pkgs.capitaine-cursors-themed;
-      name = "Capitaine Cursors (Gruvbox)";
-      size = 28;
+      package = pkgs.bibata-cursors;
+      name = "Bibata-Modern-Classic";
+      size = 24;
+    };
+
+    targets = {
+      gnome.enable = false;
+      waybar = {
+        addCss = false;
+        font = "sansSerif";
+      };
+    };
+
+    icons = {
+      enable = true;
+      package = pkgs.papirus-icon-theme;
+      light = "Papirus-Light";
+      dark = "Papirus-Dark";
     };
   };
 }

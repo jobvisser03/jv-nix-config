@@ -105,6 +105,9 @@
     };
   };
 
+  # Disable Tailscale temporarily
+  services.tailscale.enable = false;
+
   # Host-specific user packages
   users.users.${username}.packages = with pkgs; [
     tree
