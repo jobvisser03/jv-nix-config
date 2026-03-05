@@ -1,4 +1,4 @@
-# Desktop applications module for NixOS desktop systems
+# Desktop applications module for NixOS and Darwin desktop systems
 # Provides common desktop applications not covered by other specific modules
 # Services (greetd, pipewire, etc.) are configured in hyprland.nix
 {...}: {
@@ -12,12 +12,6 @@
       # Browsers (brave as secondary, firefox handled by its own module)
       brave
 
-      # Development tools
-      vscode.fhs
-      code-cursor
-      nodejs_22
-      devenv
-
       # Desktop applications
       logseq
       pcloud
@@ -28,6 +22,55 @@
 
       # Wallpaper daemon
       swww
+    ];
+  };
+
+  flake.modules.homeManager.desktop-apps = {pkgs, ...}: {
+    home.packages = with pkgs; [
+      # Core CLI tools
+      curl
+      ffmpeg
+      fzf
+      rsync
+      hurl
+      yt-dlp
+      neofetch
+
+      # Languages and formatters
+      nil
+
+      # Shells and terminals
+      vim
+      helix
+      wezterm
+
+      # Fonts
+      (nerd-fonts.caskaydia-cove)
+      (nerd-fonts.fantasque-sans-mono)
+      (nerd-fonts.sauce-code-pro)
+
+      # Cloud and networking
+      google-cloud-sdk
+      cachix
+      tailscale
+      speedtest-cli
+
+      # Android and Docker
+      android-tools
+      docker
+
+      # Graph visualization
+      graphviz
+
+      # Image manipulation
+      imagemagick
+
+      # Development tools
+      nodejs_22
+      devenv
+
+      # opencode CLI
+      opencode
     ];
   };
 }

@@ -124,6 +124,8 @@ in {
         "dev-tools"
         # Homelab
         "homelab"
+        # Desktop apps
+        "desktop-apps"
       ];
       extraModules = [
         inputs.sops-nix.nixosModules.sops
@@ -202,6 +204,8 @@ in {
         # Terminals
         "wezterm"
         "kitty"
+        # Desktop apps
+        "desktop-apps"
       ];
     };
 
@@ -231,6 +235,8 @@ in {
         # Terminals
         "wezterm"
         "kitty"
+        # Desktop apps
+        "desktop-apps"
       ];
     };
   };
