@@ -51,10 +51,6 @@
 
     targets = {
       gnome.enable = false;
-      waybar = {
-        addCss = false;
-        font = "sansSerif";
-      };
     };
 
     icons = {
