@@ -184,6 +184,7 @@ in {
         # Base modules
         "nix"
         "home"
+        "home-darwin"
         "homebrew"
         "user-job"
         # Shell
@@ -212,6 +213,7 @@ in {
         # Base modules
         "nix"
         "home"
+        "home-darwin"
         "homebrew"
         "user-job-work"
         # Shell

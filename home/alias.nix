@@ -1,15 +1,29 @@
 {
-  hm-mac = "home-manager switch --flake /Users/job/repos/jv-nix-config#mac-intel-hm";
-  hm-nixos = "home-manager switch --flake /home/job/repos/jv-nix-config#mac-intel-nixos-hm";
-  hm-work = "home-manager switch --flake /Users/job.visser/repos/jv-nix-config#mac-apple-silicon-hm";
-  hm-larkbox = "ssh larkbox 'source /etc/bashrc && cd ~/repos/jv-nix-config && git pull && home-manager switch --flake ~/repos/jv-nix-config#linux-hm'";
-  nd-work = "sudo darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-apple-silicon-host";
-  nd-mac = "sudo darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-host";
-  nr = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-nixos-host";
-  nrl = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#linux-larkbox-host";
-  nup = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-nixos-host --upgrade";
-  hm-update = "nix flake update";
+  # Darwin rebuild commands (nix-darwin with integrated home-manager)
+  nd-mac = "darwin-rebuild switch --flake ~/repos/jv-nix-config#macbook-intel";
+  nd-work = "darwin-rebuild switch --flake ~/repos/jv-nix-config#macbook-silicon";
 
+  # NixOS rebuild commands (with integrated home-manager)
+  nr = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#macbook-intel-nixos";
+  nrl = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#larkbox";
+  nr-larkbox = "ssh larkbox 'cd ~/repos/jv-nix-config && git pull && sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#larkbox'";
+
+  # Update flake inputs
+  nup = "nix flake update";
+
+  # Rebuild with update (upgrade)
+  nr-upgrade = "nix flake update && sudo nixos-rebuild switch --flake ~/repos/jv-nix-config";
+  nd-upgrade = "nix flake update && darwin-rebuild switch --flake ~/repos/jv-nix-config";
+
+  # Garbage collection
+  ngc = "nix-collect-garbage";
+  ngcd = "sudo nix-collect-garbage -d";
+  ngc-old = "sudo nix-collect-garbage --delete-older-than 30d";
+
+  # Nix store optimization
+  nopt = "sudo nix-store --optimise";
+
+  # Common utilities
   dup = "sudo systemctl list-units *docker*";
   venv = "source .venv/bin/activate";
   helpme = "tldr --list | fzf | xargs tldr";
