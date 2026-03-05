@@ -22,6 +22,7 @@
             segments = [
               {
                 type = "path";
+                style = "plain";
                 properties = {
                   style = "powerlevel";
                   max_width = 50;
@@ -61,6 +62,7 @@
             segments = [
               {
                 type = "nix-shell";
+                style = "plain";
                 template = "{{ if .Env.name }} {{ if eq .Type \"pure\" }} {{ end }}{{ .Env.name }}{{ end }}";
               }
               {
