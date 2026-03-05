@@ -33,6 +33,12 @@
         config.font_size = ${toString fontSize}
         config.window_close_confirmation = 'NeverPrompt'
 
+        -- Colors (match previous working theme)
+        config.color_scheme = 'Cobalt Neon (Gogh)'
+        config.colors = {
+          split = wezterm.color.get_builtin_schemes()[config.color_scheme].ansi[2],
+        }
+
         -- Performance
         config.max_fps = 120
         config.animation_fps = 120

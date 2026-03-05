@@ -22,7 +22,6 @@
             segments = [
               {
                 type = "path";
-                style = "plain";
                 properties = {
                   style = "powerlevel";
                   max_width = 50;
@@ -53,7 +52,7 @@
                   "{{if gt .Code 0}}red{{end}}"
                   "{{if eq .Code 0}}blue{{end}}"
                 ];
-                template = " ";
+                template = " ";
               }
             ];
           }
@@ -62,19 +61,18 @@
             segments = [
               {
                 type = "nix-shell";
-                style = "plain";
-                template = "{{ if .Env.name }} {{ if eq .Type \"pure\" }} {{ end }}{{ .Env.name }}{{ end }}";
+                template = "{{ if .Env.name }} {{ if eq .Type \"pure\" }} {{ end }}{{ .Env.name }}{{ end }}";
               }
               {
                 type = "session";
                 style = "plain";
-                template = "{{ if .SSHSession }}  {{ end }}   {{ .HostName }}";
+                template = "{{ if .SSHSession }}  {{ end }}   {{ .HostName }}";
               }
               {
                 type = "python";
                 style = "plain";
                 template = builtins.concatStringsSep "" [
-                  "  {{ .Full }}"
+                  "  {{ .Full }}"
                   "{{ if .Venv }} ({{ .Venv }}){{ end }}"
                 ];
               }
@@ -86,7 +84,7 @@
                   threshold = 5000;
                   style = "round";
                 };
-                template = "  {{ .FormattedMs }}";
+                template = "  {{ .FormattedMs }}";
               }
             ];
           }
@@ -96,14 +94,14 @@
             "{{if gt .Code 0}}red{{end}}"
             "{{if eq .Code 0}}blue{{end}}"
           ];
-          template = " ";
+          template = " ";
         };
         transient_prompt = {
           foreground_templates = [
             "{{if gt .Code 0}}red{{end}}"
             "{{if eq .Code 0}}blue{{end}}"
           ];
-          template = " ";
+          template = " ";
         };
       };
     };
