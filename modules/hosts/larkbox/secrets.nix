@@ -6,7 +6,7 @@
 {config, ...}: {
   sops = {
     # Use larkbox-specific secrets file
-    defaultSopsFile = ../../secrets/larkbox.yaml;
+    defaultSopsFile = ../../../secrets/larkbox.yaml;
 
     secrets = {
       # Radicale CalDAV/CardDAV authentication

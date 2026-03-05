@@ -1,6 +1,6 @@
 {config, ...}: {
   sops = {
-    defaultSopsFile = ../../secrets/mac-intel-nixos.yaml;
+    defaultSopsFile = ../../../secrets/mac-intel-nixos.yaml;
     secrets = {
       rclone_config = {
         owner = "root";
