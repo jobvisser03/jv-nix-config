@@ -16,6 +16,7 @@
       vscode.fhs
       code-cursor
       nodejs_22
+      devenv
 
       # Desktop applications
       logseq
