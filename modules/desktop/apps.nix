@@ -14,8 +14,6 @@
 
       # Desktop applications
       logseq
-      pcloud
-      keepassxc
       cryptomator
       protonmail-desktop
       signal-desktop
@@ -71,6 +69,21 @@
 
       # opencode CLI
       opencode
+
+      # Desktop applications
+      keepassxc
+      drawio
+      anki-bin
+      docker-client
+      overskride
+      nautilus
+      sops
+      spotify
     ];
+
+    programs.vscode = {
+      enable = true;
+      package = pkgs.vscode.fhs;
+    };
   };
 }
