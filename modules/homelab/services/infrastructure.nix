@@ -1,4 +1,4 @@
-# Services module - Caddy reverse proxy and Podman setup
+# Services infrastructure module - Caddy reverse proxy and Podman setup
 {
   config,
   lib,
@@ -23,20 +23,6 @@ in {
       description = "Enable public HTTPS termination on this host (opens ports 80/443 and lets Caddy obtain certificates)";
     };
   };
-
-  imports = [
-    ./cloudflare-ddns
-    ./forgejo
-    ./gitlab
-    ./gitlab-runner
-    ./immich
-    ./jellyfin
-    ./homepage
-    ./radicale
-    ./homeassistant
-    ./paperless-ngx
-    ./spotify-player
-  ];
 
   config = lib.mkIf (cfg.enable && cfg.services.enable) {
     # Open firewall for HTTP/HTTPS when reverse proxy is enabled

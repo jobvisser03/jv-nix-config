@@ -1,4 +1,4 @@
-# Homelab module - global options and service imports
+# Homelab core options
 {
   lib,
   config,
@@ -49,20 +49,6 @@ in {
       type = lib.types.str;
       default = config.networking.hostName;
       description = "Hostname for accessing services (e.g., 'larkbox' -> http://larkbox:8080)";
-    };
-  };
-
-  imports = [
-    ./services
-  ];
-
-  config = lib.mkIf cfg.enable {
-    # Create shared user/group for homelab services
-    users.groups.${cfg.group} = {};
-    users.users.${cfg.user} = {
-      isSystemUser = true;
-      group = cfg.group;
-      description = "Homelab services user";
     };
   };
 }
