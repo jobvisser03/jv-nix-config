@@ -29,7 +29,7 @@ in
         dots_rounding = -1;
         fade_on_empty = false;
         fade_timeout = 1000;
-        placeholder_text = "<span foreground=\"#${stylix.base05}\">󰌾  Logged in as <span foreground=\"#${stylix.base0D}\"><i>$USER</i></span></span>";
+        placeholder_text = "<span foreground=\"##${stylix.base05}\">󰌾  Logged in as <span foreground=\"##${stylix.base0D}\"><i>$USER</i></span></span>";
         hide_input = false;
         rounding = -1;
         fail_text = "<i>$FAIL <b>($ATTEMPTS)</b></i>";
@@ -70,25 +70,17 @@ in
           valign = "top";
         }
         {
-          text = "Suspend";
+          text = "cmd[update:1000] ~/.config/hypr/scripts/get_battery_info.sh";
           color = rgb stylix.base05;
-          position = "0, 10";
-          halign = "center";
-          valign = "bottom";
+          font_size = 18;
+          font_family = config.stylix.fonts.sansSerif.name;
+          position = "-30, -210";
+          halign = "right";
+          valign = "top";
         }
       ];
 
-      shape = [
-        {
-          color = rgb stylix.base00;
-          onclick = "systemctl suspend";
-          size = "120, 36";
-          rounding = 7;
-          position = "0, 4";
-          halign = "center";
-          valign = "bottom";
-        }
-      ];
+      # NOTE: No suspend button - lock screen only, no sleep/suspend actions
     };
   };
 }

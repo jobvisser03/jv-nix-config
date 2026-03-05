@@ -6,6 +6,8 @@
     wl-paste --type image --watch cliphist store &
     nm-applet --indicator &
   '';
+  rgb = color: "rgb(${color})";
+  stylix = config.lib.stylix.colors;
 in
 {
   wayland.windowManager.hyprland = {
@@ -28,7 +30,6 @@ in
         vfr = true;
         animate_manual_resizes = true;
         focus_on_activate = true;
-        allow_tearing = true;
       };
 
       monitorv2 = [
@@ -42,6 +43,10 @@ in
 
       xwayland = {
         force_zero_scaling = true;
+      };
+
+      render = {
+        new_render_scheduling = true;
       };
 
       input = {
@@ -86,22 +91,20 @@ in
       };
 
       decoration = {
-        rounding = 7;
-        active_opacity = 0.95;
-        inactive_opacity = 0.75;
+        rounding = 10;
+        active_opacity = config.stylix.opacity.applications;
+        inactive_opacity = lib.mkIf (config.stylix.opacity.applications < 1) (
+          config.stylix.opacity.applications - 0.2
+        );
         fullscreen_opacity = 1.0;
         blur = {
           enabled = true;
           size = 4;
           passes = 2;
-          new_optimizations = true;
-          ignore_opacity = false;
         };
         shadow = {
           enabled = true;
           range = 30;
-          render_power = 2;
-          ignore_window = false;
         };
       };
 
@@ -126,78 +129,141 @@ in
         use_cpu_buffer = true;
       };
 
-      animations = {
-        enabled = true;
-        bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
-        animation = [
-          "fade, 1, 4, default"
-          "border, 1, 2, default"
-          "windows, 1, 3, default, slide"
-          "workspaces, 1, 2, default, slide"
-        ];
-      };
+      animation = [
+        "fade, 1, 4, default"
+        "border, 1, 2, default"
+        "windows, 1, 3, default, slide"
+        "workspaces, 1, 2, default, slide"
+      ];
 
-      group = {
-        "col.border_active" = "rgb(89b4fa)";
-        "col.border_inactive" = "rgb(45475a)";
-        "col.border_locked_active" = "rgb(74c7ec)";
-        "col.border_locked_inactive" = "rgb(f5c2e7)";
+      group = lib.mkForce {
+        "col.border_active" = rgb stylix.base0D;
+        "col.border_inactive" = rgb stylix.base03;
+        "col.border_locked_active" = rgb stylix.base0C;
+        "col.border_locked_inactive" = rgb stylix.base0B;
+        groupbar = {
+          text_color = rgb stylix.base00;
+          font_size = config.stylix.fonts.sizes.desktop;
+          height = builtins.floor (config.stylix.fonts.sizes.desktop * 1.5 + 0.5);
+          indicator_height = 0;
+          rounding = 10;
+          gradients = true;
+          gradient_rounding = 10;
+        };
       };
 
       workspace = [
         "1, monitor:eDP-1, default:true"
         "2, monitor:eDP-1, default:true"
         "3, monitor:eDP-1, default:true"
+        # Smart Gaps
+        "w[tv1], gapsout:0, gapsin:0"
+        "f[1], gapsout:0, gapsin:0"
+        # Special workspaces
+        "special:spotify, on-created-empty:spotify"
+        "special:spotify, gapsout:50"
+        "special:monitor, on-created-empty:kitty btop"
+        "special:monitor, gapsout:50"
+        "special:discord, on-created-empty:vesktop"
+        "special:discord, gapsout:50"
+        "special:todo, on-created-empty:lunatask"
+        "special:todo, gapsout:50"
       ];
 
       "$mod" = "SUPER";
+      "$floatingSize" = "600 400";
 
-      bind = [
+      bindd = [
+        # Applications submap
         "SUPER, A, Activate applications submap, submap, applications"
+        # Open applications
         "SUPER, RETURN, Open terminal, exec, kitty"
-        "SUPER, E, Open terminal file manager, exec, nautilus"
+        "SUPER, E, Open file manager, exec, nautilus"
         ", XF86Calculator, Open calculator, exec, gnome-calculator"
 
+        # System submap
         "SUPER, S, Activate system submap, submap, system"
 
-        "SUPER, C, killactive"
-        "SUPER, M, exit"
-        "SUPER, F, exec, firefox"
-        "SUPER SHIFT, F, togglefloating"
-        "SUPER, R, exec, rofi -show drun"
-        "SUPER, D, exec, rofi -show drun"
-        "SUPER, J, togglesplit"
-        "SUPER SHIFT, Q, exit"
+        # Tiling controls
+        "SUPER, Q, Close focused window, killactive"
+        "SUPER, F, Fullscreen focused window, fullscreen"
+        "SUPER, W, Toggle floating, togglefloating"
+        "SUPER, P, Pin focused window, pin"
 
-        "SUPER, left, movefocus, l"
-        "SUPER, right, movefocus, r"
-        "SUPER, up, movefocus, u"
-        "SUPER, down, movefocus, d"
+        # Window grouping
+        "SUPER, G, Toggle group, togglegroup"
+        "SUPER ALT, G, Move out of group, moveoutofgroup"
+        "SUPER SHIFT, G, Lock or unlock active group, lockactivegroup, toggle"
+        "SUPER ALT, H, Move window to group on left, movewindoworgroup, l"
+        "SUPER ALT, J, Move window to group on bottom, movewindoworgroup, d"
+        "SUPER ALT, K, Move window to group on top, movewindoworgroup, u"
+        "SUPER ALT, L, Move window to group on right, movewindoworgroup, r"
+        "SUPER, TAB, Change active window in group right, changegroupactive, f"
+        "SUPER SHIFT, TAB, Change active window in group left, changegroupactive, b"
 
+        # Dwindle layout controls
+        "SUPER, I, Change split direction, layoutmsg, swapsplit"
+
+        # Move window focus
+        "SUPER, H, Focus window to the left, movefocus, l"
+        "SUPER, J, Focus window to the bottom, movefocus, d"
+        "SUPER, K, Focus window to the top, movefocus, u"
+        "SUPER, L, Focus window to the right, movefocus, r"
+
+        # Move window
+        "SUPER SHIFT, H, Move window left, swapwindow, l"
+        "SUPER SHIFT, J, Move window down, swapwindow, d"
+        "SUPER SHIFT, K, Move window up, swapwindow, u"
+        "SUPER SHIFT, L, Move window right, swapwindow, r"
+
+        # Resize window
+        "SUPER CTRL, H, Increase window size to the left, resizeactive, -100 0"
+        "SUPER CTRL, J, Increase window size to the bottom, resizeactive, 0 100"
+        "SUPER CTRL, K, Increase window size to the top, resizeactive, 0 -100"
+        "SUPER CTRL, L, Increase window size to the right, resizeactive, 100 0"
+
+        # Launcher
+        "SUPER, D, Open application launcher, exec, rofi -show drun"
+        "SUPER, R, Open application launcher, exec, rofi -show drun"
+
+        # Clipboard
+        "SUPER, V, Show clipboard history, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+
+        # Lock screen
+        "SUPER, ESCAPE, Lock screen, exec, loginctl lock-session"
+
+        # Workspace switching
         "SUPER, Prior, Switch to next workspace, workspace, r-1"
         "SUPER, Next, Switch to previous workspace, workspace, r+1"
         "SUPER, mouse_down, Switch to next workspace, workspace, e+1"
         "SUPER, mouse_up, Switch to previous workspace, workspace, e-1"
+      ]
+      ++ (builtins.concatLists (
+        builtins.genList (
+          i:
+          let
+            ws = i + 1;
+          in
+          [
+            "SUPER, code:1${toString i}, Switch to workspace ${toString ws}, workspace, ${toString ws}"
+            "SUPER SHIFT, code:1${toString i}, Move focused window to workspace ${toString ws}, movetoworkspace, ${toString ws}"
+          ]
+        ) 9
+      ));
 
-        "SUPER, code:11, Switch to workspace 1, workspace, 1"
-        "SUPER, code:12, Switch to workspace 2, workspace, 2"
-        "SUPER, code:13, Switch to workspace 3, workspace, 3"
-        "SUPER, code:14, Switch to workspace 4, workspace, 4"
-        "SUPER, code:15, Switch to workspace 5, workspace, 5"
-        "SUPER, code:16, Switch to workspace 6, workspace, 6"
-        "SUPER, code:17, Switch to workspace 7, workspace, 7"
-        "SUPER, code:18, Switch to workspace 8, workspace, 8"
-        "SUPER, code:19, Switch to workspace 9, workspace, 9"
+      bindl = [
+        # Audio control
+        ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+        ", XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+      ];
 
-        "SUPER SHIFT, code:11, Move focused window to workspace 1, movetoworkspace, 1"
-        "SUPER SHIFT, code:12, Move focused window to workspace 2, movetoworkspace, 2"
-        "SUPER SHIFT, code:13, Move focused window to workspace 3, movetoworkspace, 3"
-        "SUPER SHIFT, code:14, Move focused window to workspace 4, movetoworkspace, 4"
-        "SUPER SHIFT, code:15, Move focused window to workspace 5, movetoworkspace, 5"
-        "SUPER SHIFT, code:16, Move focused window to workspace 6, movetoworkspace, 6"
-        "SUPER SHIFT, code:17, Move focused window to workspace 7, movetoworkspace, 7"
-        "SUPER SHIFT, code:18, Move focused window to workspace 8, movetoworkspace, 8"
-        "SUPER SHIFT, code:19, Move focused window to workspace 9, movetoworkspace, 9"
+      bindel = [
+        # Volume control
+        ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
+        ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+        # Brightness control
+        ", XF86MonBrightnessUp, exec, brightnessctl set 5%+"
+        ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
       ];
 
       submaps = {
@@ -217,9 +283,9 @@ in
         system = {
           onDispatch = "reset";
           settings.bindd = [
-            ", R, Start/stop screencast, exec, hyprcast"
             ", O, Copy text from screen, exec, wl-ocr -nc"
             ", C, Open color picker, exec, hyprpicker -a"
+            "SHIFT, minus, Reset zoom, exec, hyprctl -q keyword cursor:zoom_factor 1"
           ];
           settings.bindde = [
             ", plus, Zoom in, exec, hyprctl -q keyword cursor:zoom_factor $(hyprctl getoption cursor:zoom_factor -j | jq '.float * 1.1')"
@@ -229,40 +295,76 @@ in
         };
       };
 
-      bindm = [
-        "$mod, mouse:272, movewindow"
-        "$mod, mouse:273, resizewindow"
+      binddm = [
+        "SUPER, mouse:272, Move window with Super and left click, movewindow"
+        "SUPER, mouse:273, Resize window with Super and right click, resizewindow"
       ];
 
       windowrule = [
-        "opaque on, match:class ^(Emulator)$"
-        "float on, match:class ^(Emulator)$"
+        # Inhibit idle when fullscreen
         "match:fullscreen true, idle_inhibit always"
-        "match:class ^(nm-connection-editor)$, float true, size 600 400, center true"
-        "match:class ^(.blueman-manager-wrapped)$, float true, size 600 400, center true"
-        "match:class ^(com.saivert.pwvucontrol)$, float true, size 600 400, center true"
-        "match:title ^(Picture-in-Picture)$, float true, pin true"
-        "match:class ^(org.gnome.Calculator)$, float true, size > >"
-        "match:class ^(org.gnome.clocks)$, float true, size 800 600"
-        "match:class .*, suppress_event maximize"
-      ];
 
-      windowrulev2 = [
-        "float 0, title:^(Picture-in-Picture)$"
+        # Smart Gaps
+        "match:workspace w[tv1] s[false], match:float false, border_size 0, rounding 0, no_shadow true"
+        "match:workspace f[1] s[false], match:float false, border_size 0, rounding 0"
+        "match:workspace f[f1] s[false], match:float false, no_shadow true"
+
+        # Fix some dragging issues with XWayland
+        "match:class ^$, match:title ^$, match:xwayland true, match:float true, match:fullscreen false, match:pin false, no_focus true"
+
+        # Ignore maximize requests from apps
+        "match:class .*, suppress_event maximize"
+
+        # Move apps to workspaces
+        "match:class ^(Todoist|@lunatask/electron)$, workspace special:todo silent"
+        "match:class ^(spotify)$, workspace special:spotify silent"
+        "match:class ^(vesktop)$, workspace special:discord silent"
+
+        # Dim some programs
+        "match:class ^(xdg-desktop-portal-gtk)$, dim_around true"
+        "match:class ^(polkit-gnome-authentication-agent-1)$, dim_around true"
+
+        # NetworkManager applet
+        "match:class ^(nm-connection-editor)$, float true, size $floatingSize, center true"
+
+        # Blueman
+        "match:class ^(.blueman-manager-wrapped)$, float true, size $floatingSize, center true"
+
+        # Audio control
+        "match:class ^(com.saivert.pwvucontrol)$, float true, size $floatingSize, center true"
+
+        # Make some windows floating and sticky
+        "match:title ^(Picture-in-Picture)$, float true, pin true"
+
+        # Calculator
+        "match:class ^(org.gnome.Calculator)$, float true, size > >"
+
+        # Clock
+        "match:class ^(org.gnome.clocks)$, float true, size 800 600"
+
+        # Emulator
+        "match:class ^(Emulator)$, float true, opaque true"
       ];
 
       layerrule = [
-        "blur, rofi"
-        "blur, waybar"
-        "animation slide, notifications"
+        "match:namespace ^(rofi|launcher)$, animation slide, dim_around true"
+        "match:namespace ^(notifications)$, animation slide right"
+      ] ++ lib.optional (config.stylix.opacity.desktop != 1.0) [
+        "match:namespace ^(waybar|rofi|launcher|notifications)$, blur true, ignore_alpha 0"
       ];
+    };
+  };
 
-      workspace = [
-        "special:spotify, on-created-empty:spotify"
-        "special:discord, on-created-empty:vesktop"
-        "special:todo, on-created-empty:lunatask"
-        "special:monitor, on-created-empty:kitty btop"
-      ];
+  # Copy scripts for hyprlock
+  home.file.".config/hypr/scripts" = {
+    source = ./scripts;
+    recursive = true;
+  };
+
+  # Gnome button layout
+  dconf.settings = {
+    "org/gnome/desktop/wm/preferences" = {
+      button-layout = "':'";
     };
   };
 }
