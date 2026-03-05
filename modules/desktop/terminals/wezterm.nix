@@ -6,7 +6,17 @@
     lib,
     config,
     ...
-  }: {
+  }: let
+    # Use stylix monospace font if available, otherwise fall back to a default
+    fontName =
+      if config ? stylix && config.stylix ? fonts
+      then config.stylix.fonts.monospace.name
+      else "monospace";
+    fontSize =
+      if config ? stylix && config.stylix ? fonts
+      then config.stylix.fonts.sizes.terminal
+      else 14;
+  in {
     programs.wezterm = {
       enable = true;
       enableZshIntegration = true;
@@ -18,16 +28,12 @@
         local config = wezterm.config_builder()
         config:set_strict_mode(true)
 
-        -- General
-        config.font = wezterm.font 'SauceCodePro Nerd Font'
-        config.font_size = 16
-        config.color_scheme = 'Cobalt Neon (Gogh)'
-        config.colors = {
-          split = wezterm.color.get_builtin_schemes()[config.color_scheme].ansi[2],
-        }
+        -- General (using stylix fonts)
+        config.font = wezterm.font '${fontName}'
+        config.font_size = ${toString fontSize}
         config.window_close_confirmation = 'NeverPrompt'
 
-        -- Performance Hack
+        -- Performance
         config.max_fps = 120
         config.animation_fps = 120
 
@@ -35,8 +41,8 @@
         config.native_macos_fullscreen_mode = true
         config.window_decorations = 'INTEGRATED_BUTTONS|RESIZE'
         config.window_frame = {
-          font = wezterm.font { family = 'SauceCodePro Nerd Font', weight = 'Bold' },
-          font_size = 12.0,
+          font = wezterm.font { family = '${fontName}', weight = 'Bold' },
+          font_size = ${toString (fontSize - 1)},
           active_titlebar_bg = TITLEBAR_COLOR,
           inactive_titlebar_bg = TITLEBAR_COLOR,
         }

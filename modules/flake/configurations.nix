@@ -164,6 +164,7 @@ in {
         "wezterm"
         "kitty"
         "firefox"
+        "desktop-apps"
       ];
       extraModules = [
         inputs.sops-nix.nixosModules.sops

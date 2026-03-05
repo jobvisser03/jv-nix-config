@@ -46,6 +46,7 @@
     ./desktop/terminals/wezterm.nix
     ./desktop/terminals/kitty.nix
     ./desktop/browsers/firefox.nix
+    ./desktop/apps.nix
 
     # Darwin-specific
     ./darwin/base.nix

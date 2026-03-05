@@ -39,7 +39,7 @@
         # Display manager
         displayManager.defaultSession = "hyprland-uwsm";
 
-        # Greetd display manager
+        # Greetd display manager with auto-login
         greetd = {
           enable = true;
           settings = {
@@ -47,10 +47,11 @@
               command = "${pkgs.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --remember --asterisks --sessions ${config.services.displayManager.sessionData.desktops}/share/wayland-sessions";
               user = "greeter";
             };
-initial_session = {
-  command = "uwsm start hyprland-uwsm.desktop";
-  user = username;
-};
+            # Auto-login for the primary user
+            initial_session = {
+              command = "uwsm start hyprland-uwsm.desktop";
+              user = username;
+            };
           };
         };
 
@@ -156,6 +157,7 @@ initial_session = {
       config,
       ...
     }: let
+      # Startup script - waybar is started by systemd, so don't include it here
       startupScript = pkgs.writeShellScriptBin "start" ''
         ${pkgs.swww}/bin/swww-daemon &
         wl-paste --type text --watch cliphist store &
