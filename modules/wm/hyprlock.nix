@@ -1,39 +1,51 @@
-{...}: {
+{config, lib, ...}: let
+  stylix = config.lib.stylix.colors;
+  rgb = color: "rgb(${color})";
+in
+{
   programs.hyprlock = {
     enable = true;
+
     settings = {
       general = {
         grace = 3;
         hide_cursor = false;
       };
 
+      auth.fingerprint.enabled = true;
+
       background = {
         blur_size = 4;
         blur_passes = 2;
-        brightness = 0.6;
+        brightness = 0.75;
       };
 
       input-field = {
-        size = "250, 50";
-        outline_thickness = 2;
-        dots_size = 0.2;
+        size = "300, 50";
+        outline_thickness = 3;
+        dots_size = 0.25;
         dots_spacing = 0.15;
         dots_center = true;
+        dots_rounding = -1;
         fade_on_empty = false;
         fade_timeout = 1000;
-        placeholder_text = "Password";
+        placeholder_text = "<span foreground=\"#${stylix.base05}\">󰌾  Logged in as <span foreground=\"#${stylix.base0D}\"><i>$USER</i></span></span>";
         hide_input = false;
-        rounding = 7;
-        position = "0, -50";
+        rounding = -1;
+        fail_text = "<i>$FAIL <b>($ATTEMPTS)</b></i>";
+        capslock_color = rgb stylix.base0A;
+
+        position = "0, -70";
         halign = "center";
         valign = "center";
       };
 
       image = {
         path = "~/.face";
-        size = 100;
-        border_color = "rgb(80, 250, 123)";
-        position = "0, 60";
+        size = 150;
+        border_color = rgb stylix.base0D;
+
+        position = "0, 75";
         halign = "center";
         valign = "center";
       };
@@ -41,26 +53,25 @@
       label = [
         {
           text = "$TIME";
-          color = "rgb(80, 250, 123)";
-          font_size = 72;
-          font_family = "Ubuntu Nerd Font";
-          position = "0, 0";
-          halign = "center";
-          valign = "center";
+          color = rgb stylix.base05;
+          font_size = 90;
+          font_family = config.stylix.fonts.sansSerif.name;
+          position = "-30, 0";
+          halign = "right";
+          valign = "top";
         }
         {
-          text = "cmd[update:3600000] echo \"$(date +'%A, %d %B %Y')\"";
-          color = "rgb(80, 250, 123)";
-          font_size = 20;
-          font_family = "Ubuntu Nerd Font";
-          position = "0, -120";
-          halign = "center";
-          valign = "center";
+          text = "cmd[update:43200000] echo \"$(date +\"%A, %d %B %Y\")\"";
+          color = rgb stylix.base05;
+          font_size = 25;
+          font_family = config.stylix.fonts.sansSerif.name;
+          position = "-30, -150";
+          halign = "right";
+          valign = "top";
         }
         {
           text = "Suspend";
-          color = "rgb(80, 250, 123)";
-          font_size = 14;
+          color = rgb stylix.base05;
           position = "0, 10";
           halign = "center";
           valign = "bottom";
@@ -69,9 +80,9 @@
 
       shape = [
         {
-          color = "rgb(40, 42, 54)";
+          color = rgb stylix.base00;
           onclick = "systemctl suspend";
-          size = "100, 30";
+          size = "120, 36";
           rounding = 7;
           position = "0, 4";
           halign = "center";
