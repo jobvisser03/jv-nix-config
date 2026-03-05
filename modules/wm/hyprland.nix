@@ -118,13 +118,6 @@ in
         new_status = "master";
       };
 
-      scrolling = {
-        column_width = "0.5";
-        focus_fit_method = 1;
-        explicit_column_widths = "0.333333, 0.5, 0.666667";
-        follow_min_visible = 0.4;
-      };
-
       cursor = {
         no_hardware_cursors = false;
         use_cpu_buffer = true;
