@@ -30,12 +30,23 @@
         name = "Iosevka Nerd Font";
         package = pkgs.nerd-fonts.iosevka;
       };
+      emoji = {
+        name = "Noto Color Emoji";
+        package = pkgs.noto-fonts-color-emoji;
+      };
     };
 
     cursor = {
       package = pkgs.bibata-cursors;
       name = "Bibata-Modern-Classic";
       size = 24;
+    };
+
+    opacity = {
+      applications = 0.95;
+      desktop = 0.95;
+      popups = 0.75;
+      terminal = 0.95;
     };
 
     targets = {

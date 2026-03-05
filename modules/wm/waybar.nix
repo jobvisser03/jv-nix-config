@@ -1,7 +1,10 @@
-{config, lib, ...}: let
+{config, lib, pkgs, ...}: let
   stylix = config.lib.stylix.colors.withHashtag;
+  borderRadius = "10";
+  borderSize = "2";
 in
-{  programs.waybar = {
+{
+  programs.waybar = {
     enable = true;
     systemd.enable = true;
 
@@ -19,8 +22,8 @@ in
         ];
 
         modules-center = [
+          "privacy"
           "clock"
-          "mpris"
         ];
 
         modules-right = [
@@ -33,9 +36,9 @@ in
         ];
 
         "custom/actions" = {
-          format = "";
+          format = "";
           tooltip-format = "System Actions";
-          on-click = "wofi --show drun";
+          on-click = "rofi -show drun";
         };
 
         "hyprland/workspaces" = {
@@ -44,12 +47,12 @@ in
           format = "{icon}";
 
           format-icons = {
-            "discord" = "";
-            "todo" = "";
+            "discord" = "";
+            "todo" = "";
             "monitor" = "󰍹";
-            "obsidian" = "";
-            "spotify" = "";
-            "default" = "";
+            "obsidian" = "";
+            "spotify" = "";
+            "default" = "";
             "1" = "1";
             "2" = "2";
             "3" = "3";
@@ -72,8 +75,14 @@ in
           icon = true;
         };
 
+        privacy = {
+          icon-spacing = 4;
+          icon-size = 18;
+          transition-duration = 250;
+        };
+
         clock = {
-          format = " {:%A %H:%M}";
+          format = " {:%A %H:%M}";
 
           tooltip-format = "<tt><small>{calendar}</small></tt>";
           calendar = {
@@ -94,22 +103,6 @@ in
             on-click-middle = "shift_reset";
             on-scroll-up = "shift_up";
             on-scroll-down = "shift_down";
-          };
-        };
-
-        mpris = {
-          player = "spotify";
-          format = "{player_icon} {status_icon} <b>{title}</b> by <i>{artist}</i>";
-          tooltip-format = "Album: {album}";
-          artist-len = 12;
-          title-len = 22;
-          ellipsis = "...";
-          player-icons = {
-            default = "";
-            spotify = "󰓇";
-          };
-          status-icons = {
-            paused = "󰏤";
           };
         };
 
@@ -143,8 +136,8 @@ in
             "󰕾"
           ];
           tooltip-format = "{volume}% on {node_name}";
-          on-click = "pwvucontrol";
-          on-click-right = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+          on-click = lib.getExe pkgs.pwvucontrol;
+          on-click-right = "${lib.getExe' pkgs.wireplumber "wpctl"} set-mute @DEFAULT_AUDIO_SINK@ toggle";
         };
 
         "group/power" = {
@@ -158,6 +151,7 @@ in
           modules = [
             "battery"
             "idle_inhibitor"
+            "power-profiles-daemon"
           ];
         };
 
@@ -165,7 +159,7 @@ in
           format = "{icon} {capacity}%";
           format-discharging = "{icon}";
           format-charging = "{icon}";
-          format-plugged = "";
+          format-plugged = "";
           format-icons = {
             charging = [
               "󰢜"
@@ -206,8 +200,20 @@ in
         idle_inhibitor = {
           format = "{icon}";
           format-icons = {
-            activated = "";
-            deactivated = "";
+            activated = "";
+            deactivated = "";
+          };
+        };
+
+        power-profiles-daemon = {
+          format = "{icon}";
+          tooltip-format = "Power profile: {profile}\nDriver: {driver}";
+          tooltip = true;
+          format-icons = {
+            default = "";
+            performance = "";
+            balanced = "";
+            power-saver = "";
           };
         };
 
@@ -220,6 +226,7 @@ in
           };
 
           modules = [
+            "custom/monitor"
             "disk"
             "cpu"
             "temperature"
@@ -227,24 +234,30 @@ in
           ];
         };
 
+        "custom/monitor" = {
+          format = "";
+          tooltip = false;
+          on-click = "hyprctl dispatch togglespecialworkspace monitor";
+        };
+
         disk = {
           format = "󰋊 {percentage_free}%";
         };
 
         cpu = {
-          format = " {usage}%";
+          format = " {usage}%";
           interval = 5;
         };
 
         temperature = {
-          format = " {temperatureC}°C";
+          format = " {temperatureC}°C";
           interval = 5;
           critical-format = "󰸁 {temperatureC}°C";
           critical-threshold = 90;
         };
 
         memory = {
-          format = " {used}/{total}GiB";
+          format = " {used}/{total}GiB";
           interval = 5;
         };
 
@@ -253,5 +266,197 @@ in
         };
       };
     };
+
+    style = ''
+      * {
+        padding: 0;
+        margin: 0;
+      }
+
+      window#waybar {
+        transition: all 0.3s ease-in-out;
+      }
+
+      .module {
+        color: @base05;
+        background: @base01;
+        border-radius: ${borderRadius}px;
+
+        padding: 0.2rem 0.5rem;
+        margin: 0.4rem 0.2rem;
+      }
+
+      .modules-left:first-child {
+        margin-left: 0.2em;
+      }
+
+      .modules-right:last-child {
+        margin-right: 0.2em;
+      }
+
+      tooltip {
+        background: @base00;
+        border: ${borderSize}px solid @base0D;
+        border-radius: ${borderRadius}px;
+      }
+
+      tooltip label {
+        color: @base05;
+
+        padding: 0.2rem 0.5rem;
+      }
+
+      window#waybar.battery-critical {
+        background: mix(@base00, @base08, 0.3);
+      }
+
+      #custom-actions {
+        color: @base0B;
+        font-size: 1.3em;
+      }
+
+      #workspaces button {
+        color: @base05;
+
+        padding: 0.05rem;
+        margin: 0.2rem 0.3rem;
+        transition: all 0.3s ease-in-out;
+      }
+
+      #workspace button:first-child {
+        margin: 0.2rem 0.3rem 0.2rem 0px;
+      }
+
+      #workspace button:last-child {
+        margin: 0.2rem 0px 0.2rem 0.3rem;
+      }
+
+      #workspaces button.empty {
+        color: @base03;
+      }
+
+      #workspaces button.visible {
+        color: @base0E;
+      }
+
+      #workspaces button.active {
+        color: @base0D;
+      }
+
+      #workspaces button.special {
+        color: @base0C;
+      }
+
+      #workspaces button:hover {
+        color: @base0B;
+        background: transparent;
+      }
+
+      window#waybar.empty #window {
+        background: transparent;
+      }
+
+      #privacy {
+        color: @base00;
+        background: @base0A;
+        border-radius: ${borderRadius}px;
+
+        padding: 0.2rem 0.5rem;
+        margin: 0.4rem 0.2rem;
+      }
+
+      #wireplumber.muted {
+        color: @base00;
+        background: @base0A;
+      }
+
+      #battery.warning {
+        color: @base00;
+        background: @base0A;
+      }
+
+      #battery.charging,
+      #battery.plugged {
+        color: @base00;
+        background: @base0B;
+      }
+
+      @keyframes blink {
+        to {
+          color: @base05;
+          background: @base01;
+        }
+      }
+
+      #battery.critical:not(.charging) {
+        background-color: @base08;
+        animation-name: blink;
+        animation-duration: 0.5s;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+      }
+
+      #power-profiles-daemon {
+        color: @base00;
+      }
+
+      #power-profiles-daemon.performance {
+        background: @base08;
+      }
+
+      #power-profiles-daemon.balanced {
+        background: @base0B;
+      }
+
+      #power-profiles-daemon.power-saver {
+        background: @base0D;
+      }
+
+      #idle_inhibitor {
+        background: @base02;
+      }
+
+      #idle_inhibitor.activated {
+        color: @base00;
+        background: @base09;
+      }
+
+      #disk,
+      #cpu,
+      #temperature,
+      #memory {
+        background: @base02;
+      }
+
+      #temperature.critical {
+        color: @base08;
+      }
+
+      #tray {
+        background: @base02;
+      }
+
+      #tray menu,
+      #tray menuitem {
+        padding: 0.25rem;
+        margin: 0.1rem;
+      }
+
+      #tray > .passive {
+        -gtk-icon-effect: dim;
+      }
+
+      #tray > .needs-attention {
+        -gtk-icon-effect: highlight;
+        background-color: @base0A;
+      }
+    '';
+  };
+
+  xdg.configFile."waybar/style.css" = {
+    onChange = ''
+      ${pkgs.procps}/bin/pkill -u $USER waybar || true
+    '';
   };
 }
