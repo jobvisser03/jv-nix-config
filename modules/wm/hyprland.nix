@@ -42,7 +42,7 @@ in {
           output = "";
           mode = "preferred";
           position = "auto";
-          scale = "1";
+          scale = "1.33";
         }
       ];
 
@@ -264,38 +264,38 @@ in {
         ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
       ];
 
-      submaps = {
-        applications = {
-          #onDispatch = "reset";
-          settings.bindd = [
-            ", B, Open browser, exec, firefox"
-            ", E, Open file manager, exec, nautilus"
-            ", N, Open notes, exec, obsidian"
-            ", M, Toggle monitor workspace, togglespecialworkspace, monitor"
-            ", T, Toggle todo workspace, togglespecialworkspace, todo"
-            ", S, Toggle Spotify workspace, togglespecialworkspace, spotify"
-            ", D, Toggle Discord workspace, togglespecialworkspace, discord"
-          ];
-          settings.bindr = [
-            ", escape, submap, reset"
-          ];
-        };
-        system = {
-          #onDispatch = "reset";
-          settings.bindd = [
-            ", O, Copy text from screen, exec, wl-ocr -nc"
-            ", C, Open color picker, exec, hyprpicker -a"
-            "SHIFT, minus, Reset zoom, exec, hyprctl -q keyword cursor:zoom_factor 1"
-          ];
-          settings.bindde = [
-            ", plus, Zoom in, exec, hyprctl -q keyword cursor:zoom_factor $(hyprctl getoption cursor:zoom_factor -j | jq '.float * 1.1')"
-            ", minus, Zoom out, exec, hyprctl -q keyword cursor:zoom_factor $(hyprctl getoption cursor:zoom_factor -j | jq '(.float * 0.9) | if . < 1 then 1 else . end')"
-          ];
-          settings.bindr = [
-            ", escape, submap, reset"
-          ];
-        };
-      };
+      # submaps = {
+      #   applications = {
+      #     #onDispatch = "reset";
+      #     settings.bindd = [
+      #       ", B, Open browser, exec, firefox"
+      #       ", E, Open file manager, exec, nautilus"
+      #       ", N, Open notes, exec, obsidian"
+      #       ", M, Toggle monitor workspace, togglespecialworkspace, monitor"
+      #       ", T, Toggle todo workspace, togglespecialworkspace, todo"
+      #       ", S, Toggle Spotify workspace, togglespecialworkspace, spotify"
+      #       ", D, Toggle Discord workspace, togglespecialworkspace, discord"
+      #     ];
+      #     settings.bindr = [
+      #       ", escape, submap, reset"
+      #     ];
+      #   };
+      #   system = {
+      #     #onDispatch = "reset";
+      #     settings.bindd = [
+      #       ", O, Copy text from screen, exec, wl-ocr -nc"
+      #       ", C, Open color picker, exec, hyprpicker -a"
+      #       "SHIFT, minus, Reset zoom, exec, hyprctl -q keyword cursor:zoom_factor 1"
+      #     ];
+      #     settings.bindde = [
+      #       ", plus, Zoom in, exec, hyprctl -q keyword cursor:zoom_factor $(hyprctl getoption cursor:zoom_factor -j | jq '.float * 1.1')"
+      #       ", minus, Zoom out, exec, hyprctl -q keyword cursor:zoom_factor $(hyprctl getoption cursor:zoom_factor -j | jq '(.float * 0.9) | if . < 1 then 1 else . end')"
+      #     ];
+      #     settings.bindr = [
+      #       ", escape, submap, reset"
+      #     ];
+      #   };
+      # };
 
       binddm = [
         "SUPER, mouse:272, Move window with Super and left click, movewindow"
