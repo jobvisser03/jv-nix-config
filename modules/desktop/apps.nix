@@ -55,7 +55,6 @@
 
       # Android and Docker
       android-tools
-      docker
 
       # Graph visualization
       graphviz
