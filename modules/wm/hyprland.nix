@@ -13,7 +13,8 @@ in
   wayland.windowManager.hyprland = {
     systemd.enable = false;
     enable = true;
-    package = null;
+    # Use Hyprland from nixpkgs (nixos-unstable in this flake)
+    package = pkgs.hyprland;
     portalPackage = null;
 
     settings = {
@@ -278,7 +279,10 @@ in
             ", S, Toggle Spotify workspace, togglespecialworkspace, spotify"
             ", D, Toggle Discord workspace, togglespecialworkspace, discord"
           ];
-          settings.bindr = [ ", catchall, submap, reset" ];
+          settings.bindr = [
+            ", escape, submap, reset"
+            ", catchall, submap, reset"
+          ];
         };
         system = {
           onDispatch = "reset";
@@ -291,7 +295,10 @@ in
             ", plus, Zoom in, exec, hyprctl -q keyword cursor:zoom_factor $(hyprctl getoption cursor:zoom_factor -j | jq '.float * 1.1')"
             ", minus, Zoom out, exec, hyprctl -q keyword cursor:zoom_factor $(hyprctl getoption cursor:zoom_factor -j | jq '(.float * 0.9) | if . < 1 then 1 else . end')"
           ];
-          settings.bindr = [ ", catchall, submap, reset" ];
+          settings.bindr = [
+            ", escape, submap, reset"
+            ", catchall, submap, reset"
+          ];
         };
       };
 
