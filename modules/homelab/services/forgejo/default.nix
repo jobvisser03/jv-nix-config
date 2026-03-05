@@ -8,6 +8,7 @@
 }: let
   cfg = config.homelab.services.forgejo;
   homelab = config.homelab;
+  forgejoCfg = config.services.forgejo;
 in {
   options.homelab.services.forgejo = {
     enable = lib.mkEnableOption "Forgejo - A painless, self-hosted Git service";
@@ -76,6 +77,16 @@ in {
         };
       };
     };
+
+    # Ensure Forgejo admin user exists on every deploy
+    systemd.services.forgejo.preStart = let
+      adminCmd = "${lib.getExe forgejoCfg.package} admin user";
+      pwd = config.sops.secrets.forgejo_admin_password;
+    in ''
+      ${adminCmd} create --admin --email "job@dutchdataworks.nl" --username job --password "$(tr -d '\n' < ${pwd.path})" || true
+      ## uncomment this line to change an admin user which was already created
+      # ${adminCmd} change-password --username job --password "$(tr -d '\n' < ${pwd.path})" || true
+    '';
 
     # Caddy reverse proxy
     services.caddy.virtualHosts = lib.mkIf homelab.services.enableReverseProxy (
