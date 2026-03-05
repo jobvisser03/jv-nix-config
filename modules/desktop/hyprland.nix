@@ -7,6 +7,7 @@
       pkgs,
       lib,
       config,
+      username,
       ...
     }: {
       # Enable Hyprland at system level
@@ -46,6 +47,10 @@
               command = "${pkgs.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --remember --asterisks --sessions ${config.services.displayManager.sessionData.desktops}/share/wayland-sessions";
               user = "greeter";
             };
+initial_session = {
+  command = "uwsm start hyprland-uwsm.desktop";
+  user = username;
+};
           };
         };
 
@@ -152,7 +157,6 @@
       ...
     }: let
       startupScript = pkgs.writeShellScriptBin "start" ''
-        ${pkgs.waybar}/bin/waybar &
         ${pkgs.swww}/bin/swww-daemon &
         wl-paste --type text --watch cliphist store &
         wl-paste --type image --watch cliphist store &
