@@ -271,6 +271,7 @@ in
       * {
         padding: 0;
         margin: 0;
+        font-family: "Ubuntu Nerd Font", "Ubuntu", sans-serif;
       }
 
       window#waybar {
