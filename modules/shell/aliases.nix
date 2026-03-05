@@ -9,16 +9,11 @@
   }: {
     programs.zsh.shellAliases = {
       # Nix rebuild aliases (will be customized per-host)
-      hm-mac = "home-manager switch --flake /Users/job/repos/jv-nix-config#mac-intel-hm";
-      hm-nixos = "home-manager switch --flake /home/job/repos/jv-nix-config#mac-intel-nixos-hm";
-      hm-work = "home-manager switch --flake /Users/job.visser/repos/jv-nix-config#mac-apple-silicon-hm";
-      hm-larkbox = "ssh larkbox 'source /etc/bashrc && cd ~/repos/jv-nix-config && git pull && home-manager switch --flake ~/repos/jv-nix-config#linux-hm'";
-      nd-work = "sudo darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-apple-silicon-host";
-      nd-mac = "sudo darwin-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-host";
-      nr = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-nixos-host";
-      nrl = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#linux-larkbox-host";
-      nup = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#mac-intel-nixos-host --upgrade";
-      hm-update = "nix flake update";
+      nd-work = "sudo darwin-rebuild switch --flake ~/repos/jv-nix-config#macbook-silicon";
+      nd-mac = "sudo darwin-rebuild switch --flake ~/repos/jv-nix-config#macbook-intel";
+      nr = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#macbook-intel-nixos";
+      nrl = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#larkbox";
+      nup = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#macbok-intel-nixos --upgrade";
 
       # General utilities
       dup = "sudo systemctl list-units *docker*";
