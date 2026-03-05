@@ -103,6 +103,7 @@
         username = users.personal.username;
       };
       modules = [
+        inputs.sops-nix.nixosModules.sops
         inputs.stylix.nixosModules.stylix
         ./hosts/mac-intel-nixos-host/configuration.nix
         nixos-hardware.nixosModules.apple-t2
