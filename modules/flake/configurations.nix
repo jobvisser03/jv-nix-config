@@ -124,11 +124,21 @@ in {
         "dev-tools"
         # Homelab
         "homelab"
-        # Desktop apps
+        # Desktop (Hyprland)
+        "stylix"
+        "hyprland"
+        "waybar"
+        "hyprlock"
+        "hypridle"
+        "rofi"
+        "wezterm"
+        "kitty"
+        "firefox"
         "desktop-apps"
       ];
       extraModules = [
         inputs.sops-nix.nixosModules.sops
+        inputs.stylix.nixosModules.stylix
         inputs.nixos-hardware.nixosModules.aoostar-r1-n100
       ];
     };
