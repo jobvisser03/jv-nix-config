@@ -77,7 +77,7 @@
     };
 
     # Disable Tailscale temporarily
-    services.tailscale.enable = false;
+    services.tailscale.enable = true;
 
     # Host-specific packages
     environment.systemPackages = with pkgs; [
