@@ -98,33 +98,35 @@ in {
 
   config = lib.mkIf cfg.enable {
     # GitLab service configuration
-    services.gitlab =
-      let
-        # Use public domain when configured, otherwise fall back to local hostname
-        externalHost =
-          if homelab.domain != null
-          then "gitlab." + homelab.domain
-          else homelab.hostname;
-        useHttps = homelab.services.enablePublicHttps && homelab.domain != null;
-      in {
-        enable = true;
-        databasePasswordFile = cfg.secrets.databasePasswordFile;
-        initialRootPasswordFile = cfg.secrets.initialRootPasswordFile;
+    services.gitlab = let
+      # Use public domain when configured, otherwise fall back to local hostname
+      externalHost =
+        if homelab.domain != null
+        then "gitlab." + homelab.domain
+        else homelab.hostname;
+      useHttps = homelab.services.enablePublicHttps && homelab.domain != null;
+    in {
+      enable = true;
+      databasePasswordFile = cfg.secrets.databasePasswordFile;
+      initialRootPasswordFile = cfg.secrets.initialRootPasswordFile;
 
-        host = externalHost;
-        port = if useHttps then 443 else cfg.port;
-        https = useHttps;
+      host = externalHost;
+      port =
+        if useHttps
+        then 443
+        else cfg.port;
+      https = useHttps;
 
-        secrets = {
-          secretFile = cfg.secrets.secretFile;
-          otpFile = cfg.secrets.otpFile;
-          dbFile = cfg.secrets.dbFile;
-          jwsFile = cfg.secrets.jwsFile;
-          activeRecordPrimaryKeyFile = cfg.secrets.activeRecordPrimaryKeyFile;
-          activeRecordDeterministicKeyFile = cfg.secrets.activeRecordDeterministicKeyFile;
-          activeRecordSaltFile = cfg.secrets.activeRecordSaltFile;
-        };
+      secrets = {
+        secretFile = cfg.secrets.secretFile;
+        otpFile = cfg.secrets.otpFile;
+        dbFile = cfg.secrets.dbFile;
+        jwsFile = cfg.secrets.jwsFile;
+        activeRecordPrimaryKeyFile = cfg.secrets.activeRecordPrimaryKeyFile;
+        activeRecordDeterministicKeyFile = cfg.secrets.activeRecordDeterministicKeyFile;
+        activeRecordSaltFile = cfg.secrets.activeRecordSaltFile;
       };
+    };
 
     # Caddy reverse proxy
     # GitLab uses a Unix socket at /run/gitlab/gitlab-workhorse.socket

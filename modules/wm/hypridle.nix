@@ -1,5 +1,8 @@
-{lib, config, ...}:
 {
+  lib,
+  config,
+  ...
+}: {
   services.hypridle = {
     enable = true;
 

@@ -1,8 +1,11 @@
-{config, lib, ...}: let
+{
+  config,
+  lib,
+  ...
+}: let
   stylix = config.lib.stylix.colors;
   rgb = color: "rgb(${color})";
-in
-{
+in {
   programs.hyprlock = {
     enable = true;
 

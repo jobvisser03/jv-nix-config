@@ -1,9 +1,13 @@
-{config, lib, pkgs, ...}: let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   stylix = config.lib.stylix.colors.withHashtag;
   borderRadius = "10";
   borderSize = "2";
-in
-{
+in {
   programs.waybar = {
     enable = true;
     systemd.enable = true;
