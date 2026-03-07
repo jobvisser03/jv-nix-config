@@ -78,6 +78,7 @@
       nautilus
       sops
       spotify
+      retroarch-free
     ];
 
     programs.vscode = {
