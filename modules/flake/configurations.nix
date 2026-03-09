@@ -48,7 +48,10 @@
   }:
     inputs.nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = {inherit inputs;};
+      specialArgs = {
+        inherit inputs;
+        username = user;
+      };
       modules =
         [
           # Always include base modules
@@ -70,7 +73,10 @@
   }:
     inputs.darwin.lib.darwinSystem {
       inherit system;
-      specialArgs = {inherit inputs;};
+      specialArgs = {
+        inherit inputs;
+        username = user;
+      };
       modules =
         [
           # Always include base darwin module
