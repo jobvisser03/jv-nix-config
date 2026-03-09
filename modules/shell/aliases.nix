@@ -12,6 +12,7 @@
       nd-work = "sudo darwin-rebuild switch --flake ~/repos/jv-nix-config#macbook-silicon";
       nd-mac = "sudo darwin-rebuild switch --flake ~/repos/jv-nix-config#macbook-intel";
       nr = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#macbook-intel-nixos";
+      nrs = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#macbook-intel-nixos-sooph";
       nrl = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#larkbox";
       nup = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#macbok-intel-nixos --upgrade";
 

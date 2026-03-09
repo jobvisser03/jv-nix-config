@@ -22,6 +22,7 @@
     # User definitions
     ./users/job.nix
     ./users/job-work.nix
+    ./users/sooph.nix
 
     # Shell modules
     ./shell/zsh.nix
@@ -63,6 +64,7 @@
     # Host definitions
     ./hosts/larkbox/default.nix
     ./hosts/macbook-intel-nixos/default.nix
+    ./hosts/macbook-intel-nixos-sooph/default.nix
     ./hosts/macbook-intel/default.nix
     ./hosts/macbook-silicon/default.nix
   ];

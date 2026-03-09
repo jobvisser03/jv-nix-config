@@ -184,6 +184,37 @@ in {
         inputs.nixos-hardware.nixosModules.apple-t2
       ];
     };
+
+
+# MacBook running NixOS
+    macbook-intel-nixos-sooph = mkNixosSystem {
+      hostname = "macbook-intel-nixos-sooph";
+      system = "x86_64-linux";
+      user = "sooph";
+      modules = [
+        # Base modules
+        "nix"
+        "home"
+        "sops"
+        "user-sooph"
+        "vscode-server"
+        # Shell
+        "zsh"
+        "atuin"
+        "oh-my-posh"
+        "aliases"
+        "direnv"
+        "eza"
+        "fd"
+        # Dev tools
+        "git"
+        "dev-tools"
+        # Desktop
+        "wezterm"
+        "firefox"
+        "desktop-apps"
+      ];
+    };
   };
 
   # Darwin configurations
