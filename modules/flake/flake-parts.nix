@@ -1,6 +1,10 @@
 # Core flake-parts options and module definitions
 # Uses flake-parts.flakeModules.modules for proper deferredModule typing
-{lib, inputs, ...}: {
+{
+  lib,
+  inputs,
+  ...
+}: {
   imports = [inputs.flake-parts.flakeModules.modules];
 
   options.flake = {
