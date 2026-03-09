@@ -12,6 +12,7 @@ darwin-rebuild switch --flake .#macbook-silicon
 # NixOS
 sudo nixos-rebuild switch --flake .#larkbox
 sudo nixos-rebuild switch --flake .#macbook-intel-nixos
+sudo nixos-rebuild switch --flake .#macbook-intel-nixos-sooph
 ```
 
 ## Structure
@@ -23,37 +24,42 @@ The configuration follows a **dendritic pattern** where `flake.nix` imports only
 ├── flake.nix              # Entry point - imports modules/default.nix
 ├── flake.lock             # Pinned input versions
 ├── README.md              # This file
+├── .sops.yaml             # SOPS key configuration
 │
 ├── modules/               # ALL configuration lives here
 │   ├── default.nix        # Imports all module categories
-│   ├── meta.nix           # Flake metadata
+│   ├── meta.nix           # Global identity and appearance defaults
 │   │
 │   ├── flake/             # Flake infrastructure
 │   │   ├── configurations.nix  # NixOS/Darwin system definitions
-│   │   ├── flake-parts.nix     # flake-parts setup
+│   │   ├── flake-parts.nix     # flake-parts setup and options
 │   │   ├── overlays.nix        # Package overlays
 │   │   ├── shell.nix           # Development shell
 │   │   ├── systems.nix         # Supported systems
 │   │   └── treefmt.nix         # Code formatting
 │   │
-│   ├── hosts/             # Host-specific configurations (self-contained)
+│   ├── hosts/             # Host-specific configurations
 │   │   ├── larkbox/           # NixOS homelab server
 │   │   │   ├── default.nix
-│   │   │   ├── hardware-configuration.nix
-│   │   │   └── secrets.nix
+│   │   │   ├── _hardware-configuration.nix
+│   │   │   └── _secrets.nix
 │   │   ├── macbook-intel-nixos/  # Intel Mac running NixOS
 │   │   │   ├── default.nix
-│   │   │   ├── hardware-configuration.nix
-│   │   │   ├── secrets.nix
-│   │   │   └── firmware/brcm/    # WiFi/Bluetooth firmware
+│   │   │   ├── _hardware-configuration.nix
+│   │   │   ├── _secrets.nix
+│   │   │   └── firmware/brcm/    # WiFi/Bluetooth firmware blobs
+│   │   ├── macbook-intel-nixos-sooph/  # Intel Mac running NixOS (sooph)
+│   │   │   ├── default.nix
+│   │   │   └── _hardware-configuration.nix
 │   │   ├── macbook-intel/        # Intel Mac (macOS/Darwin)
 │   │   │   └── default.nix
 │   │   └── macbook-silicon/      # Apple Silicon Mac (macOS/Darwin)
 │   │       └── default.nix
 │   │
-│   ├── base/              # Base system configurations
-│   │   ├── nixos.nix          # Base NixOS settings
-│   │   └── darwin.nix         # Base Darwin settings
+│   ├── base/              # Shared base modules (all platforms)
+│   │   ├── home.nix           # Home-manager base config
+│   │   ├── nix.nix            # Nix daemon settings
+│   │   └── sops.nix           # SOPS base setup
 │   │
 │   ├── nixos/             # NixOS-specific modules
 │   │   └── base.nix           # Core NixOS configuration
@@ -75,7 +81,7 @@ The configuration follows a **dendritic pattern** where `flake.nix` imports only
 │   │   ├── git.nix            # Git configuration
 │   │   └── tools.nix          # ripgrep, bat, jq, etc.
 │   │
-│   ├── desktop/           # Desktop environment (NixOS)
+│   ├── desktop/           # Desktop environment (NixOS/Hyprland)
 │   │   ├── stylix.nix         # System-wide theming
 │   │   ├── hyprland.nix       # Hyprland compositor
 │   │   ├── waybar.nix         # Status bar
@@ -89,51 +95,51 @@ The configuration follows a **dendritic pattern** where `flake.nix` imports only
 │   │   └── browsers/
 │   │       └── firefox.nix    # Firefox with extensions
 │   │
-│   ├── wm/                # Window manager configs (alternative)
-│   │   ├── hyprland.nix
-│   │   ├── waybar.nix
-│   │   ├── hyprlock.nix
-│   │   └── hypridle.nix
-│   │
 │   ├── system/            # System-level modules
-│   │   ├── nix.nix            # Nix daemon settings
 │   │   ├── power-management.nix
-│   │   ├── keyd.nix           # Key remapping
 │   │   └── vscode-server.nix  # VS Code remote server
 │   │
 │   ├── users/             # User account definitions
-│   │   ├── job.nix            # Personal user
-│   │   └── job-work.nix       # Work user
+│   │   ├── job.nix            # Personal user (NixOS + Darwin + HM)
+│   │   ├── job-work.nix       # Work user variant
+│   │   └── sooph.nix          # Secondary user
 │   │
 │   ├── homelab/           # Homelab services
-│   │   ├── flake-module.nix   # Homelab module entry
-│   │   ├── options.nix        # Homelab options
-│   │   └── services/
-│   │       ├── infrastructure.nix   # Caddy, Podman
+│   │   ├── flake-module.nix   # Homelab module entry point
+│   │   ├── _options.nix       # Shared homelab NixOS options
+│   │   └── _services/         # Individual service definitions
+│   │       ├── infrastructure.nix   # Shared infra (reverse proxy, etc.)
 │   │       ├── immich.nix           # Photo management
 │   │       ├── homeassistant.nix    # Home automation
 │   │       ├── forgejo.nix          # Git forge
 │   │       ├── gitlab.nix           # GitLab
 │   │       ├── gitlab-runner.nix    # CI/CD runner
 │   │       ├── jellyfin.nix         # Media server
-│   │       ├── homepage.nix         # Dashboard
+│   │       ├── homepage.nix         # Service dashboard
 │   │       ├── paperless.nix        # Document management
 │   │       ├── radicale.nix         # CalDAV/CardDAV
 │   │       ├── spotify-player.nix   # Spotify daemon
 │   │       └── cloudflare-ddns.nix  # Dynamic DNS
 │   │
-│   ├── rclone/            # Cloud storage mounts
+│   ├── _rclone/           # Cloud storage mounts (internal)
 │   │   └── default.nix
-│   │
-│   └── sops/              # Secret management
-│       └── default.nix
+│   ├── _sops/             # Secret management (internal)
+│   │   └── default.nix
+│   └── _wm-scripts/       # WM helper scripts (internal)
+│       └── get_battery_info.sh
 │
 ├── secrets/               # SOPS-encrypted secrets
 │   ├── larkbox.yaml
+│   ├── mac-intel-nixos.yaml
 │   └── shared.yaml
 │
 └── non-nix-configs/       # Non-Nix configuration files
+    ├── wezterm.lua
+    ├── raycast_config.rayconfig
+    └── *.png               # Wallpapers
 ```
+
+> **Note on `_` prefixes:** Directories prefixed with `_` (`_rclone/`, `_sops/`, `_wm-scripts/`, `_options.nix`, `_services/`, `_hardware-configuration.nix`, `_secrets.nix`) are internal/private files. They are imported explicitly by name where needed and are not auto-discovered by the module system.
 
 ## How It Works
 
@@ -169,17 +175,18 @@ Modules register themselves to be available for composition:
 
 ### Configuration Composition
 
-Systems are defined by composing modules:
+Systems are defined by composing modules. The `username` argument is automatically passed to all NixOS/Darwin modules via `specialArgs`:
 
 ```nix
 # modules/flake/configurations.nix
 flake.nixosConfigurations = {
-  larkbox = mkNixosSystem {
-    hostname = "larkbox";
+  macbook-intel-nixos = mkNixosSystem {
+    hostname = "macbook-intel-nixos";
+    user = "job";           # exposed as `username` in all modules
     modules = [
       "zsh" "atuin" "oh-my-posh"  # Shell
       "git" "dev-tools"           # Dev
-      "homelab"                   # Services
+      "hyprland" "waybar"         # Desktop
     ];
   };
 };
@@ -187,25 +194,30 @@ flake.nixosConfigurations = {
 
 ## Available Configurations
 
-| Configuration | Type | Architecture | Description |
-|--------------|------|--------------|-------------|
-| `larkbox` | NixOS | x86_64-linux | Homelab server (Immich, Home Assistant, etc.) |
-| `macbook-intel-nixos` | NixOS | x86_64-linux | Intel MacBook running NixOS with Hyprland |
-| `macbook-intel` | Darwin | x86_64-darwin | Intel MacBook running macOS |
-| `macbook-silicon` | Darwin | aarch64-darwin | Apple Silicon MacBook running macOS |
+| Configuration | Type | Architecture | User | Description |
+|---|---|---|---|---|
+| `larkbox` | NixOS | x86_64-linux | job | Homelab server + Hyprland desktop |
+| `macbook-intel-nixos` | NixOS | x86_64-linux | job | Intel MacBook running NixOS with Hyprland |
+| `macbook-intel-nixos-sooph` | NixOS | x86_64-linux | sooph | Intel MacBook running NixOS (sooph's account) |
+| `macbook-intel` | Darwin | x86_64-darwin | job | Intel MacBook running macOS |
+| `macbook-silicon` | Darwin | aarch64-darwin | job.visser | Apple Silicon MacBook running macOS |
 
 ## Homelab Architecture
 
-The homelab module (`modules/homelab/`) provides a complete self-hosted services stack with secure remote access via Tailscale.
+The homelab module (`modules/homelab/`) provides a complete self-hosted services stack. Service definitions live under `_services/` and are composed in `flake-module.nix`.
 
 ### Services
 
 - **Immich** - Photo management and backup
 - **Home Assistant** - Home automation (with Zigbee2MQTT, Mosquitto)
 - **Forgejo** - Git repository hosting
+- **Jellyfin** - Media server
 - **Paperless** - Document management
 - **Homepage** - Service dashboard
+- **Radicale** - CalDAV/CardDAV server
 - **Spotify Player** - Headless Spotify daemon
+- **GitLab / GitLab Runner** - CI/CD
+- **Cloudflare DDNS** - Dynamic DNS updates
 
 ### Access Methods
 
@@ -222,10 +234,10 @@ The homelab module (`modules/homelab/`) provides a complete self-hosted services
 1. Create `modules/hosts/<hostname>/default.nix`:
 ```nix
 {...}: {
-  flake.modules.nixos."hosts/<hostname>" = {config, ...}: {
+  flake.modules.nixos."hosts/<hostname>" = {config, pkgs, username, ...}: {
     imports = [
-      ./hardware-configuration.nix
-      ./secrets.nix
+      ./_hardware-configuration.nix
+      ./_secrets.nix
     ];
     networking.hostName = "<hostname>";
     # Host-specific config...
@@ -233,24 +245,27 @@ The homelab module (`modules/homelab/`) provides a complete self-hosted services
 }
 ```
 
-2. Copy `hardware-configuration.nix` from the target machine
+2. Copy `hardware-configuration.nix` from the target machine (prefix with `_`)
 
 3. Add to `modules/flake/configurations.nix`:
 ```nix
 <hostname> = mkNixosSystem {
   hostname = "<hostname>";
+  user = "<username>";
   modules = [ "zsh" "git" /* ... */ ];
 };
 ```
 
-4. Import in `modules/hosts/default.nix` (if exists) or ensure auto-import
+4. Import in `modules/default.nix`
 
 ### Darwin Host
 
 1. Create `modules/hosts/<hostname>/default.nix`:
 ```nix
 {...}: {
-  flake.modules.darwin."hosts/<hostname>" = {...}: {
+  flake.modules.darwin."hosts/<hostname>" = {username, ...}: {
+    users.users.${username}.home = "/Users/${username}";
+    system.primaryUser = username;
     # Host-specific Darwin settings
   };
 }
@@ -266,39 +281,42 @@ The homelab module (`modules/homelab/`) provides a complete self-hosted services
 };
 ```
 
+3. Import in `modules/default.nix`
+
 ## Adding a New Module
 
 1. Create `modules/<category>/<name>.nix`:
 ```nix
 {...}: {
   # For NixOS
-  flake.modules.nixos.<name> = {...}: {
+  flake.modules.nixos.<name> = {pkgs, lib, config, ...}: {
     # NixOS configuration
   };
 
   # For Darwin (if applicable)
-  flake.modules.darwin.<name> = {...}: {
+  flake.modules.darwin.<name> = {pkgs, lib, config, ...}: {
     # Darwin configuration
   };
 
   # For Home Manager (if applicable)
-  flake.modules.homeManager.<name> = {...}: {
+  flake.modules.homeManager.<name> = {pkgs, lib, config, ...}: {
     # Home Manager configuration
   };
 }
 ```
 
-2. Import in the category's parent or `modules/default.nix`
+2. Import in `modules/default.nix`
 
-3. Add to system configurations in `modules/flake/configurations.nix`
+3. Add the module name to the relevant system configurations in `modules/flake/configurations.nix`
 
 ## Secrets
 
-Secrets are managed with [sops-nix](https://github.com/Mic92/sops-nix).
+Secrets are managed with [sops-nix](https://github.com/Mic92/sops-nix). Encrypted YAML files live in `secrets/` and are referenced via the `_sops/` module.
 
 ```bash
 # Edit host-specific secrets
 sops secrets/larkbox.yaml
+sops secrets/mac-intel-nixos.yaml
 
 # Edit shared secrets
 sops secrets/shared.yaml
@@ -338,7 +356,7 @@ sudo nix-collect-garbage --delete-older-than 14d
 
 1. Install Nix using the [Determinate Systems installer](https://github.com/DeterminateSystems/nix-installer)
 2. Clone this repo to `~/repos/jv-nix-config`
-3. Initial setup: `nix run nix-darwin --extra-experimental-features nix-command --extra-experimental-features flakes -- switch --flake ~/repos/jv-nix-config#<hostname>`
+3. Initial setup: `nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --flake ~/repos/jv-nix-config#<hostname>`
 4. Subsequent updates: `darwin-rebuild switch --flake ~/repos/jv-nix-config#<hostname>`
 
 ## Troubleshooting
