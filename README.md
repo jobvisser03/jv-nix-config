@@ -1,6 +1,6 @@
 # Nix Flake Configuration
 
-This repository contains my personal Nix configuration using flakes, supporting multiple platforms (macOS via nix-darwin and NixOS). It follows a **dendritic flake-parts structure** inspired by [MrSom3body/dotfiles](https://github.com/MrSom3body/dotfiles), where all configuration lives under a unified `modules/` directory.
+This repository contains my personal Nix configuration using flakes, supporting multiple platforms (macOS via nix-darwin and NixOS). It follows a **dendritic flake-parts structure** using [import-tree](https://github.com/vic/import-tree), inspired by [MrSom3body/dotfiles](https://github.com/MrSom3body/dotfiles) and [mightyiam/dendritic](https://github.com/mightyiam/dendritic), where all configuration lives under a unified `modules/` directory.
 
 ## Quick Reference
 
@@ -17,17 +17,16 @@ sudo nixos-rebuild switch --flake .#macbook-intel-nixos-sooph
 
 ## Structure
 
-The configuration follows a **dendritic pattern** where `flake.nix` imports only `modules/default.nix`, which then imports all other modules. Each module registers itself to `flake.modules.{nixos,darwin,homeManager}.*` and configurations compose them declaratively.
+The configuration follows a **dendritic pattern** using `import-tree` to auto-import all `.nix` files from `modules/`. Each module registers itself to `flake.modules.{nixos,darwin,homeManager}.*` and configurations compose them declaratively. Paths containing `/_` are excluded from auto-import.
 
 ```
 .
-├── flake.nix              # Entry point - imports modules/default.nix
+├── flake.nix              # Entry point - uses import-tree ./modules
 ├── flake.lock             # Pinned input versions
 ├── README.md              # This file
 ├── .sops.yaml             # SOPS key configuration
 │
-├── modules/               # ALL configuration lives here
-│   ├── default.nix        # Imports all module categories
+├── modules/               # ALL configuration lives here (auto-imported)
 │   ├── meta.nix           # Global identity and appearance defaults
 │   │
 │   ├── flake/             # Flake infrastructure
@@ -47,7 +46,7 @@ The configuration follows a **dendritic pattern** where `flake.nix` imports only
 │   │   │   ├── default.nix
 │   │   │   ├── _hardware-configuration.nix
 │   │   │   ├── _secrets.nix
-│   │   │   └── firmware/brcm/    # WiFi/Bluetooth firmware blobs
+│   │   │   └── _firmware/brcm/   # WiFi/Bluetooth firmware blobs
 │   │   ├── macbook-intel-nixos-sooph/  # Intel Mac running NixOS (sooph)
 │   │   │   ├── default.nix
 │   │   │   └── _hardware-configuration.nix
@@ -139,16 +138,16 @@ The configuration follows a **dendritic pattern** where `flake.nix` imports only
     └── *.png               # Wallpapers
 ```
 
-> **Note on `_` prefixes:** Directories prefixed with `_` (`_rclone/`, `_sops/`, `_wm-scripts/`, `_options.nix`, `_services/`, `_hardware-configuration.nix`, `_secrets.nix`) are internal/private files. They are imported explicitly by name where needed and are not auto-discovered by the module system.
+> **Note on `_` prefixes:** Paths containing `/_` are automatically excluded by `import-tree`. This includes `_rclone/`, `_sops/`, `_wm-scripts/`, `_firmware/`, `_options.nix`, `_services/`, `_hardware-configuration.nix`, and `_secrets.nix`. These internal files are imported explicitly where needed.
 
 ## How It Works
 
 ### Dendritic Pattern
 
-The configuration uses a **dendritic (tree-like) structure** with flake-parts:
+The configuration uses a **dendritic (tree-like) structure** with [import-tree](https://github.com/vic/import-tree) and flake-parts:
 
-1. **`flake.nix`** imports only `modules/default.nix`
-2. **`modules/default.nix`** imports all module categories
+1. **`flake.nix`** calls `inputs.import-tree ./modules` — all `.nix` files are auto-imported
+2. **Paths with `/_`** are excluded (hardware configs, secrets, internal modules)
 3. **Each module** registers itself to `flake.modules.{nixos,darwin,homeManager}.<name>`
 4. **`modules/flake/configurations.nix`** composes modules into system configurations
 
@@ -256,7 +255,7 @@ The homelab module (`modules/homelab/`) provides a complete self-hosted services
 };
 ```
 
-4. Import in `modules/default.nix`
+The host module will be auto-imported by `import-tree`.
 
 ### Darwin Host
 
@@ -281,11 +280,11 @@ The homelab module (`modules/homelab/`) provides a complete self-hosted services
 };
 ```
 
-3. Import in `modules/default.nix`
+The host module will be auto-imported by `import-tree`.
 
 ## Adding a New Module
 
-1. Create `modules/<category>/<name>.nix`:
+1. Create `modules/<category>/<name>.nix` — it will be auto-imported:
 ```nix
 {...}: {
   # For NixOS
@@ -305,9 +304,9 @@ The homelab module (`modules/homelab/`) provides a complete self-hosted services
 }
 ```
 
-2. Import in `modules/default.nix`
+2. Add the module name to the relevant system configurations in `modules/flake/configurations.nix`
 
-3. Add the module name to the relevant system configurations in `modules/flake/configurations.nix`
+That's it — `import-tree` will auto-import the new module file.
 
 ## Secrets
 
