@@ -185,8 +185,7 @@ in {
       ];
     };
 
-
-# MacBook running NixOS
+    # MacBook running NixOS
     macbook-intel-nixos-sooph = mkNixosSystem {
       hostname = "macbook-intel-nixos-sooph";
       system = "x86_64-linux";

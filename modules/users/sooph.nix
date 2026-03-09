@@ -33,8 +33,7 @@
     }: {
       home = {
         username = "sooph";
-        homeDirectory =
-          "/home/sooph";
+        homeDirectory = "/home/sooph";
 
         # State version - should match system stateVersion
         stateVersion = "25.11";

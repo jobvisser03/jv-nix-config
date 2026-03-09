@@ -13,12 +13,12 @@
       ./hardware-configuration.nix
     ];
 
-nixpkgs.config.allowUnfree = true;
+    nixpkgs.config.allowUnfree = true;
 
     # Host identity
     networking.hostName = "sooph-macbook-nixos";
 
-  networking.networkmanager.enable = true;
+    networking.networkmanager.enable = true;
 
     # Boot configuration
     boot.loader = {
@@ -28,49 +28,49 @@ nixpkgs.config.allowUnfree = true;
       timeout = 0;
     };
 
-  # Set your time zone.
-  time.timeZone = "Europe/Amsterdam";
+    # Set your time zone.
+    time.timeZone = "Europe/Amsterdam";
 
-  boot.kernelModules = [
-"firewire-core"
-"firewire-ohci"
-"firewire-net"
-"wl"
-];
+    boot.kernelModules = [
+      "firewire-core"
+      "firewire-ohci"
+      "firewire-net"
+      "wl"
+    ];
 
-boot.initrd.kernelModules = [ "kvm-intel" "wl" ] ;
+    boot.initrd.kernelModules = ["kvm-intel" "wl"];
 
-hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.legacy_470;
-hardware.nvidia.modesetting.enable = true;
-hardware.opengl.enable = true;
+    hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.legacy_470;
+    hardware.nvidia.modesetting.enable = true;
+    hardware.opengl.enable = true;
 
-nixpkgs.config.permittedInsecurePackages = [
-"broadcom-sta-6.30.223.271-59-6.12.75"
-"broadcom-sta-6.30.223.271-59-6.12.69"
-];
+    nixpkgs.config.permittedInsecurePackages = [
+      "broadcom-sta-6.30.223.271-59-6.12.75"
+      "broadcom-sta-6.30.223.271-59-6.12.69"
+    ];
 
-boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
- 
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+    boot.extraModulePackages = [config.boot.kernelPackages.broadcom_sta];
 
-  # Configure keymap in X11
-  services.xserver.xkb.layout = "us";
-  console.useXkbConfig = true;
-   services.xserver.xkb.options = "eurosign:e,caps:escape";
+    # Enable the X11 windowing system.
+    services.xserver.enable = true;
+    services.xserver.displayManager.gdm.enable = true;
+    services.xserver.desktopManager.gnome.enable = true;
 
-   services.pipewire = {
-     enable = true;
-     pulse.enable = true;
-   };
+    # Configure keymap in X11
+    services.xserver.xkb.layout = "us";
+    console.useXkbConfig = true;
+    services.xserver.xkb.options = "eurosign:e,caps:escape";
 
-   # Printing
-      services.printing.enable = true;
-   
-     # Enable touchpad support (enabled default in most desktopManager).
-   services.libinput.enable = true;
+    services.pipewire = {
+      enable = true;
+      pulse.enable = true;
+    };
+
+    # Printing
+    services.printing.enable = true;
+
+    # Enable touchpad support (enabled default in most desktopManager).
+    services.libinput.enable = true;
 
     # Host-specific packages
     environment.systemPackages = with pkgs; [
@@ -79,8 +79,8 @@ boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
       vim
     ];
 
-  # Enable the OpenSSH daemon.
-   services.openssh.enable = true;
+    # Enable the OpenSSH daemon.
+    services.openssh.enable = true;
 
     system.stateVersion = "25.11";
   };
