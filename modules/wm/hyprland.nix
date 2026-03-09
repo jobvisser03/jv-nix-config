@@ -42,7 +42,7 @@ in {
           output = "";
           mode = "preferred";
           position = "auto";
-          scale = "1.33";
+          scale = "2";
         }
       ];
 
@@ -58,7 +58,7 @@ in {
         kb_layout = "us";
         kb_options = "caps:swapescape";
         follow_mouse = 1;
-        sensitivity = 0;
+        sensitivity = 0.6;
         scroll_method = "2fg";
         touchpad = {
           disable_while_typing = true;
