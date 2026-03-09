@@ -10,7 +10,7 @@
   }: {
     imports = [
       # Hardware configuration
-      ./hardware-configuration.nix
+      ./_hardware-configuration.nix
     ];
 
     nixpkgs.config.allowUnfree = true;

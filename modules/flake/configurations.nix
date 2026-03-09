@@ -2,7 +2,6 @@
 {
   config,
   inputs,
-  lib,
   ...
 }: let
   # Load both NixOS and home-manager modules for a given list of module names
@@ -49,11 +48,7 @@
   }:
     inputs.nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = {
-        inherit inputs;
-        username = user;
-        flakeConfig = config;
-      };
+      specialArgs = {inherit inputs;};
       modules =
         [
           # Always include base modules
@@ -75,11 +70,7 @@
   }:
     inputs.darwin.lib.darwinSystem {
       inherit system;
-      specialArgs = {
-        inherit inputs;
-        username = user;
-        flakeConfig = config;
-      };
+      specialArgs = {inherit inputs;};
       modules =
         [
           # Always include base darwin module

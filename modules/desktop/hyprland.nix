@@ -479,7 +479,7 @@
 
       # Copy scripts for hyprlock
       home.file.".config/hypr/scripts" = {
-        source = ../../modules/wm/scripts;
+        source = ../../modules/_wm-scripts;
         recursive = true;
       };
 

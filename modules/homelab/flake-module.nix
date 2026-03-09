@@ -13,21 +13,21 @@
     # Import all homelab modules
     imports = [
       # Core homelab options
-      (import ./options.nix)
+      (import ./_options.nix)
       # Services infrastructure (Caddy, Podman)
-      (import ./services/infrastructure.nix)
+      (import ./_services/infrastructure.nix)
       # Individual services
-      (import ./services/cloudflare-ddns.nix)
-      (import ./services/forgejo.nix)
-      (import ./services/gitlab.nix)
-      (import ./services/gitlab-runner.nix)
-      (import ./services/homepage.nix)
-      (import ./services/homeassistant.nix)
-      (import ./services/immich.nix)
-      (import ./services/jellyfin.nix)
-      (import ./services/paperless.nix)
-      (import ./services/radicale.nix)
-      (import ./services/spotify-player.nix)
+      (import ./_services/cloudflare-ddns.nix)
+      (import ./_services/forgejo.nix)
+      (import ./_services/gitlab.nix)
+      (import ./_services/gitlab-runner.nix)
+      (import ./_services/homepage.nix)
+      (import ./_services/homeassistant.nix)
+      (import ./_services/immich.nix)
+      (import ./_services/jellyfin.nix)
+      (import ./_services/paperless.nix)
+      (import ./_services/radicale.nix)
+      (import ./_services/spotify-player.nix)
     ];
 
     config = lib.mkIf cfg.enable {

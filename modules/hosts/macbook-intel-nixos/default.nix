@@ -10,11 +10,11 @@
   }: {
     imports = [
       # Hardware configuration
-      ./hardware-configuration.nix
-      ./secrets.nix
+      ./_hardware-configuration.nix
+      ./_secrets.nix
 
       # Rclone module
-      ../../rclone
+      ../../_rclone
     ];
 
     # Host identity
