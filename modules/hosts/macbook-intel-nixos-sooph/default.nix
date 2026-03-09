@@ -65,6 +65,9 @@ boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
      enable = true;
      pulse.enable = true;
    };
+
+   # Printing
+      services.printing.enable = true;
    
      # Enable touchpad support (enabled default in most desktopManager).
    services.libinput.enable = true;
