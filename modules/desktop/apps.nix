@@ -64,7 +64,6 @@
       imagemagick
 
       # Development tools
-      nodejs_20
       devenv
 
       # opencode CLI
