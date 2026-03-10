@@ -46,6 +46,7 @@ The configuration follows a **dendritic pattern** using `import-tree` to auto-im
 │   │   │   ├── default.nix
 │   │   │   ├── _hardware-configuration.nix
 │   │   │   ├── _secrets.nix
+│   │   │   ├── _t2-suspend/      # T2 suspend/resume fix module
 │   │   │   └── _firmware/brcm/   # WiFi/Bluetooth firmware blobs
 │   │   ├── macbook-intel-nixos-sooph/  # Intel Mac running NixOS (sooph)
 │   │   │   ├── default.nix
@@ -359,6 +360,32 @@ sudo nix-collect-garbage --delete-older-than 14d
 4. Subsequent updates: `darwin-rebuild switch --flake ~/repos/jv-nix-config#<hostname>`
 
 ## Troubleshooting
+
+### T2 Mac Suspend/Resume (macbook-intel-nixos)
+
+T2 Macs have broken suspend/resume due to PipeWire holding audio handles to `apple-bce`. On resume, the driver maps audio at a new MMIO address, causing stale handles and broken input devices.
+
+The `_t2-suspend` module fixes this by:
+1. Stopping PipeWire before suspend (releases audio handles)
+2. Unloading `apple-bce` and WiFi modules
+3. Reloading modules on resume and restarting PipeWire
+
+Configuration in `modules/hosts/macbook-intel-nixos/default.nix`:
+```nix
+hardware.apple-t2-suspend = {
+  enable = true;
+  useDeepSleep = true;      # mem_sleep_default=deep
+  disableAspm = true;       # pcie_aspm=off (improves stability)
+  unloadAppleBce = true;    # Unload/reload apple-bce module
+  stopAudio = true;         # Stop PipeWire before suspend
+};
+```
+
+Check logs: `journalctl -u suspend-fix-t2`
+
+References:
+- https://github.com/lucadibello/T2Linux-Suspend-Fix
+- https://github.com/t2linux/T2-Debian-and-Ubuntu-Kernel/issues/53
 
 ### Trusted Users Warning
 

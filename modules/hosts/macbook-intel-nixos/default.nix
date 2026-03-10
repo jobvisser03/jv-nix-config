@@ -7,14 +7,7 @@
     inputs,
     username,
     ...
-  }: let
-    # Patched apple-bce driver with internal suspend/resume support
-    # Source: https://github.com/klizas/apple-bce-drv (branch: aur)
-    # This eliminates the need for module unloading/reloading on suspend/resume
-    appleBcePatched = pkgs.callPackage ./_apple-bce-patched.nix {
-      kernel = config.boot.kernelPackages.kernel;
-    };
-  in {
+  }: {
     imports = [
       # Hardware configuration
       ./_hardware-configuration.nix
@@ -37,16 +30,6 @@
       efi.efiSysMountPoint = "/boot";
       timeout = 0;
     };
-
-    # Use patched apple-bce module with suspend/resume support
-    # This replaces the built-in module from nixos-hardware
-    boot.extraModulePackages = [appleBcePatched];
-
-    # Blacklist the built-in apple-bce module to use our patched version
-    boot.blacklistedKernelModules = ["apple-bce"];
-
-    # Load our patched apple-bce module
-    boot.kernelModules = ["apple-bce"];
 
     # Enable T2 suspend/resume fixes
     # This handles: PipeWire audio, apple-bce module unload/reload, WiFi, Bluetooth, Touch Bar
