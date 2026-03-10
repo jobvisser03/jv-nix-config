@@ -7,7 +7,6 @@
       # Hardware management
       radeontop
       easyeffects
-      helvum
 
       # Browsers (brave as secondary, firefox handled by its own module)
       brave
