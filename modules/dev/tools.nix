@@ -7,6 +7,10 @@
     config,
     ...
   }: {
+    home.packages = with pkgs; [
+      alejandra # Nix formatter
+    ];
+
     programs = {
       awscli.enable = true;
       bat.enable = true;
