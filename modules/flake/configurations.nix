@@ -132,6 +132,7 @@ in {
         "kitty"
         "firefox"
         "desktop-apps"
+        "nixos-desktop-apps"
       ];
       extraModules = [
         inputs.sops-nix.nixosModules.sops
@@ -174,6 +175,7 @@ in {
         "kitty"
         "firefox"
         "desktop-apps"
+        "nixos-desktop-apps"
       ];
       extraModules = [
         inputs.sops-nix.nixosModules.sops
@@ -209,6 +211,7 @@ in {
         "wezterm"
         "firefox"
         "desktop-apps"
+        "nixos-desktop-apps"
       ];
     };
   };

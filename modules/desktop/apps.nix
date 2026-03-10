@@ -23,13 +23,13 @@
     ];
   };
 
+  # Cross-platform home-manager packages (works on both NixOS and Darwin)
   flake.modules.homeManager.desktop-apps = {pkgs, ...}: {
     home.packages = with pkgs; [
       # Core CLI tools
       curl
       ffmpeg
       fzf
-      rsync
       hurl
       yt-dlp
       neofetch
@@ -74,15 +74,24 @@
       drawio
       anki-bin
       docker-client
-      overskride
-      nautilus
       sops
+    ];
+
+    programs.vscode = {
+      enable = true;
+    };
+  };
+
+  # NixOS-only home-manager packages (Linux-specific applications)
+  flake.modules.homeManager.nixos-desktop-apps = {pkgs, ...}: {
+    home.packages = with pkgs; [
+      # Linux-only desktop applications
+      nautilus
       spotify
       retroarch-free
     ];
 
     programs.vscode = {
-      enable = true;
       package = pkgs.vscode.fhs;
     };
   };
