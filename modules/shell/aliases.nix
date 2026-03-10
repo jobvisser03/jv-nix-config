@@ -15,6 +15,7 @@
       nrs = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#macbook-intel-nixos-sooph";
       nrl = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#larkbox";
       nup = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#macbok-intel-nixos --upgrade";
+      flup = "nix flake update --commit-lock-file";
 
       # General utilities
       dup = "sudo systemctl list-units *docker*";

@@ -32,10 +32,12 @@
       fzf
       hurl
       yt-dlp
-      neofetch
+      fastfetch
 
       # Languages and formatters
       nil
+      alejandra
+      shfmt
 
       # Shells and terminals
       vim
