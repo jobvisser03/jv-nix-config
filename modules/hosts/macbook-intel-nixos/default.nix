@@ -49,12 +49,14 @@
     boot.kernelModules = ["apple-bce"];
 
     # Enable T2 suspend/resume fixes
+    # This handles: PipeWire audio, apple-bce module unload/reload, WiFi, Bluetooth, Touch Bar
     hardware.apple-t2-suspend = {
       enable = true;
       keyboardBacklightLevel = 100;
       useDeepSleep = true;
-      # Set to true if you experience suspend issues
-      disableAspm = false;
+      disableAspm = true; # Improves suspend stability
+      unloadAppleBce = true; # Required for reliable resume
+      stopAudio = true; # Release PipeWire handles before apple-bce unload
     };
 
     # Fix NetworkManager-wait-online failures
