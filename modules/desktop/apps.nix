@@ -75,6 +75,7 @@
       anki-bin
       docker-client
       sops
+      ssh-to-age
     ];
 
     programs.vscode = {

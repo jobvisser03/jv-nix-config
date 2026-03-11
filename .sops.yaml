@@ -11,7 +11,7 @@ keys:
 
   # Mac Intel NixOS host key
   # Run: ssh-keyscan job-mac-nixos 2>/dev/null | grep ed25519 | ssh-to-age
-  - &mac_intel_nixos age1swfmvcexzr04argh8ms5asd9rvaxfj4at2j7eaj9qj03gevvwkswkt62s
+  - &mac_intel_nixos age1swfmvcexzr04argh8ms5asd9rvaxfj4at2j7eaj9qj03gevvwakswkt62s
 
   # Personal key for editing secrets (not for host decryption)
   - &personal age188usuuflnprxceyxxa4c79hgajgyzjzsuwrlpn0rntdfm4ujsv2swfx743
