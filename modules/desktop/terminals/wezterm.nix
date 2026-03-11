@@ -11,11 +11,11 @@
     fontName =
       if config ? stylix && config.stylix ? fonts
       then config.stylix.fonts.monospace.name
-      else "monospace";
+      else "SauceCodePro Nerd Font";
     fontSize =
       if config ? stylix && config.stylix ? fonts
       then config.stylix.fonts.sizes.terminal
-      else 14;
+      else 16;
   in {
     programs.wezterm = {
       enable = true;
