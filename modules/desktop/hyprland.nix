@@ -80,6 +80,12 @@
       hardware.bluetooth = {
         enable = true;
         powerOnBoot = true;
+        settings = {
+          General = {
+            Experimental = true;
+            UserspaceHID = true; # Helps with high-resolution scrolling/input
+          };
+      };
       };
       services.blueman.enable = true;
 
@@ -193,7 +199,7 @@
               output = "";
               mode = "preferred";
               position = "auto";
-              scale = "1.33";
+              scale = "2.00";
             }
           ];
 
