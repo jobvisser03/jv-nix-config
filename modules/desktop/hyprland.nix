@@ -85,7 +85,7 @@
             Experimental = true;
             UserspaceHID = true; # Helps with high-resolution scrolling/input
           };
-      };
+        };
       };
       services.blueman.enable = true;
 
@@ -116,6 +116,7 @@
         cliphist
         brightnessctl
         networkmanagerapplet
+        hyprmon
 
         # Notifications
         dunst
@@ -194,12 +195,27 @@
             focus_on_activate = true;
           };
 
+          # TODO  add DP-6 3840x1600 scale 1.25Df
           monitorv2 = [
             {
               output = "";
               mode = "preferred";
               position = "auto";
-              scale = "2.00";
+              scale = "1.60";
+            }
+            {
+              name = "eDP-1";
+              mode = "3072x1920";
+              x = 512;
+              y = 1344;
+              scale = "1.60";
+            }
+            {
+              name = "DP-6";
+              mode = "3840x1600";
+              x = 0;
+              y = 0;
+              scale = "1.25";
             }
           ];
 
@@ -317,7 +333,7 @@
             # Special workspaces
             "special:spotify, on-created-empty:spotify"
             "special:spotify, gapsout:50"
-            "special:monitor, on-created-empty:kitty btop"
+            "special:monitor, on-created-empty:wezterm btop"
             "special:monitor, gapsout:50"
             "special:discord, on-created-empty:vesktop"
             "special:discord, gapsout:50"
@@ -333,7 +349,7 @@
               # Applications submap
               "SUPER, A, Activate applications submap, submap, applications"
               # Open applications
-              "SUPER, RETURN, Open terminal, exec, kitty"
+              "SUPER, RETURN, Open terminal, exec, wezterm"
               "SUPER, E, Open file manager, exec, nautilus"
               ", XF86Calculator, Open calculator, exec, gnome-calculator"
 

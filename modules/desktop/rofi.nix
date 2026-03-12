@@ -28,7 +28,7 @@
         display-window = "";
         display-combi = "";
         icon-theme = "Fluent-dark";
-        terminal = "kitty";
+        terminal = "wezterm";
         drun-match-fields = "name";
         drun-display-format = "{name}";
         me-select-entry = "";

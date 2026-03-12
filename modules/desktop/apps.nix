@@ -14,7 +14,6 @@
       # Desktop applications
       logseq
       cryptomator
-      protonmail-desktop
       signal-desktop
 
       # Wallpaper daemon
