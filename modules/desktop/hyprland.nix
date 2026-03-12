@@ -204,17 +204,15 @@
               scale = "1.60";
             }
             {
-              name = "eDP-1";
+              output = "eDP-1";
               mode = "3072x1920";
-              x = 512;
-              y = 1344;
+              position = "512x1344";
               scale = "1.60";
             }
             {
-              name = "DP-6";
+              output  = "DP-6";
               mode = "3840x1600";
-              x = 0;
-              y = 0;
+              position = "0x0";
               scale = "1.25";
             }
           ];

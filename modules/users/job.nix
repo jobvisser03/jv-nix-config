@@ -16,7 +16,7 @@
       users.users.job = {
         isNormalUser = true;
         description = "Job Visser";
-        extraGroups = ["wheel" "video" "audio" "networkmanager" "docker"];
+        extraGroups = ["wheel" "docker""video" "audio" "networkmanager" ];
         shell = pkgs.zsh;
       };
 

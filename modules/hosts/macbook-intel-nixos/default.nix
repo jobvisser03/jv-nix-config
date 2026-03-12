@@ -92,6 +92,20 @@
 
     # Disable Tailscale temporarily
     services.tailscale.enable = true;
+    
+    # Podman for OCI containers (Home Assistant, etc.)
+    # virtualisation.podman = {
+    #   enable = true;
+    #   dockerCompat = true;
+    #   autoPrune.enable = true;
+    #   defaultNetwork.settings = {
+    #     dns_enabled = true;
+    #   };
+    # };
+    virtualisation.docker.enable = true;
+
+    # Use Podman as OCI backend
+    virtualisation.oci-containers.backend = "docker";
 
     # Host-specific packages
     environment.systemPackages = with pkgs; [
