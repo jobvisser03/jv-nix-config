@@ -42,12 +42,21 @@
       stopAudio = true; # Release PipeWire handles before apple-bce unload
     };
 
-    # Fix NetworkManager-wait-online failures
-    systemd.services.NetworkManager-wait-online = {
+    # Kernel modules for Docker networking
+    boot.kernelModules = [ "br_netfilter" "bridge" "veth" ];
+
+    # Docker systemd dependencies - just wait for NetworkManager, not network-online
+    systemd.services.docker = {
+      after = [ "NetworkManager.service" ];
+      requires = [ "NetworkManager.service" ];
       serviceConfig = {
-        ExecStart = lib.mkForce "${pkgs.networkmanager}/bin/nm-online -s -q --timeout=10";
+        Restart = "on-failure";
+        RestartSec = "5s";
       };
     };
+
+    # Disable NetworkManager-wait-online to avoid 60s+ startup delay on WiFi
+    systemd.services.NetworkManager-wait-online.enable = false;
 
     # Apple T2 specific firmware
     hardware.firmware = [
@@ -102,7 +111,13 @@
     #     dns_enabled = true;
     #   };
     # };
-    virtualisation.docker.enable = true;
+    virtualisation.docker = {
+      enable = true;
+      daemon.settings = {
+        userland-proxy = false;
+        data-root = "/data/docker";
+      };
+    };
 
     # Use Podman as OCI backend
     virtualisation.oci-containers.backend = "docker";

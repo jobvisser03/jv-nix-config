@@ -14,7 +14,15 @@
 
   boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "usbhid" "usb_storage" "sd_mod"];
   boot.initrd.kernelModules = [];
-  boot.kernelModules = ["kvm-intel" "hid-logitech-hidpp" "hci_uart" "btbcm"];
+  boot.kernelModules = [
+    "kvm-intel"
+    "hid-logitech-hidpp"
+    "hci_uart"
+    "btbcm"
+    "br_netfilter"
+    "bridge"
+    "veth"
+  ];
   boot.extraModulePackages = [];
 
   fileSystems."/" = {
