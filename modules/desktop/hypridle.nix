@@ -42,12 +42,12 @@
           }
           # Lock screen
           {
-            timeout = 120;
+            timeout = 300;
             on-timeout = "pgrep hyprlock || hyprlock --grace 3";
           }
           # Turn off display
           {
-            timeout = 140;
+            timeout = 600;
             on-timeout = "hyprctl dispatch dpms off";
             on-resume = "hyprctl dispatch dpms on";
           }
