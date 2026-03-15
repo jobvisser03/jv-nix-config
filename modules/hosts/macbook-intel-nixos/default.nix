@@ -96,7 +96,14 @@
           uid = 1000;
           gid = 100;
         };
-      };
+         pcloud- = {
+          remote = "pcloud:PHOTOS/'TEMP Photo Library'";
+          mountpoint = "/home/${username}/pcloud/temp-photo-library";
+          cacheMode = "writes";
+          readOnly = false;
+          uid = 1000;
+          gid = 100;
+        };     };
     };
 
     # Disable Tailscale temporarily

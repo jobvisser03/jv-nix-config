@@ -75,6 +75,7 @@
       docker-client
       sops
       ssh-to-age
+      darktable
     ];
 
     programs.vscode = {
