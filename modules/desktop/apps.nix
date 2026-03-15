@@ -65,8 +65,9 @@
       # Development tools
       devenv
 
-      # opencode CLI
+      # TUI coding apps
       opencode
+      claude-code
 
       # Desktop applications
       keepassxc
