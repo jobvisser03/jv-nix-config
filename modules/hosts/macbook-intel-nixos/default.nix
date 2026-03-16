@@ -42,6 +42,9 @@
       stopAudio = true; # Release PipeWire handles before apple-bce unload
     };
 
+    # Intel GPU GuC submission for hybrid graphics suspend support
+    boot.kernelParams = [ "i915.enable_guc=3" ];
+
     # Kernel modules for Docker networking
     boot.kernelModules = [ "br_netfilter" "bridge" "veth" ];
 
@@ -70,10 +73,17 @@
       }))
     ];
 
-    # Host-specific hardware settings
-    hardware = {
-      nvidia.modesetting.enable = false;
-    };
+    # Hybrid GPU: force Intel iGPU as default via apple-gmux
+    # AMD dGPU available via DRI_PRIME=1 for offloading
+    # Ref: https://wiki.t2linux.org/guides/hybrid-graphics/
+    boot.extraModprobeConfig = ''
+      options apple-gmux force_igd=y
+    '';
+
+    # AMD dGPU power management - keep at low profile to reduce thermals
+    services.udev.extraRules = ''
+      SUBSYSTEM=="drm", DRIVERS=="amdgpu", ATTR{device/power_dpm_force_performance_level}="low"
+    '';
 
     # Rclone cloud storage mounts
     services.rclone = {

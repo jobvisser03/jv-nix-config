@@ -195,7 +195,6 @@
             focus_on_activate = true;
           };
 
-          # TODO  add DP-6 3840x1600 scale 1.25Df
           monitorv2 = [
             {
               output = "";
@@ -210,10 +209,15 @@
               scale = "1.60";
             }
             {
-              output  = "DP-6";
+              output = "DP-6";
               mode = "3840x1600";
               position = "0x0";
               scale = "1.25";
+            }
+            {
+              # Disable phantom dGPU output (AMD eDP-2)
+              output = "eDP-2";
+              disabled = true;
             }
           ];
 
@@ -255,6 +259,7 @@
           env = [
             "ELECTRON_OZONE_PLATFORM_HINT,auto"
             "ELECTRON_ENABLE_WAYLAND,1"
+            "AQ_DRM_DEVICES,/dev/dri/card1"
           ];
 
           general = {
