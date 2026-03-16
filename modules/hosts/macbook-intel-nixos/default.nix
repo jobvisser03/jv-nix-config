@@ -85,6 +85,9 @@
       SUBSYSTEM=="drm", DRIVERS=="amdgpu", ATTR{device/power_dpm_force_performance_level}="low"
     '';
 
+    # Intel thermald - adaptive thermal management for Intel CPUs
+    services.thermald.enable = true;
+
     # Rclone cloud storage mounts
     services.rclone = {
       enable = true;
