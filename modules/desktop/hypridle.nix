@@ -33,11 +33,11 @@
           }
           # Dim screen progressively
           {
-            timeout = 50;
+            timeout = 120;
             on-timeout = "brightnessctl set 50%-";
           }
           {
-            timeout = 110;
+            timeout = 240;
             on-timeout = "brightnessctl set 50%-";
           }
           # Lock screen

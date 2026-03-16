@@ -11,6 +11,8 @@
     borderRadius = "10";
     borderSize = "2";
   in {
+    systemd.user.services.waybar.Service.ExecStartPre = "${pkgs.coreutils}/bin/sleep 3";
+
     programs.waybar = {
       enable = true;
       systemd.enable = true;

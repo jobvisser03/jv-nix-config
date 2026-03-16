@@ -118,6 +118,9 @@
         networkmanagerapplet
         hyprmon
 
+        # GPU utility to check which GPU is rendering a window
+        mesa-demos
+
         # Notifications
         dunst
         libnotify
