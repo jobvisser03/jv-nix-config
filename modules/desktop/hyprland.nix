@@ -262,7 +262,7 @@
           env = [
             "ELECTRON_OZONE_PLATFORM_HINT,auto"
             "ELECTRON_ENABLE_WAYLAND,1"
-            "AQ_DRM_DEVICES,/dev/dri/card1"
+            "AQ_DRM_DEVICES,/dev/dri/${if (config.macbook.gpuMode or "dgpu") == "igpu" then "card1" else "card0"}"
           ];
 
           general = {

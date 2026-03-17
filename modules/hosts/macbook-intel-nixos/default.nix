@@ -16,9 +16,14 @@
       # T2 Mac suspend/resume fix
       ./_t2-suspend
 
+      # GPU mode (igpu/dgpu)
+      ./_gpu.nix
+
       # Rclone module
       ../../_rclone
     ];
+
+    macbook.gpuMode = "dgpu";
 
     # Host identity
     networking.hostName = "job-mac-nixos";
@@ -72,18 +77,6 @@
         '';
       }))
     ];
-
-    # Hybrid GPU: force Intel iGPU as default via apple-gmux
-    # AMD dGPU available via DRI_PRIME=1 for offloading
-    # Ref: https://wiki.t2linux.org/guides/hybrid-graphics/
-    boot.extraModprobeConfig = ''
-      options apple-gmux force_igd=y
-    '';
-
-    # AMD dGPU power management - keep at low profile to reduce thermals
-    services.udev.extraRules = ''
-      SUBSYSTEM=="drm", DRIVERS=="amdgpu", ATTR{device/power_dpm_force_performance_level}="low"
-    '';
 
     # Intel thermald - adaptive thermal management for Intel CPUs
     services.thermald.enable = true;
