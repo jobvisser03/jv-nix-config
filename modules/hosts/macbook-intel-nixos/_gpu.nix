@@ -1,6 +1,6 @@
 # GPU mode configuration for MacBook Intel (hybrid Intel iGPU + AMD dGPU)
 # igpu: Intel as primary (force_igd=y) - historically causes freezes + broken suspend
-# dgpu: AMD as primary (force_igd=n) - stable, card0=AMD card1=Intel
+# dgpu: AMD as primary (force_igd=n) - stable, uses by-path symlinks for stable device refs
 {
   config,
   lib,
@@ -28,6 +28,12 @@
         # Intel GuC submission for hybrid graphics suspend support
         "i915.enable_guc=3"
       ];
+
+    # Tell Aquamarine/Hyprland which GPU to use via stable PCI by-path symlinks
+    environment.sessionVariables.AQ_DRM_DEVICES =
+      if config.macbook.gpuMode == "igpu"
+      then "/dev/dri/by-path/pci-0000:00:02.0-card"
+      else "/dev/dri/by-path/pci-0000:03:00.0-card";
 
     # Keep AMD at low power only when it's a background offload GPU
     services.udev.extraRules = lib.mkIf (config.macbook.gpuMode == "igpu") ''
