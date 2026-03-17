@@ -47,8 +47,7 @@
       stopAudio = true; # Release PipeWire handles before apple-bce unload
     };
 
-    # Intel GPU GuC submission for hybrid graphics suspend support
-    boot.kernelParams = [ "i915.enable_guc=3" ];
+    # GPU-specific kernel params are managed by _gpu.nix based on gpuMode
 
     # Kernel modules for Docker networking
     boot.kernelModules = [ "br_netfilter" "bridge" "veth" ];
@@ -78,8 +77,7 @@
       }))
     ];
 
-    # Intel thermald - adaptive thermal management for Intel CPUs
-    services.thermald.enable = true;
+    # thermald disabled by _t2-suspend module (conflicts with T2 suspend)
 
     # Rclone cloud storage mounts
     services.rclone = {

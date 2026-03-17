@@ -1,15 +1,15 @@
 # T2 Mac suspend/resume fix module
 # Based on:
 # - https://github.com/t2linux/T2-Debian-and-Ubuntu-Kernel/issues/53
-# - https://github.com/lucadibello/T2Linux-Suspend-Fix
-# - https://github.com/deqrocks/T2Linux-Suspend-Fix
+# - https://github.com/lucadibello/T2Linux-Suspend-Fix (PipeWire + apple-bce insight)
+# - https://github.com/benstaker/T2Linux-Suspend-Fix (v1.5.0 - full driver teardown)
 #
-# The key insight from lucadibello: PipeWire holds PCM stream handles to
-# apple-bce's audio device. On resume, apple-bce maps audio at a NEW MMIO
-# address, but PipeWire's stale handles point to the old address, causing
-# kernel panics or broken input devices.
-#
-# Solution: Stop PipeWire BEFORE unloading apple-bce, restart AFTER reload.
+# Key insights:
+# - lucadibello: PipeWire holds PCM stream handles to apple-bce's audio device.
+#   On resume, apple-bce maps audio at a NEW MMIO address, causing kernel panics.
+# - benstaker: Full driver teardown (bluetooth, touch bar, sparse_keymap) + PCI
+#   rescan on resume + separate resume service for reliability + IOMMU/PCIe compat
+#   kernel params.
 {
   config,
   lib,
@@ -22,164 +22,189 @@
   stopAudioScript = pkgs.writeShellScript "t2-stop-audio.sh" ''
     set -euo pipefail
 
-    # Get all logged-in users with active sessions
-    for uid in $(${pkgs.systemd}/bin/loginctl list-users --no-legend | ${pkgs.gawk}/bin/awk '{print $1}'); do
-      user=$(${pkgs.coreutils}/bin/id -nu "$uid" 2>/dev/null) || continue
+    # Get first active user session
+    uid=$(${pkgs.systemd}/bin/loginctl list-sessions --no-legend 2>/dev/null | ${pkgs.gawk}/bin/awk '{print $2}' | head -n1)
+    if [ -z "$uid" ]; then
+      echo "SKIP: no user session found"
+      exit 0
+    fi
 
-      echo "Stopping PipeWire for user: $user (UID: $uid)"
+    if [ ! -S "/run/user/$uid/bus" ]; then
+      echo "SKIP: no D-Bus session found for uid $uid"
+      exit 0
+    fi
 
-      # Stop PipeWire services for this user
-      ${pkgs.systemd}/bin/systemctl --user -M "$user@" stop pipewire.socket 2>/dev/null || true
-      ${pkgs.systemd}/bin/systemctl --user -M "$user@" stop pipewire-pulse.socket 2>/dev/null || true
-      ${pkgs.systemd}/bin/systemctl --user -M "$user@" stop pipewire.service 2>/dev/null || true
-      ${pkgs.systemd}/bin/systemctl --user -M "$user@" stop pipewire-pulse.service 2>/dev/null || true
-      ${pkgs.systemd}/bin/systemctl --user -M "$user@" stop wireplumber.service 2>/dev/null || true
-    done
+    user=$(${pkgs.coreutils}/bin/id -nu "$uid" 2>/dev/null) || exit 0
+    echo "Stopping PipeWire for user: $user (UID: $uid)"
 
-    # Give services time to stop cleanly
+    XDG_RUNTIME_DIR="/run/user/$uid" \
+    DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+      ${pkgs.util-linux}/bin/runuser -u "$user" -- \
+      ${pkgs.systemd}/bin/systemctl --user stop \
+        pipewire.socket pipewire-pulse.socket \
+        pipewire.service pipewire-pulse.service \
+        wireplumber.service 2>/dev/null || true
+
     sleep 1
-    echo "PipeWire stopped for all users"
+    echo "PipeWire stopped for user $user"
   '';
 
   # Helper script to start PipeWire for all logged-in users
   startAudioScript = pkgs.writeShellScript "t2-start-audio.sh" ''
     set -euo pipefail
 
-    # Get all logged-in users with active sessions
-    for uid in $(${pkgs.systemd}/bin/loginctl list-users --no-legend | ${pkgs.gawk}/bin/awk '{print $1}'); do
-      user=$(${pkgs.coreutils}/bin/id -nu "$uid" 2>/dev/null) || continue
+    uid=$(${pkgs.systemd}/bin/loginctl list-sessions --no-legend 2>/dev/null | ${pkgs.gawk}/bin/awk '{print $2}' | head -n1)
+    if [ -z "$uid" ]; then
+      echo "SKIP: no user session found"
+      exit 0
+    fi
 
-      echo "Starting PipeWire for user: $user (UID: $uid)"
+    if [ ! -S "/run/user/$uid/bus" ]; then
+      echo "SKIP: no D-Bus session found for uid $uid"
+      exit 0
+    fi
 
-      # Start PipeWire sockets (services will be activated on demand)
-      ${pkgs.systemd}/bin/systemctl --user -M "$user@" start pipewire.socket 2>/dev/null || true
-      ${pkgs.systemd}/bin/systemctl --user -M "$user@" start pipewire-pulse.socket 2>/dev/null || true
-    done
+    user=$(${pkgs.coreutils}/bin/id -nu "$uid" 2>/dev/null) || exit 0
+    echo "Starting PipeWire for user: $user (UID: $uid)"
 
-    echo "PipeWire started for all users"
+    XDG_RUNTIME_DIR="/run/user/$uid" \
+    DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+      ${pkgs.util-linux}/bin/runuser -u "$user" -- \
+      ${pkgs.systemd}/bin/systemctl --user start \
+        pipewire.socket pipewire-pulse.socket 2>/dev/null || true
+
+    echo "PipeWire sockets started for user $user"
   '';
 
-  # Main suspend/resume script
-  suspendScript = pkgs.writeShellScript "suspend-fix-t2.sh" ''
+  # Pre-suspend script
+  suspendScript = pkgs.writeShellScript "t2-suspend.sh" ''
     set -euo pipefail
+    echo "=== T2 Suspend: Pre-suspend sequence starting ==="
 
-    case "$1" in
-      pre)
-        echo "=== T2 Suspend: Pre-suspend sequence starting ==="
+    # 1. Disable async PM operations for more reliable suspend
+    echo "Setting pm_async=0..."
+    echo 0 > /sys/power/pm_async
 
-        # 1. Disable async PM operations for more reliable suspend
-        echo "Disabling async PM..."
-        echo 0 > /sys/power/pm_async
+    # 2. Force deep sleep mode
+    echo "Setting deep sleep mode..."
+    echo deep > /sys/power/mem_sleep 2>/dev/null || true
 
-        # 2. Force deep sleep mode
-        echo "Setting deep sleep mode..."
-        echo deep > /sys/power/mem_sleep 2>/dev/null || true
-
-        # 3. Stop PipeWire to release audio handles (CRITICAL)
-        ${lib.optionalString cfg.stopAudio ''
-      echo "Stopping PipeWire audio services..."
-      ${stopAudioScript}
+    # 3. Stop PipeWire to release audio handles (CRITICAL)
+    ${lib.optionalString cfg.stopAudio ''
+    echo "Stopping PipeWire audio services..."
+    ${stopAudioScript}
     ''}
 
-        # 4. Stop NetworkManager
-        echo "Stopping NetworkManager..."
-        ${pkgs.systemd}/bin/systemctl stop NetworkManager 2>/dev/null || true
+    # 4. Disable WiFi radio via NetworkManager
+    echo "Disabling WiFi radio..."
+    ${pkgs.networkmanager}/bin/nmcli radio wifi off 2>/dev/null || true
 
-        # 5. Block WiFi and Bluetooth
-        echo "Blocking WiFi and Bluetooth..."
-        ${pkgs.util-linux}/bin/rfkill block wifi 2>/dev/null || true
-        ${pkgs.util-linux}/bin/rfkill block bluetooth 2>/dev/null || true
+    # 5. Block WiFi and Bluetooth
+    echo "Blocking WiFi and Bluetooth..."
+    ${pkgs.util-linux}/bin/rfkill block wifi 2>/dev/null || true
+    ${pkgs.util-linux}/bin/rfkill block bluetooth 2>/dev/null || true
 
-        # 6. Unload WiFi modules
-        echo "Unloading WiFi modules..."
-        ${pkgs.kmod}/bin/modprobe -r brcmfmac_wcc 2>/dev/null || true
-        ${pkgs.kmod}/bin/modprobe -r brcmfmac 2>/dev/null || true
+    # 6. Unload WiFi modules
+    echo "Unloading WiFi modules..."
+    ${pkgs.kmod}/bin/modprobe -r brcmfmac_wcc 2>/dev/null || true
+    ${pkgs.kmod}/bin/modprobe -r brcmfmac 2>/dev/null || true
 
-        # 7. Unload apple-bce module (CRITICAL - must be after PipeWire stops)
-        ${lib.optionalString cfg.unloadAppleBce ''
-      echo "Unloading apple-bce module..."
-      ${pkgs.kmod}/bin/rmmod -f apple-bce 2>/dev/null || true
-      sleep 1
+    # 7. Unload Bluetooth driver
+    echo "Unloading Bluetooth driver..."
+    ${pkgs.kmod}/bin/modprobe -r hci_bcm4377 2>/dev/null || true
+
+    # 8. Unload Touch Bar drivers (order matters: sparse_keymap depends on hid_appletb_kbd)
+    echo "Unloading Touch Bar drivers..."
+    ${pkgs.kmod}/bin/modprobe -r sparse_keymap 2>/dev/null || true
+    ${pkgs.kmod}/bin/modprobe -r hid_appletb_kbd 2>/dev/null || true
+    ${pkgs.kmod}/bin/modprobe -r hid_appletb_bl 2>/dev/null || true
+
+    # 9. Unload apple-bce module (CRITICAL - must be after PipeWire stops)
+    ${lib.optionalString cfg.unloadAppleBce ''
+    echo "Unloading apple-bce module..."
+    ${pkgs.kmod}/bin/rmmod -f apple-bce 2>/dev/null || true
+    sleep 1
     ''}
 
-        echo "=== T2 Suspend: Pre-suspend sequence complete ==="
-        ;;
+    echo "=== T2 Suspend: Pre-suspend sequence complete ==="
+  '';
 
-      post)
-        echo "=== T2 Resume: Post-resume sequence starting ==="
+  # Post-resume script
+  resumeScript = pkgs.writeShellScript "t2-resume.sh" ''
+    set -euo pipefail
+    echo "=== T2 Resume: Post-resume sequence starting ==="
 
-        # 1. Re-enable async PM operations
-        echo "Re-enabling async PM..."
-        echo 1 > /sys/power/pm_async
+    # 1. Reload apple-bce module (CRITICAL - must be before PipeWire starts)
+    ${lib.optionalString cfg.unloadAppleBce ''
+    echo "Loading apple-bce module..."
+    ${pkgs.kmod}/bin/modprobe apple-bce 2>/dev/null || true
 
-        # 2. Reload apple-bce module (CRITICAL - must be before PipeWire starts)
-        ${lib.optionalString cfg.unloadAppleBce ''
-      echo "Loading apple-bce module..."
-      ${pkgs.kmod}/bin/modprobe apple-bce 2>/dev/null || true
-
-      # Wait for apple-bce device to appear (up to 15 seconds)
-      echo "Waiting for apple-bce device..."
-      timeout=15
-      while [ $timeout -gt 0 ]; do
-        if [ -d /sys/bus/pci/drivers/apple-bce ]; then
-          echo "apple-bce device ready"
-          break
-        fi
-        sleep 1
-        timeout=$((timeout - 1))
-      done
-
-      if [ $timeout -eq 0 ]; then
-        echo "WARNING: apple-bce device did not appear within timeout"
+    # Wait for apple-bce PCI binding (up to 15 seconds)
+    echo "Waiting for apple-bce PCI binding..."
+    for i in $(seq 1 15); do
+      if ls /sys/bus/pci/drivers/apple-bce/*:* >/dev/null 2>&1; then
+        echo "apple-bce PCI binding found (attempt $i/15)"
+        break
       fi
-
-      # Additional settle time for device initialization
-      sleep 2
+      sleep 1
+    done
+    sleep 2
     ''}
 
-        # 3. Reload WiFi modules
-        echo "Loading WiFi modules..."
-        ${pkgs.kmod}/bin/modprobe brcmfmac 2>/dev/null || true
-        ${pkgs.kmod}/bin/modprobe brcmfmac_wcc 2>/dev/null || true
+    # 2. PCI bus rescan (discovers devices that disappeared during suspend)
+    echo "Running PCI bus rescan..."
+    echo 1 > /sys/bus/pci/rescan 2>/dev/null || true
 
-        # 4. Start PipeWire (CRITICAL - must be after apple-bce loads)
-        ${lib.optionalString cfg.stopAudio ''
-      echo "Starting PipeWire audio services..."
-      ${startAudioScript}
+    # 3. Load Bluetooth driver
+    echo "Loading Bluetooth driver..."
+    ${pkgs.kmod}/bin/modprobe hci_bcm4377 2>/dev/null || true
+
+    # 4. Load WiFi modules
+    echo "Loading WiFi modules..."
+    ${pkgs.kmod}/bin/modprobe brcmfmac 2>/dev/null || true
+    ${pkgs.kmod}/bin/modprobe brcmfmac_wcc 2>/dev/null || true
+
+    # 5. Unblock WiFi and Bluetooth
+    echo "Unblocking WiFi and Bluetooth..."
+    ${pkgs.util-linux}/bin/rfkill unblock wifi 2>/dev/null || true
+    ${pkgs.util-linux}/bin/rfkill unblock bluetooth 2>/dev/null || true
+
+    # 6. Enable WiFi radio
+    echo "Enabling WiFi radio..."
+    ${pkgs.networkmanager}/bin/nmcli radio wifi on 2>/dev/null || true
+
+    # 7. Start PipeWire (CRITICAL - must be after apple-bce loads)
+    ${lib.optionalString cfg.stopAudio ''
+    echo "Starting PipeWire audio services..."
+    ${startAudioScript}
     ''}
 
-        # 5. Unblock WiFi and Bluetooth
-        echo "Unblocking WiFi and Bluetooth..."
-        ${pkgs.util-linux}/bin/rfkill unblock wifi 2>/dev/null || true
-        ${pkgs.util-linux}/bin/rfkill unblock bluetooth 2>/dev/null || true
+    # 8. Restart UPower (sees all re-appeared PCI devices)
+    echo "Restarting UPower..."
+    ${pkgs.systemd}/bin/systemctl restart upower 2>/dev/null || true
 
-        # 6. Start NetworkManager
-        echo "Starting NetworkManager..."
-        ${pkgs.systemd}/bin/systemctl start NetworkManager 2>/dev/null || true
+    # 9. Restore keyboard backlight (poll for up to 15 seconds)
+    echo "Restoring keyboard backlight..."
+    for i in $(seq 1 15); do
+      for kbd in /sys/class/leds/*kbd_backlight*/brightness; do
+        if [ -f "$kbd" ]; then
+          echo "${toString cfg.keyboardBacklightLevel}" > "$kbd" 2>/dev/null && break 2
+        fi
+      done
+      sleep 1
+    done
 
-        # 7. Rebind Touch Bar HID driver
-        echo "Rebinding Touch Bar HID driver..."
-        sleep 1
-        for dev in /sys/bus/hid/drivers/hid-appletb-kbd/0003:*; do
-          if [[ -L "$dev" ]]; then
-            devid=$(${pkgs.coreutils}/bin/basename "$dev")
-            echo "$devid" > /sys/bus/hid/drivers/hid-appletb-kbd/unbind 2>/dev/null || true
-            sleep 0.3
-            echo "$devid" > /sys/bus/hid/drivers/hid-appletb-kbd/bind 2>/dev/null || true
-          fi
-        done
+    # 10. Wait for WiFi driver binding
+    echo "Checking WiFi driver binding..."
+    for i in $(seq 1 10); do
+      if ls /sys/bus/pci/drivers/brcmfmac/*:* >/dev/null 2>&1; then
+        echo "WiFi driver bound (attempt $i/10)"
+        break
+      fi
+      sleep 0.5
+    done
 
-        # 8. Restore keyboard backlight
-        echo "Restoring keyboard backlight..."
-        for kbd in /sys/class/leds/*kbd_backlight*/brightness; do
-          if [[ -f "$kbd" ]]; then
-            echo "${toString cfg.keyboardBacklightLevel}" > "$kbd" 2>/dev/null || true
-          fi
-        done
-
-        echo "=== T2 Resume: Post-resume sequence complete ==="
-        ;;
-    esac
+    echo "=== T2 Resume: Post-resume sequence complete ==="
   '';
 in {
   options.hardware.apple-t2-suspend = {
@@ -218,13 +243,22 @@ in {
 
   config = lib.mkIf cfg.enable {
     # Kernel parameters for proper suspend
+    # pcie_ports=compat + intel_iommu/iommu=pt from benstaker fix for T2 stability
     boot.kernelParams =
       lib.optionals cfg.useDeepSleep ["mem_sleep_default=deep"]
-      ++ lib.optionals cfg.disableAspm ["pcie_aspm=off"];
+      ++ lib.optionals cfg.disableAspm ["pcie_aspm=off"]
+      ++ [
+        "pcie_ports=compat"
+        "intel_iommu=on"
+        "iommu=pt"
+      ];
 
-    # Systemd service for suspend/resume handling
-    systemd.services.suspend-fix-t2 = {
-      description = "T2 Mac suspend/resume fixes (audio, Wi-Fi, Bluetooth, Touch Bar)";
+    # Disable thermald - conflicts with T2 suspend (benstaker fix)
+    services.thermald.enable = lib.mkForce false;
+
+    # Suspend service: runs pre-suspend teardown, triggered before sleep
+    systemd.services.t2-suspend = {
+      description = "T2 Mac pre-suspend teardown (audio, Wi-Fi, Bluetooth, Touch Bar, apple-bce)";
       before = ["sleep.target"];
       wantedBy = ["sleep.target"];
 
@@ -235,11 +269,48 @@ in {
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
-        # Increase timeout for module unload/reload operations
         TimeoutStartSec = 30;
-        TimeoutStopSec = 60;
-        ExecStart = "${suspendScript} pre";
-        ExecStop = "${suspendScript} post";
+        ExecStart = suspendScript;
+      };
+    };
+
+    # Resume service: runs post-resume reload, triggered after wake
+    systemd.services.t2-resume = {
+      description = "T2 Mac post-resume reload (apple-bce, Wi-Fi, Bluetooth, audio, UPower)";
+      after = ["suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target"];
+      wantedBy = ["suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target"];
+
+      serviceConfig = {
+        Type = "oneshot";
+        TimeoutStartSec = 60;
+        ExecStart = resumeScript;
+      };
+    };
+
+    # Enable all ACPI wakeup devices at boot (benstaker fix)
+    systemd.services.t2-enable-wakeup-devices = {
+      description = "Enable all ACPI wakeup devices for T2 Mac suspend";
+      after = ["multi-user.target"];
+      wantedBy = ["multi-user.target"];
+
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = pkgs.writeShellScript "t2-enable-wakeup-devices.sh" ''
+          set -euo pipefail
+          enabled=0
+          while IFS= read -r line; do
+            dev=$(echo "$line" | ${pkgs.gawk}/bin/awk '{print $1}')
+            status=$(echo "$line" | ${pkgs.gawk}/bin/awk '{print $3}')
+            [ "$dev" = "Device" ] && continue
+            [ -z "$dev" ] && continue
+            if [ "$status" = "*disabled" ]; then
+              echo "$dev" > /proc/acpi/wakeup 2>/dev/null || true
+              enabled=$((enabled + 1))
+            fi
+          done < /proc/acpi/wakeup
+          echo "Enabled $enabled ACPI wakeup devices"
+        '';
       };
     };
 
