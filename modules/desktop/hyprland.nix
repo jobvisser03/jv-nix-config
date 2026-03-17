@@ -237,6 +237,8 @@
             kb_options = "caps:swapescape";
             follow_mouse = 1;
             sensitivity = 0;
+            repeat_delay = 300;
+            repeat_rate = 50;
             scroll_method = "2fg";
             touchpad = {
               disable_while_typing = true;
