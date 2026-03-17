@@ -180,7 +180,7 @@
       wayland.windowManager.hyprland = {
         enable = true;
         package = pkgs.hyprland;
-        systemd.enable = true;
+        systemd.enable = false; # UWSM handles systemd session management
         systemd.enableXdgAutostart = true;
 
         settings = {
