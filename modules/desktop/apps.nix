@@ -49,6 +49,7 @@
 
       # Cloud and networking
       google-cloud-sdk
+      azure-cli
       cachix
       tailscale
       speedtest-cli

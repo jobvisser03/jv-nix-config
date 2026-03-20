@@ -234,7 +234,7 @@
 
           input = {
             kb_layout = "us";
-            kb_options = "caps:swapescape";
+            kb_options = "ctrl:nocaps";
             follow_mouse = 1;
             sensitivity = 0;
             repeat_delay = 300;
@@ -406,7 +406,7 @@
               "SUPER, R, Open application launcher, exec, rofi -show drun"
 
               # Clipboard
-              "SUPER, V, Show clipboard history, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+              "SUPER SHIFT, C, Show clipboard history, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 
               # Lock screen
               "SUPER, ESCAPE, Lock screen, exec, loginctl lock-session"
