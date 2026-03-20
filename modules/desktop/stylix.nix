@@ -75,6 +75,9 @@
     }: {
       # Stylix home-manager module is automatically applied when enabled at NixOS level
       # This module can be used for home-manager-specific stylix overrides
+
+      stylix.targets.firefox.profileNames = ["default"];
+      stylix.targets.vscode.enable = false;
     };
   };
 }
