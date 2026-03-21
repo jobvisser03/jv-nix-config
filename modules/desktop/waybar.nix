@@ -56,10 +56,8 @@
             format = "{icon}";
 
             format-icons = {
-              "discord" = "";
-              "todo" = "";
               "monitor" = "󰍹";
-              "obsidian" = "";
+              "logseq" = "";
               "spotify" = "";
               "default" = "";
               "1" = "1";

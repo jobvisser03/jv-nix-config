@@ -121,9 +121,24 @@
         # GPU utility to check which GPU is rendering a window
         mesa-demos
 
-        # Notifications
-        dunst
+        # Notifications (dunst configured via home-manager dunst module)
         libnotify
+
+        # Screenshot & recording
+        grimblast
+        satty
+        grim
+        slurp
+        wl-screenrec
+
+        # Color picker
+        hyprpicker
+
+        # Media control
+        playerctl
+
+        # On-screen display
+        swayosd
 
         # File manager
         nautilus
@@ -187,6 +202,7 @@
           exec-once = [
             "${startupScript}/bin/start"
             "wpctl set-mute @DEFAULT_AUDIO_SINK@ 1"
+            "swayosd-server"
           ];
 
           misc = {
@@ -401,6 +417,10 @@
               "SUPER, D, Open application launcher, exec, rofi -show drun"
               "SUPER, R, Open application launcher, exec, rofi -show drun"
 
+              # Screenshot (Print key for quick region screenshot)
+              ", Print, Screenshot region, exec, grimblast --freeze save area - | satty -f -"
+              "SHIFT, Print, Screenshot fullscreen, exec, grimblast --freeze save screen"
+
               # Clipboard
               "SUPER SHIFT, C, Show clipboard history, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 
@@ -423,18 +443,23 @@
             ));
 
           bindl = [
-            # Audio control
-            ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-            ", XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+            # Audio control (swayosd for visual feedback)
+            ", XF86AudioMute, exec, swayosd-client --output-volume mute-toggle"
+            ", XF86AudioMicMute, exec, swayosd-client --input-volume mute-toggle"
+            # Media controls
+            ", XF86AudioPlay, exec, playerctl play-pause"
+            ", XF86AudioPause, exec, playerctl play-pause"
+            ", XF86AudioNext, exec, playerctl next"
+            ", XF86AudioPrev, exec, playerctl previous"
           ];
 
           bindel = [
-            # Volume control
-            ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
-            ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-            # Brightness control
-            ", XF86MonBrightnessUp, exec, brightnessctl set 5%+"
-            ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
+            # Volume control (swayosd for visual feedback)
+            ", XF86AudioRaiseVolume, exec, swayosd-client --output-volume raise"
+            ", XF86AudioLowerVolume, exec, swayosd-client --output-volume lower"
+            # Brightness control (swayosd for visual feedback)
+            ", XF86MonBrightnessUp, exec, swayosd-client --brightness raise"
+            ", XF86MonBrightnessDown, exec, swayosd-client --brightness lower"
           ];
 
           binddm = [
@@ -483,6 +508,9 @@
             # Clock
             "match:class ^(org.gnome.clocks)$, float true, size 800 600"
 
+            # Screenshot editor
+            "match:class ^(com.gabm.satty)$, float true, opaque true"
+
             # Emulator
             "match:class ^(Emulator)$, float true, opaque true"
           ];
@@ -510,6 +538,9 @@
 
           # System submap (SUPER+S, then one key)
           submap = system
+          bindd = , S, Screenshot region (edit), exec, grimblast --freeze save area - | satty -f -
+          bindd = SHIFT, S, Screenshot fullscreen, exec, grimblast --freeze save screen
+          bindd = , R, Start/stop screen recording, exec, pkill wl-screenrec || wl-screenrec -f ~/Videos/recording-$(date +%Y%m%d-%H%M%S).mp4
           bindd = , C, Color picker, exec, hyprpicker -a
           bindd = , L, Lock screen, exec, loginctl lock-session
           bindde = , equal, Zoom in, exec, hyprctl keyword cursor:zoom_factor "$(hyprctl getoption cursor:zoom_factor | grep float | awk '{print $2 + 0.5}')"
@@ -519,6 +550,9 @@
           submap = reset
         '';
       };
+
+      # Playerctl daemon for media key integration
+      services.playerctld.enable = true;
 
       # Copy scripts for hyprlock
       home.file.".config/hypr/scripts" = {
