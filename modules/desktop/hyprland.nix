@@ -342,10 +342,8 @@
             "special:spotify, gapsout:50"
             "special:monitor, on-created-empty:wezterm btop"
             "special:monitor, gapsout:50"
-            "special:discord, on-created-empty:vesktop"
-            "special:discord, gapsout:50"
-            "special:todo, on-created-empty:lunatask"
-            "special:todo, gapsout:50"
+            "special:logseq, on-created-empty:logseq"
+            "special:logseq, gapsout:50"
           ];
 
           "$mod" = "SUPER";
@@ -353,15 +351,13 @@
 
           bindd =
             [
-              # Applications submap
+              # Submaps
               "SUPER, A, Activate applications submap, submap, applications"
+              "SUPER, S, Activate system submap, submap, system"
+
               # Open applications
               "SUPER, RETURN, Open terminal, exec, wezterm"
-              "SUPER, E, Open file manager, exec, nautilus"
               ", XF86Calculator, Open calculator, exec, gnome-calculator"
-
-              # System submap
-              "SUPER, S, Activate system submap, submap, system"
 
               # Tiling controls
               "SUPER, Q, Close focused window, killactive"
@@ -407,9 +403,6 @@
 
               # Clipboard
               "SUPER SHIFT, C, Show clipboard history, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
-
-              # Lock screen
-              "SUPER, ESCAPE, Lock screen, exec, loginctl lock-session"
 
               # Workspace switching
               "SUPER, Prior, Switch to next workspace, workspace, r-1"
@@ -465,9 +458,8 @@
             "match:class .*, suppress_event maximize"
 
             # Move apps to workspaces
-            "match:class ^(Todoist|@lunatask/electron)$, workspace special:todo silent"
             "match:class ^(spotify)$, workspace special:spotify silent"
-            "match:class ^(vesktop)$, workspace special:discord silent"
+            "match:class ^(Logseq)$, workspace special:logseq silent"
 
             # Dim some programs
             "match:class ^(xdg-desktop-portal-gtk)$, dim_around true"
@@ -504,6 +496,28 @@
               "match:namespace ^(waybar|rofi|launcher|notifications)$, blur true, ignore_alpha 0"
             ];
         };
+
+        extraConfig = ''
+          # Applications submap (SUPER+A, then one key)
+          submap = applications
+          bindd = , B, Open browser, exec, firefox
+          bindd = , E, Open file manager, exec, nautilus
+          bindd = , N, Open notes (Logseq), togglespecialworkspace, logseq
+          bindd = , M, Toggle monitor (btop), togglespecialworkspace, monitor
+          bindd = , S, Toggle Spotify, togglespecialworkspace, spotify
+          bindr = , catchall, submap, reset
+          submap = reset
+
+          # System submap (SUPER+S, then one key)
+          submap = system
+          bindd = , C, Color picker, exec, hyprpicker -a
+          bindd = , L, Lock screen, exec, loginctl lock-session
+          bindde = , equal, Zoom in, exec, hyprctl keyword cursor:zoom_factor "$(hyprctl getoption cursor:zoom_factor | grep float | awk '{print $2 + 0.5}')"
+          bindde = , minus, Zoom out, exec, hyprctl keyword cursor:zoom_factor "$(hyprctl getoption cursor:zoom_factor | grep float | awk '{print ($2 - 0.5 < 1) ? 1 : $2 - 0.5}')"
+          bindd = SHIFT, minus, Reset zoom, exec, hyprctl keyword cursor:zoom_factor 1
+          bindr = , catchall, submap, reset
+          submap = reset
+        '';
       };
 
       # Copy scripts for hyprlock
