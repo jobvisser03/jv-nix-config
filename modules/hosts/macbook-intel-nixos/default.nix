@@ -114,6 +114,9 @@
     # Disable Tailscale temporarily
     services.tailscale.enable = true;
     
+    # Printing
+    services.printing.enable = true;
+ 
     # Podman for OCI containers (Home Assistant, etc.)
     # virtualisation.podman = {
     #   enable = true;
