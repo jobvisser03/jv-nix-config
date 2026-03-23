@@ -286,7 +286,7 @@
             gaps_in = 5;
             gaps_out = 10;
             border_size = 2;
-            layout = "dwindle";
+            layout = "scrolling";
             resize_on_border = false;
             allow_tearing = true;
           };
@@ -309,9 +309,13 @@
             };
           };
 
-          dwindle = {
-            pseudotile = true;
-            preserve_split = false;
+          scrolling = {
+            column_width = 0.5;
+            focus_fit_method = 1; # 0 = center, 1 = fit
+            follow_focus = true;
+            fullscreen_on_one_column = true;
+            wrap_focus = true;
+            wrap_swapcol = true;
           };
 
           master = {
@@ -392,26 +396,28 @@
               "SUPER, TAB, Change active window in group right, changegroupactive, f"
               "SUPER SHIFT, TAB, Change active window in group left, changegroupactive, b"
 
-              # Dwindle layout controls
-              "SUPER, I, Change split direction, layoutmsg, swapsplit"
+              # Scrolling layout controls
+              "SUPER, I, Promote window to own column, layoutmsg, promote"
+              "SUPER, bracketleft, Cycle column width down, layoutmsg, colresize -conf"
+              "SUPER, bracketright, Cycle column width up, layoutmsg, colresize +conf"
+              "SUPER SHIFT, F, Fit all columns to screen, layoutmsg, fit all"
+              "SUPER, equal, Toggle fit/center mode, layoutmsg, togglefit"
 
               # Move window focus
-              "SUPER, H, Focus window to the left, movefocus, l"
-              "SUPER, J, Focus window to the bottom, movefocus, d"
-              "SUPER, K, Focus window to the top, movefocus, u"
-              "SUPER, L, Focus window to the right, movefocus, r"
+              "SUPER, H, Focus column to the left, layoutmsg, focus l"
+              "SUPER, J, Focus window below in column, layoutmsg, focus d"
+              "SUPER, K, Focus window above in column, layoutmsg, focus u"
+              "SUPER, L, Focus column to the right, layoutmsg, focus r"
 
-              # Move window
-              "SUPER SHIFT, H, Move window left, swapwindow, l"
-              "SUPER SHIFT, J, Move window down, swapwindow, d"
-              "SUPER SHIFT, K, Move window up, swapwindow, u"
-              "SUPER SHIFT, L, Move window right, swapwindow, r"
+              # Move/swap columns
+              "SUPER SHIFT, H, Swap column left, layoutmsg, swapcol l"
+              "SUPER SHIFT, J, Move window down in column, swapwindow, d"
+              "SUPER SHIFT, K, Move window up in column, swapwindow, u"
+              "SUPER SHIFT, L, Swap column right, layoutmsg, swapcol r"
 
-              # Resize window
-              "SUPER CTRL, H, Increase window size to the left, resizeactive, -100 0"
-              "SUPER CTRL, J, Increase window size to the bottom, resizeactive, 0 100"
-              "SUPER CTRL, K, Increase window size to the top, resizeactive, 0 -100"
-              "SUPER CTRL, L, Increase window size to the right, resizeactive, 100 0"
+              # Resize column
+              "SUPER CTRL, H, Decrease column width, layoutmsg, colresize -0.05"
+              "SUPER CTRL, L, Increase column width, layoutmsg, colresize +0.05"
 
               # Launcher
               "SUPER, D, Open application launcher, exec, rofi -show drun"
