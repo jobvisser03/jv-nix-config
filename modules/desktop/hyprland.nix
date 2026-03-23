@@ -314,8 +314,8 @@
             focus_fit_method = 1; # 0 = center, 1 = fit
             follow_focus = true;
             fullscreen_on_one_column = true;
-            wrap_focus = true;
-            wrap_swapcol = true;
+            # wrap_focus = true;
+            # wrap_swapcol = true;
           };
 
           master = {
