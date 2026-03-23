@@ -9,6 +9,15 @@
     options.powerManagement.desktopMode = lib.mkEnableOption "Desktop mode (no battery, always plugged in)";
 
     config = lib.mkMerge [
+      # Common settings for all systems
+      {
+        # Enable suspend and set lid close to suspend
+        services.logind = {
+          lidSwitch = "suspend";
+          lidSwitchExternalPower = "suspend";
+        };
+      }
+
       # Desktop mode - simple performance-focused settings
       (lib.mkIf config.powerManagement.desktopMode {
         # Disable TLP (it's for laptops with batteries)

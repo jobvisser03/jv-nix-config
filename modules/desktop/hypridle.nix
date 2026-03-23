@@ -40,16 +40,21 @@
             timeout = 240;
             on-timeout = "brightnessctl set 50%-";
           }
-          # Lock screen
+          # Lock screen (8 minutes)
           {
-            timeout = 300;
+            timeout = 480;
             on-timeout = "pgrep hyprlock || hyprlock --grace 3";
           }
           # Turn off display
           {
-            timeout = 600;
+            timeout = 540;
             on-timeout = "hyprctl dispatch dpms off";
             on-resume = "hyprctl dispatch dpms on";
+          }
+          # Suspend (10 minutes)
+          {
+            timeout = 600;
+            on-timeout = "systemctl suspend";
           }
 
           # If already locked - dim faster and turn off display sooner

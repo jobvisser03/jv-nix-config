@@ -72,6 +72,7 @@
 
       # Desktop applications
       keepassxc
+      proton-pass
       drawio
       anki-bin
       docker-client
