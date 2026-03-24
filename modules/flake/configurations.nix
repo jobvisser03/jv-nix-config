@@ -176,6 +176,8 @@ in {
         "firefox"
         "desktop-apps"
         "nixos-desktop-apps"
+        # Networking
+        "nixos/networking/azure-vpn"
       ];
       extraModules = [
         inputs.sops-nix.nixosModules.sops

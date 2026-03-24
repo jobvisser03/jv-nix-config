@@ -10,7 +10,7 @@
   }:
   let
     cfg = config.services.azure-vpn;
-    azureVpn = pkgs.callPackage ./package.nix {};
+    azureVpn = pkgs.callPackage ./_package.nix {};
   in
   {
     options.services.azure-vpn = {
@@ -104,11 +104,13 @@
         dnssec = "false";
         domains = [ "~." ];
         fallbackDns = [ "1.1.1.1" "8.8.8.8" ];
-        extraConfig = ''
-          DNSStubListener=yes
-          ResolveUnicastSingleLabel=yes
-          Cache=yes
-        '';
+        settings = {
+          Resolve = {
+            DNSStubListener = "yes";
+            ResolveUnicastSingleLabel = "yes";
+            Cache = "yes";
+          };
+        };
       };
 
       # systemd-resolved service configuration
@@ -134,14 +136,14 @@
                 <allow own="org.freedesktop.resolve1"/>
                 <allow send_destination="org.freedesktop.resolve1"/>
               </policy>
-              
+
               <!-- Allow all users to set DNS -->
               <policy context="default">
                 <allow send_destination="org.freedesktop.resolve1"
                        send_interface="org.freedesktop.resolve1.Manager"
                        send_member="SetLinkDNS"/>
                 <allow send_destination="org.freedesktop.resolve1"
-                       send_interface="org.freedesktop.resolve1.Manager" 
+                       send_interface="org.freedesktop.resolve1.Manager"
                        send_member="SetLinkDomains"/>
                 <allow send_destination="org.freedesktop.resolve1"
                        send_interface="org.freedesktop.resolve1.Manager"
@@ -163,7 +165,7 @@
                        send_member="Ping"/>
               </policy>
               ${lib.optionalString (cfg.user != "") ''
-              
+
               <!-- Specific policy for configured user -->
               <policy user="${cfg.user}">
                 <allow send_destination="org.freedesktop.resolve1"/>
@@ -186,12 +188,12 @@
                  subject.programPath.indexOf("openvpn") >= 0)) {
               return polkit.Result.YES;
             }
-            
+
             if (subject.local && subject.active && subject.isInGroup("networkmanager")) {
               return polkit.Result.YES;
             }
           }
-          
+
           // Allow specific DNS operations
           if (action.id == "org.freedesktop.resolve1.set-dns-servers" ||
               action.id == "org.freedesktop.resolve1.set-domains" ||
@@ -208,7 +210,7 @@
       # Firewall configuration
       networking.firewall = lib.mkIf cfg.openFirewall {
         allowedUDPPorts = [ 1194 ];
-        checkReversePath = false;
+        checkReversePath = lib.mkDefault "loose";
       };
 
       # Ensure user is in required groups if specified
