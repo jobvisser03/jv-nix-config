@@ -90,14 +90,6 @@
         '';
       };
 
-      # Security wrapper with required capabilities for VPN operations
-      security.wrappers.microsoft-azurevpnclient = {
-        owner = "root";
-        group = "root";
-        capabilities = "cap_net_admin,cap_net_raw,cap_net_bind_service,cap_setpcap,cap_setuid,cap_setgid,cap_sys_admin+ep";
-        source = "${azureVpn}/bin/microsoft-azurevpnclient";
-      };
-
       # systemd-resolved for DNS management (required by Azure VPN)
       services.resolved = {
         enable = true;
