@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(nix flake:*)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:wiki.hypr.land)",
+      "WebSearch",
+      "WebFetch(domain:deepwiki.com)"
+    ]
+  }
+}

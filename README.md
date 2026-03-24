@@ -1,295 +1,325 @@
 # Nix Flake Configuration
 
-This repository contains my personal Nix configuration using flakes, supporting multiple platforms (macOS via nix-darwin and NixOS).
+This repository contains my personal Nix configuration using flakes, supporting multiple platforms (macOS via nix-darwin and NixOS). It follows a **dendritic flake-parts structure** using [import-tree](https://github.com/vic/import-tree), inspired by [MrSom3body/dotfiles](https://github.com/MrSom3body/dotfiles) and [mightyiam/dendritic](https://github.com/mightyiam/dendritic), where all configuration lives under a unified `modules/` directory.
 
 ## Quick Reference
 
 ```bash
 # macOS (nix-darwin)
-darwin-rebuild switch --flake .#mac-intel-host
-darwin-rebuild switch --flake .#mac-apple-silicon-host
+darwin-rebuild switch --flake .#macbook-intel
+darwin-rebuild switch --flake .#macbook-silicon
 
 # NixOS
-sudo nixos-rebuild switch --flake .#linux-larkbox-host
-sudo nixos-rebuild switch --flake .#mac-intel-nixos-host
-
-# Home Manager (standalone)
-home-manager switch --flake .#mac-intel-hm
-home-manager switch --flake .#mac-apple-silicon-hm
+sudo nixos-rebuild switch --flake .#larkbox
+sudo nixos-rebuild switch --flake .#macbook-intel-nixos
+sudo nixos-rebuild switch --flake .#macbook-intel-nixos-sooph
 ```
 
 ## Structure
 
+The configuration follows a **dendritic pattern** using `import-tree` to auto-import all `.nix` files from `modules/`. Each module registers itself to `flake.modules.{nixos,darwin,homeManager}.*` and configurations compose them declaratively. Paths containing `/_` are excluded from auto-import.
+
 ```
 .
-├── flake.nix              # Main entry point - defines all configurations
+├── flake.nix              # Entry point - uses import-tree ./modules
+├── flake.lock             # Pinned input versions
 ├── README.md              # This file
+├── .sops.yaml             # SOPS key configuration
 │
-├── home/                  # Home Manager configurations
-│   ├── shared-home.nix    # Common home config (imports all others)
-│   ├── core-packages.nix  # Base packages for all systems
-│   ├── home-nixos.nix     # NixOS-specific home config (Hyprland, etc.)
-│   ├── home-mac.nix       # macOS-specific home config
-│   ├── alias.nix          # Shell aliases
-│   └── programs/          # Program-specific configs
-    │       ├── default.nix    # Aggregates all program configs
-    │       ├── browser.nix    # Firefox settings
-    │       ├── shell.nix      # zsh, atuin, direnv, eza, fzf-tab, oh-my-posh, wezterm, kitty
-    │       └── dev-tools.nix  # git, awscli, ripgrep, bat, broot, etc.
-│
-├── hosts/                 # Host-specific configurations
-│   ├── common/            # Shared host configurations
-│   │   ├── darwin/        # Common macOS settings (Homebrew, Touch ID, etc.)
-│   │   └── nixos/         # Common NixOS settings (timezone, locale, avahi, etc.)
+├── modules/               # ALL configuration lives here (auto-imported)
+│   ├── meta.nix           # Global identity and appearance defaults
 │   │
-│   ├── linux-larkbox-host/    # NixOS homelab server
-│   │   ├── configuration.nix  # System configuration
-│   │   ├── hardware-configuration.nix
-│   │   ├── home.nix       # Host-specific home packages
-│   │   └── secrets.nix    # SOPS secrets configuration
+│   ├── flake/             # Flake infrastructure
+│   │   ├── configurations.nix  # NixOS/Darwin system definitions
+│   │   ├── flake-parts.nix     # flake-parts setup and options
+│   │   ├── overlays.nix        # Package overlays
+│   │   ├── shell.nix           # Development shell
+│   │   ├── systems.nix         # Supported systems
+│   │   └── treefmt.nix         # Code formatting
 │   │
-│   ├── mac-intel-nixos-host/  # Intel Mac running NixOS
-│   │   ├── configuration.nix
-│   │   └── hardware-configuration.nix
+│   ├── hosts/             # Host-specific configurations
+│   │   ├── larkbox/           # NixOS homelab server
+│   │   │   ├── default.nix
+│   │   │   ├── _hardware-configuration.nix
+│   │   │   └── _secrets.nix
+│   │   ├── macbook-intel-nixos/  # Intel Mac running NixOS
+│   │   │   ├── default.nix
+│   │   │   ├── _hardware-configuration.nix
+│   │   │   ├── _secrets.nix
+│   │   │   ├── _t2-suspend/      # T2 suspend/resume fix module
+│   │   │   └── _firmware/brcm/   # WiFi/Bluetooth firmware blobs
+│   │   ├── macbook-intel-nixos-sooph/  # Intel Mac running NixOS (sooph)
+│   │   │   ├── default.nix
+│   │   │   └── _hardware-configuration.nix
+│   │   ├── macbook-intel/        # Intel Mac (macOS/Darwin)
+│   │   │   └── default.nix
+│   │   └── macbook-silicon/      # Apple Silicon Mac (macOS/Darwin)
+│   │       └── default.nix
 │   │
-│   ├── mac-intel-host/        # Intel Mac running macOS
-│   │   └── system.nix     # Host-specific Darwin settings
+│   ├── base/              # Shared base modules (all platforms)
+│   │   ├── home.nix           # Home-manager base config
+│   │   ├── nix.nix            # Nix daemon settings
+│   │   └── sops.nix           # SOPS base setup
 │   │
-│   └── mac-apple-silicon-host/  # Apple Silicon Mac
-│       └── system.nix
+│   ├── nixos/             # NixOS-specific modules
+│   │   └── base.nix           # Core NixOS configuration
+│   │
+│   ├── darwin/            # Darwin-specific modules
+│   │   ├── base.nix           # Core Darwin configuration
+│   │   └── homebrew.nix       # Homebrew integration
+│   │
+│   ├── shell/             # Shell configuration modules
+│   │   ├── zsh.nix            # Zsh shell
+│   │   ├── atuin.nix          # Shell history sync
+│   │   ├── oh-my-posh.nix     # Prompt theme
+│   │   ├── aliases.nix        # Shell aliases
+│   │   ├── direnv.nix         # Directory environments
+│   │   ├── eza.nix            # Modern ls replacement
+│   │   └── fd.nix             # Modern find replacement
+│   │
+│   ├── dev/               # Development tools
+│   │   ├── git.nix            # Git configuration
+│   │   └── tools.nix          # ripgrep, bat, jq, etc.
+│   │
+│   ├── desktop/           # Desktop environment (NixOS/Hyprland)
+│   │   ├── stylix.nix         # System-wide theming
+│   │   ├── hyprland.nix       # Hyprland compositor
+│   │   ├── waybar.nix         # Status bar
+│   │   ├── hyprlock.nix       # Lock screen
+│   │   ├── hypridle.nix       # Idle management
+│   │   ├── rofi.nix           # Application launcher
+│   │   ├── apps.nix           # Desktop applications
+│   │   ├── terminals/
+│   │   │   ├── wezterm.nix    # WezTerm terminal
+│   │   │   └── kitty.nix      # Kitty terminal
+│   │   └── browsers/
+│   │       └── firefox.nix    # Firefox with extensions
+│   │
+│   ├── system/            # System-level modules
+│   │   ├── power-management.nix
+│   │   └── vscode-server.nix  # VS Code remote server
+│   │
+│   ├── users/             # User account definitions
+│   │   ├── job.nix            # Personal user (NixOS + Darwin + HM)
+│   │   ├── job-work.nix       # Work user variant
+│   │   └── sooph.nix          # Secondary user
+│   │
+│   ├── homelab/           # Homelab services
+│   │   ├── flake-module.nix   # Homelab module entry point
+│   │   ├── _options.nix       # Shared homelab NixOS options
+│   │   └── _services/         # Individual service definitions
+│   │       ├── infrastructure.nix   # Shared infra (reverse proxy, etc.)
+│   │       ├── immich.nix           # Photo management
+│   │       ├── homeassistant.nix    # Home automation
+│   │       ├── forgejo.nix          # Git forge
+│   │       ├── gitlab.nix           # GitLab
+│   │       ├── gitlab-runner.nix    # CI/CD runner
+│   │       ├── jellyfin.nix         # Media server
+│   │       ├── homepage.nix         # Service dashboard
+│   │       ├── paperless.nix        # Document management
+│   │       ├── radicale.nix         # CalDAV/CardDAV
+│   │       ├── spotify-player.nix   # Spotify daemon
+│   │       └── cloudflare-ddns.nix  # Dynamic DNS
+│   │
+│   ├── _rclone/           # Cloud storage mounts (internal)
+│   │   └── default.nix
+│   ├── _sops/             # Secret management (internal)
+│   │   └── default.nix
+│   └── _wm-scripts/       # WM helper scripts (internal)
+│       └── get_battery_info.sh
 │
-├── modules/               # Reusable NixOS modules
-│   ├── default.nix
-│   ├── homelab/          # Homelab services (Immich, Home Assistant, etc.)
-│   ├── sops/             # Secret management configuration
-│   ├── system/           # System-level modules (nix settings, power management)
-│   └── wm/               # Window manager configs (Hyprland, Waybar, etc.)
+├── secrets/               # SOPS-encrypted secrets
+│   ├── larkbox.yaml
+│   ├── mac-intel-nixos.yaml
+│   └── shared.yaml
 │
-├── profiles/              # Configuration profiles
-│   ├── default.nix
-│   ├── desktop.nix       # Desktop environment settings
-│   └── stylix.nix        # Theming and styling
-│
-└── secrets/               # SOPS-encrypted secrets
-    ├── larkbox.yaml
-    └── shared.yaml
+└── non-nix-configs/       # Non-Nix configuration files
+    ├── wezterm.lua
+    ├── raycast_config.rayconfig
+    └── *.png               # Wallpapers
 ```
 
-## Homelab Architecture
+> **Note on `_` prefixes:** Paths containing `/_` are automatically excluded by `import-tree`. This includes `_rclone/`, `_sops/`, `_wm-scripts/`, `_firmware/`, `_options.nix`, `_services/`, `_hardware-configuration.nix`, and `_secrets.nix`. These internal files are imported explicitly where needed.
 
-The homelab module (`modules/homelab/`) provides a complete self-hosted services stack with secure remote access. The architecture is designed for simplicity and security, using HTTP locally while leveraging Tailscale's WireGuard encryption for remote access.
+## How It Works
 
-### Components
+### Dendritic Pattern
 
-#### 1. **Tailscale** - Secure VPN Access Layer
-- **Purpose**: Encrypted WireGuard tunnel for secure remote access
-- **Configuration**: Enabled on all NixOS systems via `hosts/common/nixos/default.nix`
-- **Network**: Creates `tailscale0` interface (trusted in firewall)
-- **Access**: Services accessible via Tailscale IPs (e.g., `http://100.x.y.z`) or MagicDNS hostnames
+The configuration uses a **dendritic (tree-like) structure** with [import-tree](https://github.com/vic/import-tree) and flake-parts:
 
-#### 2. **Caddy** - HTTP Reverse Proxy
-- **Purpose**: Single entry point routing traffic to backend services
-- **Port**: Listens on port 80 (HTTP only)
-- **Configuration**: `modules/homelab/services/default.nix`
-- **Features**: 
-  - No automatic HTTPS (`auto_https off`)
-  - Virtual host routing to different services
-  - Handles WebSocket proxying for Home Assistant
-- **Why HTTP?**: Encryption provided by Tailscale tunnel; HTTPS would be redundant
+1. **`flake.nix`** calls `inputs.import-tree ./modules` — all `.nix` files are auto-imported
+2. **Paths with `/_`** are excluded (hardware configs, secrets, internal modules)
+3. **Each module** registers itself to `flake.modules.{nixos,darwin,homeManager}.<name>`
+4. **`modules/flake/configurations.nix`** composes modules into system configurations
 
-#### 3. **Podman** - Container Runtime
-- **Purpose**: Runs containerized services (Home Assistant, etc.)
-- **Network**: Custom `homelab` network with DNS resolution between containers
-- **Configuration**: Automatic container restart, pruning, and DNS-enabled networking
+### Module Registration
 
-#### 4. **Services**
-Available services in `modules/homelab/services/`:
-- **GitLab** - Git repository management (port 8929)
-- **GitLab Runner** - CI/CD executor
-- **Immich** - Photo management and backup (port 2283)
-- **Jellyfin** - Media server (port 8096)
-- **Home Assistant** - Home automation and IoT (port 8123)
-  - Mosquitto MQTT broker
-  - Zigbee2MQTT for Zigbee devices
-- **Homepage** - Service dashboard (port 80, root `/`)
-- **Radicale** - CalDAV/CardDAV server (optional, port 5232)
-- **rclone** - Cloud storage mounts (pCloud integration)
+Modules register themselves to be available for composition:
 
-### Request Flow
-
-#### Local Network Access
-```
-User (192.168.x.x)
-    ↓
-    [Port 80] → Caddy Reverse Proxy
-                    ↓
-        ┌───────────┼───────────┬─────────────┬──────────────┐
-        ↓           ↓           ↓             ↓              ↓
-    GitLab:8929  Immich:2283  Jellyfin:8096  HomeAssistant  Homepage
-                                              (Podman)       (root /)
-```
-
-**Path**: `http://larkbox` or `http://192.168.x.x` → Caddy routes based on port/path → Backend service
-
-#### Remote Access via Tailscale
-```
-User (anywhere with Tailscale)
-    ↓
-    Tailscale VPN (WireGuard encrypted tunnel)
-    ↓
-    [tailscale0 interface → 100.x.y.z]
-    ↓
-    [Port 80] → Caddy Reverse Proxy
-                    ↓
-        ┌───────────┼───────────┬─────────────┬──────────────┐
-        ↓           ↓           ↓             ↓              ↓
-    GitLab:8929  Immich:2283  Jellyfin:8096  HomeAssistant  Homepage
-                                              (Podman)       (root /)
-```
-
-**Path**: `http://100.x.y.z` or `http://larkbox.tailnet.ts.net` → Tailscale encrypted tunnel → Caddy → Backend service
-
-**Security**: All traffic encrypted at network layer (WireGuard), no HTTPS overhead needed
-
-### Network & Firewall Configuration
-
-#### Firewall Rules (`hosts/linux-larkbox-host/configuration.nix`)
 ```nix
-networking.firewall = {
-  enable = true;
-  trustedInterfaces = [ "tailscale0" ];  # Trust all Tailscale traffic
-  allowedUDPPorts = [ 41641 ];           # Tailscale connection establishment
-  # Port 80 opened by homelab module
+# modules/shell/zsh.nix
+{...}: {
+  # Register for NixOS systems
+  flake.modules.nixos.zsh = {...}: {
+    programs.zsh.enable = true;
+    # ...
+  };
+
+  # Register for home-manager
+  flake.modules.homeManager.zsh = {...}: {
+    programs.zsh.enable = true;
+    # ...
+  };
+}
+```
+
+### Configuration Composition
+
+Systems are defined by composing modules. The `username` argument is automatically passed to all NixOS/Darwin modules via `specialArgs`:
+
+```nix
+# modules/flake/configurations.nix
+flake.nixosConfigurations = {
+  macbook-intel-nixos = mkNixosSystem {
+    hostname = "macbook-intel-nixos";
+    user = "job";           # exposed as `username` in all modules
+    modules = [
+      "zsh" "atuin" "oh-my-posh"  # Shell
+      "git" "dev-tools"           # Dev
+      "hyprland" "waybar"         # Desktop
+    ];
+  };
 };
 ```
 
-#### Service Routing
-- **Caddy** listens on `0.0.0.0:80` (all interfaces, including Tailscale)
-- **Backend services** listen on `localhost` or internal Podman network
-- **Tailscale interface** is trusted → no additional firewall rules needed
-- **Local network** accesses same port 80 → transparent routing
+## Available Configurations
 
-### Adding a Homelab Service
+| Configuration | Type | Architecture | User | Description |
+|---|---|---|---|---|
+| `larkbox` | NixOS | x86_64-linux | job | Homelab server + Hyprland desktop |
+| `macbook-intel-nixos` | NixOS | x86_64-linux | job | Intel MacBook running NixOS with Hyprland |
+| `macbook-intel-nixos-sooph` | NixOS | x86_64-linux | sooph | Intel MacBook running NixOS (sooph's account) |
+| `macbook-intel` | Darwin | x86_64-darwin | job | Intel MacBook running macOS |
+| `macbook-silicon` | Darwin | aarch64-darwin | job.visser | Apple Silicon MacBook running macOS |
 
-1. **Create service module**: `modules/homelab/services/<service-name>/default.nix`
-2. **Define options**: Port, enable flag, storage paths
-3. **Configure backend**: Systemd service or Podman container
-4. **Add Caddy virtual host** (if using reverse proxy):
-   ```nix
-   services.caddy.virtualHosts."http://:${toString cfg.port}" = {
-     extraConfig = ''
-       reverse_proxy localhost:${toString internalPort}
-     '';
-   };
-   ```
-5. **Import in** `modules/homelab/services/default.nix`
-6. **Enable in host config**: `homelab.services.<service-name>.enable = true;`
+## Homelab Architecture
+
+The homelab module (`modules/homelab/`) provides a complete self-hosted services stack. Service definitions live under `_services/` and are composed in `flake-module.nix`.
+
+### Services
+
+- **Immich** - Photo management and backup
+- **Home Assistant** - Home automation (with Zigbee2MQTT, Mosquitto)
+- **Forgejo** - Git repository hosting
+- **Jellyfin** - Media server
+- **Paperless** - Document management
+- **Homepage** - Service dashboard
+- **Radicale** - CalDAV/CardDAV server
+- **Spotify Player** - Headless Spotify daemon
+- **GitLab / GitLab Runner** - CI/CD
+- **Cloudflare DDNS** - Dynamic DNS updates
 
 ### Access Methods
 
-| Method | URL | Security | Use Case |
-|--------|-----|----------|----------|
-| **Local LAN** | `http://larkbox` or `http://192.168.x.x` | Unencrypted (trusted network) | Home network access |
-| **Tailscale IP** | `http://100.x.y.z` | WireGuard encrypted | Remote access from phone/laptop |
-| **MagicDNS** | `http://larkbox.tailnet.ts.net` | WireGuard encrypted | Remote access with friendly hostname |
-
-### First-Time Tailscale Setup
-
-After deploying the configuration:
-
-```bash
-# Authenticate with Tailscale (opens browser)
-sudo tailscale up
-
-# Check status and get your IP
-tailscale status
-tailscale ip -4
-
-# Enable MagicDNS (optional, in Tailscale admin console)
-# Settings → DNS → Enable MagicDNS
-```
-
-Then access services from anywhere: `http://100.x.y.z` or `http://larkbox`
+| Method | URL | Security |
+|--------|-----|----------|
+| Local LAN | `http://larkbox` | Trusted network |
+| Tailscale | `http://100.x.y.z` | WireGuard encrypted |
+| MagicDNS | `http://larkbox.tailnet.ts.net` | WireGuard encrypted |
 
 ## Adding a New Host
 
 ### NixOS Host
 
-1. Create directory: `hosts/<hostname>/`
-2. Copy `hardware-configuration.nix` from the target machine
-3. Create `configuration.nix` importing common modules and setting host-specific options
-4. Optionally create `home.nix` for host-specific packages
-5. Add to `flake.nix` in `nixosConfigurations`
-
-Example `configuration.nix`:
+1. Create `modules/hosts/<hostname>/default.nix`:
 ```nix
-{
-  imports = [
-    ./hardware-configuration.nix
-    ../common/nixos
-    ../../modules/system
-    ../../profiles
-    # ... other imports
-  ];
-  
-  networking.hostName = "<hostname>";
-  # Host-specific config...
+{...}: {
+  flake.modules.nixos."hosts/<hostname>" = {config, pkgs, username, ...}: {
+    imports = [
+      ./_hardware-configuration.nix
+      ./_secrets.nix
+    ];
+    networking.hostName = "<hostname>";
+    # Host-specific config...
+  };
 }
 ```
 
-### macOS Host
+2. Copy `hardware-configuration.nix` from the target machine (prefix with `_`)
 
-1. Create directory: `hosts/<hostname>/`
-2. Create `system.nix` with host-specific settings (architecture, user, etc.)
-3. Add to `flake.nix` in `darwinConfigurations`
+3. Add to `modules/flake/configurations.nix`:
+```nix
+<hostname> = mkNixosSystem {
+  hostname = "<hostname>";
+  user = "<username>";
+  modules = [ "zsh" "git" /* ... */ ];
+};
+```
 
-## Home Manager Structure
+The host module will be auto-imported by `import-tree`.
 
-Home configurations are split logically for maintainability:
+### Darwin Host
 
-- **`shared-home.nix`** - Entry point, imports all home configs
-- **`core-packages.nix`** - Base packages available on all systems
-- **`home-nixos.nix`** - NixOS-specific (Hyprland, Wayland apps, Linux packages)
-- **`home-mac.nix`** - macOS-specific packages
-- **`programs/`** - Individual program configurations organized by category:
-  - `browser.nix` - Firefox with extensions and search engines
-  - `shell.nix` - zsh, atuin (history), direnv, eza, fzf-tab, oh-my-posh (prompt with hostname), wezterm, kitty, pandoc, zoxide
-  - `dev-tools.nix` - git, awscli, ripgrep, bat, broot, btop, jq
+1. Create `modules/hosts/<hostname>/default.nix`:
+```nix
+{...}: {
+  flake.modules.darwin."hosts/<hostname>" = {username, ...}: {
+    users.users.${username}.home = "/Users/${username}";
+    system.primaryUser = username;
+    # Host-specific Darwin settings
+  };
+}
+```
+
+2. Add to `modules/flake/configurations.nix`:
+```nix
+<hostname> = mkDarwinSystem {
+  hostname = "<hostname>";
+  system = "aarch64-darwin";  # or x86_64-darwin
+  user = "<username>";
+  modules = [ "zsh" "git" /* ... */ ];
+};
+```
+
+The host module will be auto-imported by `import-tree`.
+
+## Adding a New Module
+
+1. Create `modules/<category>/<name>.nix` — it will be auto-imported:
+```nix
+{...}: {
+  # For NixOS
+  flake.modules.nixos.<name> = {pkgs, lib, config, ...}: {
+    # NixOS configuration
+  };
+
+  # For Darwin (if applicable)
+  flake.modules.darwin.<name> = {pkgs, lib, config, ...}: {
+    # Darwin configuration
+  };
+
+  # For Home Manager (if applicable)
+  flake.modules.homeManager.<name> = {pkgs, lib, config, ...}: {
+    # Home Manager configuration
+  };
+}
+```
+
+2. Add the module name to the relevant system configurations in `modules/flake/configurations.nix`
+
+That's it — `import-tree` will auto-import the new module file.
 
 ## Secrets
 
-Secrets are managed with [sops-nix](https://github.com/Mic92/sops-nix).
+Secrets are managed with [sops-nix](https://github.com/Mic92/sops-nix). Encrypted YAML files live in `secrets/` and are referenced via the `_sops/` module.
 
 ```bash
 # Edit host-specific secrets
 sops secrets/larkbox.yaml
+sops secrets/mac-intel-nixos.yaml
 
 # Edit shared secrets
 sops secrets/shared.yaml
-```
-
-## Setup Instructions
-
-### New NixOS Machine
-
-1. Install NixOS with the standard installer
-2. Clone this repo to `~/repos/jv-nix-config`
-3. Run: `sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#<hostname>`
-
-### New macOS Machine
-
-1. Install Nix using the [Determinate Systems installer](https://github.com/DeterminateSystems/nix-installer)
-2. Clone this repo to `~/repos/jv-nix-config`
-3. Initial setup: `nix run nix-darwin --extra-experimental-features nix-command --extra-experimental-features flakes -- switch --flake ~/repos/jv-nix-config`
-4. Subsequent updates: `darwin-rebuild switch --flake ~/repos/jv-nix-config`
-
-### Home Manager (Standalone)
-
-Useful for non-NixOS Linux or when not using nix-darwin on macOS:
-
-```bash
-nix --experimental-features 'nix-command flakes' run home-manager/master -- init --switch
-home-manager switch --flake /Users/job/repos/jv-nix-config#<config-name>
 ```
 
 ## Maintenance
@@ -307,11 +337,55 @@ nix flake show
 # Update all inputs
 nix flake update
 
+# Enter development shell
+nix develop
+
 # Clean old generations
 sudo nix-collect-garbage --delete-older-than 14d
 ```
 
+## Setup Instructions
+
+### New NixOS Machine
+
+1. Install NixOS with the standard installer
+2. Clone this repo to `~/repos/jv-nix-config`
+3. Run: `sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#<hostname>`
+
+### New macOS Machine
+
+1. Install Nix using the [Determinate Systems installer](https://github.com/DeterminateSystems/nix-installer)
+2. Clone this repo to `~/repos/jv-nix-config`
+3. Initial setup: `nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --flake ~/repos/jv-nix-config#<hostname>`
+4. Subsequent updates: `darwin-rebuild switch --flake ~/repos/jv-nix-config#<hostname>`
+
 ## Troubleshooting
+
+### T2 Mac Suspend/Resume (macbook-intel-nixos)
+
+T2 Macs have broken suspend/resume due to PipeWire holding audio handles to `apple-bce`. On resume, the driver maps audio at a new MMIO address, causing stale handles and broken input devices.
+
+The `_t2-suspend` module fixes this by:
+1. Stopping PipeWire before suspend (releases audio handles)
+2. Unloading `apple-bce` and WiFi modules
+3. Reloading modules on resume and restarting PipeWire
+
+Configuration in `modules/hosts/macbook-intel-nixos/default.nix`:
+```nix
+hardware.apple-t2-suspend = {
+  enable = true;
+  useDeepSleep = true;      # mem_sleep_default=deep
+  disableAspm = true;       # pcie_aspm=off (improves stability)
+  unloadAppleBce = true;    # Unload/reload apple-bce module
+  stopAudio = true;         # Stop PipeWire before suspend
+};
+```
+
+Check logs: `journalctl -u suspend-fix-t2`
+
+References:
+- https://github.com/lucadibello/T2Linux-Suspend-Fix
+- https://github.com/t2linux/T2-Debian-and-Ubuntu-Kernel/issues/53
 
 ### Trusted Users Warning
 
@@ -330,8 +404,9 @@ cachix authtoken <your-token>
 
 ## Resources
 
+- [flake-parts Documentation](https://flake.parts/)
 - [Home Manager Manual](https://nix-community.github.io/home-manager/)
 - [Nix Language Basics](https://nix.dev/tutorials/nix-language)
-- [Flakes Wiki](https://nixos.wiki/wiki/Flakes)
 - [nix-darwin](https://github.com/LnL7/nix-darwin)
 - [sops-nix](https://github.com/Mic92/sops-nix)
+- [MrSom3body/dotfiles](https://github.com/MrSom3body/dotfiles) - Inspiration for dendritic structure
