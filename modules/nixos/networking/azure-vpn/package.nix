@@ -63,6 +63,29 @@ let
     -----END CERTIFICATE-----
   '';
 
+  # Runtime libraries needed by the Azure VPN client
+  runtimeLibs = [
+    zenity
+    openssl
+    gtk3
+    libsecret
+    cairo
+    nss
+    nspr
+    libuuid
+    stdenv.cc.cc.lib
+    at-spi2-core
+    libdrm
+    mesa
+    gtk2
+    glib
+    pango
+    atk
+    curl
+    cacert
+    openvpn
+  ];
+
   # DigiCert Global Root CA certificate (alternative, used by some Azure configurations)
   digiCertGlobalRootCA = ''
     -----BEGIN CERTIFICATE-----
@@ -107,27 +130,7 @@ let
       libcap
     ];
 
-    buildInputs = [
-      zenity
-      openssl
-      gtk3
-      libsecret
-      cairo
-      nss
-      nspr
-      libuuid
-      stdenv.cc.cc.lib
-      at-spi2-core
-      libdrm
-      mesa
-      gtk2
-      glib
-      pango
-      atk
-      curl
-      cacert
-      openvpn
-    ];
+    buildInputs = runtimeLibs;
 
     unpackPhase = ''
       dpkg-deb -x $src .
@@ -147,7 +150,7 @@ let
         --prefix SSL_CERT_DIR : "${cacert.unbundled}/etc/ssl/certs" \
         --prefix PATH : "${zenity}/bin" \
         --prefix PATH : "${openvpn}/bin" \
-        --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath buildInputs} \
+        --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath runtimeLibs} \
         --prefix LD_LIBRARY_PATH : "$out/lib"
     '';
   };
