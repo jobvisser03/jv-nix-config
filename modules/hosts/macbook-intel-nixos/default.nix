@@ -113,7 +113,13 @@
 
     # Disable Tailscale temporarily
     services.tailscale.enable = true;
-    
+
+    # Azure VPN Client (Microsoft Entra ID authentication)
+    services.azure-vpn = {
+      enable = true;
+      user = username;
+    };
+
     # Printing
     services.printing = {
       enable = true;
