@@ -176,6 +176,7 @@ in {
         "firefox"
         "desktop-apps"
         "nixos-desktop-apps"
+        "affinity"
         # Networking
         "nixos/networking/azure-vpn"
       ];
