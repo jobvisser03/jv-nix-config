@@ -36,6 +36,7 @@
         "microsoft-azure-storage-explorer"
         "qobuz"
         "proton-mail"
+        "proton-pass"
         "keepassxc"
         "slack"
         "obs"
