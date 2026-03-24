@@ -15,7 +15,7 @@ jobs:
         config:
           - larkbox
           - macbook-intel-nixos
-          - macbook-intel-nixos-sooph
+          # - macbook-intel-nixos-sooph
     steps:
       - uses: actions/checkout@v4
 
