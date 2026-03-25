@@ -32,6 +32,7 @@
   gnome-keyring,
   buildFHSEnv,
   writeShellScript,
+  writeShellScriptBin,
   libcap,
 }:
 let
@@ -158,12 +159,20 @@ let
     '';
   };
 
+  # xdg-open wrapper that clears LD_LIBRARY_PATH before launching the browser.
+  # Without this, Firefox picks up the FHS env's older nss libs and fails with
+  # "NSS_3.113 not found".
+  xdg-open-clean = writeShellScriptBin "xdg-open" ''
+    unset LD_LIBRARY_PATH
+    exec ${xdg-utils}/bin/xdg-open "$@"
+  '';
+
   # FHS environment wrapper that provides the expected certificate structure
   wrapped = buildFHSEnv {
     inherit pname version;
 
     targetPkgs = pkgs: runtimeLibs ++ [
-      xdg-utils
+      xdg-open-clean
       pkgs.gnome-keyring
       pkgs.libsecret
     ];
@@ -185,23 +194,12 @@ let
       # Create log directory expected by the client
       mkdir -p /var/log/azurevpnclient
 
-      # Create a browser wrapper that clears LD_LIBRARY_PATH before launching
-      # the browser. Without this, Firefox picks up the FHS env's older nss libs
-      # and fails with "NSS_3.113 not found".
-      mkdir -p /tmp/azurevpn-bin
-      cat > /tmp/azurevpn-bin/xdg-open <<BROWSER_SCRIPT
-      #!/bin/sh
-      unset LD_LIBRARY_PATH
-      exec ${xdg-utils}/bin/xdg-open "\$@"
-      BROWSER_SCRIPT
-      chmod +x /tmp/azurevpn-bin/xdg-open
-      export PATH="/tmp/azurevpn-bin:$PATH"
-
       exec ${unpacked}/bin/${pname} "$@"
     '';
 
     extraBwrapArgs = [
       "--tmpfs /etc/ssl"
+      "--tmpfs /var/log"
     ];
 
     meta = {
