@@ -364,6 +364,8 @@
             "special:monitor, gapsout:50"
             "special:logseq, on-created-empty:logseq"
             "special:logseq, gapsout:50"
+            "special:logseq, on-created-empty:proton-pass"
+            "special:logseq, gapsout:50"
           ];
 
           "$mod" = "SUPER";
@@ -497,6 +499,7 @@
             # Move apps to workspaces
             "match:class ^(spotify)$, workspace special:spotify silent"
             "match:class ^(Logseq)$, workspace special:logseq silent"
+            "match:class ^(Proton Pass)$, workspace special:proton-pass silent"
 
             # Dim some programs
             "match:class ^(xdg-desktop-portal-gtk)$, dim_around true"
@@ -545,6 +548,7 @@
           bindd = , N, Open notes (Logseq), togglespecialworkspace, logseq
           bindd = , M, Toggle monitor (btop), togglespecialworkspace, monitor
           bindd = , S, Toggle Spotify, togglespecialworkspace, spotify
+          bindd = , P, Toggle Proton Pass, togglespecialworkspace, proton-pass
           bindr = , catchall, submap, reset
           submap = reset
 
