@@ -14,7 +14,7 @@
   gtk3,
   libsecret,
   cairo,
-  nss,
+  nss_latest,
   nspr,
   libuuid,
   at-spi2-core,
@@ -73,7 +73,7 @@ let
     gtk3
     libsecret
     cairo
-    nss
+    nss_latest
     nspr
     libuuid
     stdenv.cc.cc.lib
