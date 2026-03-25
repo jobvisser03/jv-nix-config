@@ -90,6 +90,9 @@
         '';
       };
 
+      # Enable gnome-keyring for credential storage (required by Azure VPN's libsecret usage)
+      services.gnome.gnome-keyring.enable = true;
+
       # systemd-resolved for DNS management (required by Azure VPN)
       services.resolved = {
         enable = true;

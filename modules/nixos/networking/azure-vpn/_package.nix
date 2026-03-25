@@ -28,6 +28,8 @@
   zenity,
   cacert,
   openvpn,
+  xdg-utils,
+  gnome-keyring,
   buildFHSEnv,
   writeShellScript,
   libcap,
@@ -150,6 +152,7 @@ let
         --prefix SSL_CERT_DIR : "${cacert.unbundled}/etc/ssl/certs" \
         --prefix PATH : "${zenity}/bin" \
         --prefix PATH : "${openvpn}/bin" \
+        --prefix PATH : "${xdg-utils}/bin" \
         --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath runtimeLibs} \
         --prefix LD_LIBRARY_PATH : "$out/lib"
     '';
@@ -159,10 +162,16 @@ let
   wrapped = buildFHSEnv {
     inherit pname version;
 
+    targetPkgs = pkgs: runtimeLibs ++ [
+      xdg-utils
+      pkgs.gnome-keyring
+      pkgs.libsecret
+    ];
+
     runScript = writeShellScript "${pname}-wrapper.sh" ''
       # Create certificate directory structure expected by Azure VPN client
       mkdir -p /etc/ssl/certs
-      
+
       # Add DigiCert Global Root G2 (primary cert used by Azure)
       cat <<'CERT_EOF' > /etc/ssl/certs/DigiCert_Global_Root_G2.pem
       ${digiCertGlobalRootG2}
@@ -172,6 +181,21 @@ let
       cat <<'CERT_EOF' > /etc/ssl/certs/DigiCert_Global_Root_CA.pem
       ${digiCertGlobalRootCA}
       CERT_EOF
+
+      # Create log directory expected by the client
+      mkdir -p /var/log/azurevpnclient
+
+      # Create a browser wrapper that clears LD_LIBRARY_PATH before launching
+      # the browser. Without this, Firefox picks up the FHS env's older nss libs
+      # and fails with "NSS_3.113 not found".
+      mkdir -p /tmp/azurevpn-bin
+      cat > /tmp/azurevpn-bin/xdg-open <<BROWSER_SCRIPT
+      #!/bin/sh
+      unset LD_LIBRARY_PATH
+      exec ${xdg-utils}/bin/xdg-open "\$@"
+      BROWSER_SCRIPT
+      chmod +x /tmp/azurevpn-bin/xdg-open
+      export PATH="/tmp/azurevpn-bin:$PATH"
 
       exec ${unpacked}/bin/${pname} "$@"
     '';
