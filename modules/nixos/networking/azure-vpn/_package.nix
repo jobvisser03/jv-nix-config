@@ -194,12 +194,17 @@ let
       # Create log directory expected by the client
       mkdir -p /var/log/azurevpnclient
 
+      # Prefer capability-wrapped openvpn from NixOS security.wrappers
+      export PATH="/run/wrappers/bin:$PATH"
+
       exec ${unpacked}/bin/${pname} "$@"
     '';
 
     extraBwrapArgs = [
       "--tmpfs /etc/ssl"
       "--tmpfs /var/log"
+      "--dev-bind /dev/net /dev/net"
+      "--ro-bind /run/wrappers /run/wrappers"
     ];
 
     meta = {

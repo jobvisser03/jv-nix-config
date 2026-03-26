@@ -50,8 +50,8 @@
 
     # GPU-specific kernel params are managed by _gpu.nix based on gpuMode
 
-    # Kernel modules for Docker networking
-    boot.kernelModules = [ "br_netfilter" "bridge" "veth" ];
+    # Kernel modules for Docker networking and VPN tunnel
+    boot.kernelModules = [ "br_netfilter" "bridge" "veth" "tun" ];
 
     # Docker systemd dependencies - just wait for NetworkManager, not network-online
     systemd.services.docker = {

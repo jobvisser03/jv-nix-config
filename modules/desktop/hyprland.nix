@@ -364,8 +364,8 @@
             "special:monitor, gapsout:50"
             "special:logseq, on-created-empty:logseq"
             "special:logseq, gapsout:50"
-            "special:logseq, on-created-empty:proton-pass"
-            "special:logseq, gapsout:50"
+            "special:proton-pass, on-created-empty:proton-pass"
+            "special:proton-pass, gapsout:50"
           ];
 
           "$mod" = "SUPER";
@@ -419,7 +419,6 @@
 
               # Resize column
               "SUPER CTRL, H, Decrease column width, layoutmsg, colresize -0.05"
-              "SUPER CTRL, L, Increase column width, layoutmsg, colresize +0.05"
 
               # Launcher
               "SUPER, D, Open application launcher, exec, rofi -show drun"
@@ -437,6 +436,7 @@
               "SUPER, Next, Switch to previous workspace, workspace, r+1"
               "SUPER, mouse_down, Switch to next workspace, workspace, e+1"
               "SUPER, mouse_up, Switch to previous workspace, workspace, e-1"
+              "SUPER, M, Move workspace to next monitor, moveworkspacetomonitor, e+1"
             ]
             ++ (builtins.concatLists (
               builtins.genList (
