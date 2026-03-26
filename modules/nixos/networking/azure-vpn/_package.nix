@@ -29,7 +29,6 @@
   cacert,
   openvpn,
   xdg-utils,
-  gnome-keyring,
   buildFHSEnv,
   writeShellScript,
   writeShellScriptBin,
@@ -66,29 +65,6 @@ let
     -----END CERTIFICATE-----
   '';
 
-  # Runtime libraries needed by the Azure VPN client
-  runtimeLibs = [
-    zenity
-    openssl
-    gtk3
-    libsecret
-    cairo
-    nss_latest
-    nspr
-    libuuid
-    stdenv.cc.cc.lib
-    at-spi2-core
-    libdrm
-    mesa
-    gtk2
-    glib
-    pango
-    atk
-    curl
-    cacert
-    openvpn
-  ];
-
   # DigiCert Global Root CA certificate (alternative, used by some Azure configurations)
   digiCertGlobalRootCA = ''
     -----BEGIN CERTIFICATE-----
@@ -114,6 +90,29 @@ let
     CAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=
     -----END CERTIFICATE-----
   '';
+
+  # Runtime libraries needed by the Azure VPN client
+  runtimeLibs = [
+    zenity
+    openssl
+    gtk3
+    libsecret
+    cairo
+    nss_latest
+    nspr
+    libuuid
+    stdenv.cc.cc.lib
+    at-spi2-core
+    libdrm
+    mesa
+    gtk2
+    glib
+    pango
+    atk
+    curl
+    cacert
+    openvpn
+  ];
 
   # The unpacked and patched Azure VPN client
   unpacked = stdenv.mkDerivation {
@@ -152,8 +151,6 @@ let
       wrapProgram $out/bin/microsoft-azurevpnclient \
         --prefix SSL_CERT_DIR : "${cacert.unbundled}/etc/ssl/certs" \
         --prefix PATH : "${zenity}/bin" \
-        --prefix PATH : "${openvpn}/bin" \
-        --prefix PATH : "${xdg-utils}/bin" \
         --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath runtimeLibs} \
         --prefix LD_LIBRARY_PATH : "$out/lib"
     '';
@@ -171,40 +168,26 @@ let
   wrapped = buildFHSEnv {
     inherit pname version;
 
-    targetPkgs = pkgs: runtimeLibs ++ [
+    targetPkgs = pkgs: [
       xdg-open-clean
-      pkgs.gnome-keyring
-      pkgs.libsecret
     ];
 
     runScript = writeShellScript "${pname}-wrapper.sh" ''
-      # Create certificate directory structure expected by Azure VPN client
       mkdir -p /etc/ssl/certs
 
-      # Add DigiCert Global Root G2 (primary cert used by Azure)
       cat <<'CERT_EOF' > /etc/ssl/certs/DigiCert_Global_Root_G2.pem
       ${digiCertGlobalRootG2}
       CERT_EOF
 
-      # Add DigiCert Global Root CA (alternative)
       cat <<'CERT_EOF' > /etc/ssl/certs/DigiCert_Global_Root_CA.pem
       ${digiCertGlobalRootCA}
       CERT_EOF
-
-      # Create log directory expected by the client
-      mkdir -p /var/log/azurevpnclient
-
-      # Prefer capability-wrapped openvpn from NixOS security.wrappers
-      export PATH="/run/wrappers/bin:$PATH"
 
       exec ${unpacked}/bin/${pname} "$@"
     '';
 
     extraBwrapArgs = [
       "--tmpfs /etc/ssl"
-      "--tmpfs /var/log"
-      "--dev-bind /dev/net /dev/net"
-      "--ro-bind /run/wrappers /run/wrappers"
     ];
 
     meta = {

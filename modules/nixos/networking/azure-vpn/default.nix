@@ -36,14 +36,6 @@
         pkgs.openresolv
       ];
 
-      # Give openvpn CAP_NET_ADMIN so it can create tun interfaces and set routes without root
-      security.wrappers.openvpn = {
-        source = "${pkgs.openvpn}/bin/openvpn";
-        capabilities = "cap_net_admin+ep";
-        owner = "root";
-        group = "root";
-      };
-
       # Add DigiCert certificates that Azure VPN requires
       # The client expects .pem files in /etc/ssl/certs/
       environment.etc = {
@@ -213,7 +205,7 @@
       # Firewall configuration
       networking.firewall = lib.mkIf cfg.openFirewall {
         allowedUDPPorts = [ 1194 ];
-        checkReversePath = lib.mkDefault "loose";
+        checkReversePath = lib.mkDefault false;
       };
 
       # Ensure user is in required groups if specified
