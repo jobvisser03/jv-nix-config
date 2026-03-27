@@ -137,6 +137,12 @@
       apacheHttpd
     ];
 
+    # Home-manager overrides for this host
+    home-manager.users.${username} = {
+      # Disable suspend on idle for homelab server
+      hypridle.suspendOnIdle = false;
+    };
+
     system.stateVersion = "25.11";
   };
 }

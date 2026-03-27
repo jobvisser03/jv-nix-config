@@ -7,67 +7,74 @@
     pkgs,
     ...
   }: {
-    services.hypridle = {
-      enable = true;
+    options.hypridle.suspendOnIdle = lib.mkEnableOption "Suspend system after idle timeout" // {default = true;};
 
-      settings = let
-        isLocked = command: "pgrep hyprlock && ${command}";
-      in {
-        general = {
-          lock_cmd = "pgrep hyprlock || hyprlock";
-          unlock_cmd = "pkill -SIGUSR1 hyprlock";
+    config = {
+      services.hypridle = {
+        enable = true;
+
+        settings = let
+          isLocked = command: "pgrep hyprlock && ${command}";
+        in {
+          general = {
+            lock_cmd = "pgrep hyprlock || hyprlock";
+            unlock_cmd = "pkill -SIGUSR1 hyprlock";
+          };
+
+          listener =
+            [
+              # Save brightness state early
+              {
+                timeout = 10;
+                on-timeout = "brightnessctl --save";
+                on-resume = "brightnessctl --restore";
+              }
+              # Turn off keyboard backlight
+              {
+                timeout = 30;
+                on-timeout = "brightnessctl --device *:kbd_backlight --save set 0";
+                on-resume = "brightnessctl --device *:kbd_backlight --restore";
+              }
+              # Dim screen progressively
+              {
+                timeout = 120;
+                on-timeout = "brightnessctl set 50%-";
+              }
+              {
+                timeout = 240;
+                on-timeout = "brightnessctl set 50%-";
+              }
+              # Lock screen (8 minutes)
+              {
+                timeout = 480;
+                on-timeout = "pgrep hyprlock || hyprlock --grace 3";
+              }
+              # Turn off display
+              {
+                timeout = 540;
+                on-timeout = "hyprctl dispatch dpms off";
+                on-resume = "hyprctl dispatch dpms on";
+              }
+
+              # If already locked - dim faster and turn off display sooner
+              {
+                timeout = 15;
+                on-timeout = isLocked "brightnessctl set 75%-";
+              }
+              {
+                timeout = 20;
+                on-timeout = isLocked "hyprctl dispatch dpms off";
+                on-resume = "hyprctl dispatch dpms on";
+              }
+            ]
+            # Suspend (10 minutes) - only if suspendOnIdle is enabled
+            ++ lib.optionals config.hypridle.suspendOnIdle [
+              {
+                timeout = 600;
+                on-timeout = "systemctl suspend";
+              }
+            ];
         };
-
-        listener = [
-          # Save brightness state early
-          {
-            timeout = 10;
-            on-timeout = "brightnessctl --save";
-            on-resume = "brightnessctl --restore";
-          }
-          # Turn off keyboard backlight
-          {
-            timeout = 30;
-            on-timeout = "brightnessctl --device *:kbd_backlight --save set 0";
-            on-resume = "brightnessctl --device *:kbd_backlight --restore";
-          }
-          # Dim screen progressively
-          {
-            timeout = 120;
-            on-timeout = "brightnessctl set 50%-";
-          }
-          {
-            timeout = 240;
-            on-timeout = "brightnessctl set 50%-";
-          }
-          # Lock screen (8 minutes)
-          {
-            timeout = 480;
-            on-timeout = "pgrep hyprlock || hyprlock --grace 3";
-          }
-          # Turn off display
-          {
-            timeout = 540;
-            on-timeout = "hyprctl dispatch dpms off";
-            on-resume = "hyprctl dispatch dpms on";
-          }
-          # Suspend (10 minutes)
-          {
-            timeout = 600;
-            on-timeout = "systemctl suspend";
-          }
-
-          # If already locked - dim faster and turn off display sooner
-          {
-            timeout = 15;
-            on-timeout = isLocked "brightnessctl set 75%-";
-          }
-          {
-            timeout = 20;
-            on-timeout = isLocked "hyprctl dispatch dpms off";
-            on-resume = "hyprctl dispatch dpms on";
-          }
-        ];
       };
     };
   };
