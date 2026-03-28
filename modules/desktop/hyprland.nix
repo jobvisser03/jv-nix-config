@@ -275,6 +275,8 @@
           gesture = [
             "3, horizontal, workspace"
             "4, down, dispatcher, exec, loginctl lock-session"
+            "4, left, dispatcher, layoutmsg, focus r"
+            "4, right, dispatcher, layoutmsg, focus l"
           ];
 
           env = [
@@ -434,8 +436,8 @@
               # Workspace switching
               "SUPER, Prior, Switch to next workspace, workspace, r-1"
               "SUPER, Next, Switch to previous workspace, workspace, r+1"
-              "SUPER, mouse_down, Switch to next workspace, workspace, e+1"
-              "SUPER, mouse_up, Switch to previous workspace, workspace, e-1"
+              "SUPER, mouse_down, Focus next window, layoutmsg, focus r"
+              "SUPER, mouse_up, Focus previous window, layoutmsg, focus l"
               "SUPER, M, Move workspace to next monitor, moveworkspacetomonitor, e+1"
             ]
             ++ (builtins.concatLists (
