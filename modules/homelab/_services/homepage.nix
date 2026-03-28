@@ -16,6 +16,14 @@ in {
       description = "Port for Homepage dashboard";
     };
 
+    # Extra hosts/IPs to add to HOMEPAGE_ALLOWED_HOSTS (e.g. LAN IP, Tailscale IP)
+    extraAllowedHosts = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+      description = "Additional hostnames or IP addresses allowed to access the Homepage dashboard (appended to the default list of hostname, localhost, 127.0.0.1)";
+      example = ["192.168.1.100" "100.75.90.21"];
+    };
+
     # Additional custom links to show on the dashboard
     customLinks = lib.mkOption {
       type = lib.types.listOf (lib.types.attrsOf lib.types.anything);
@@ -242,7 +250,9 @@ in {
         # Allow access from hostname and common patterns (localhost, IPs)
         # Homepage validates Host header, so we need to list all possible access methods
         # Wildcards are not supported, so we list patterns without ports (Caddy forwards on port 80)
-        HOMEPAGE_ALLOWED_HOSTS = lib.mkForce "${homelab.hostname},localhost,127.0.0.1";
+        HOMEPAGE_ALLOWED_HOSTS = lib.mkForce (lib.concatStringsSep "," (
+          ["${homelab.hostname}" "localhost" "127.0.0.1"] ++ cfg.extraAllowedHosts
+        ));
       }
       // lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
         HOMEPAGE_FILE_JELLYFIN_API_KEY = cfg.jellyfin.apiKeyFile;
