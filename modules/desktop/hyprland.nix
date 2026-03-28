@@ -250,6 +250,7 @@
 
           input = {
             kb_layout = "us";
+            # "caps:swapescape"
             kb_options = "ctrl:nocaps";
             follow_mouse = 1;
             sensitivity = 0;
@@ -436,8 +437,8 @@
               # Workspace switching
               "SUPER, Prior, Switch to next workspace, workspace, r-1"
               "SUPER, Next, Switch to previous workspace, workspace, r+1"
-              "SUPER, mouse_down, Focus next window, layoutmsg, focus r"
-              "SUPER, mouse_up, Focus previous window, layoutmsg, focus l"
+              "SUPER, mouse_up, Focus next window, layoutmsg, focus r"
+              "SUPER, mouse_down, Focus previous window, layoutmsg, focus l"
               "SUPER, M, Move workspace to next monitor, moveworkspacetomonitor, e+1"
             ]
             ++ (builtins.concatLists (

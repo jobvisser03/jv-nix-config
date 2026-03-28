@@ -116,7 +116,7 @@
 
     # Azure VPN Client (Microsoft Entra ID authentication)
     services.azure-vpn = {
-      enable = true;
+      enable = false;
       user = username;
     };
 

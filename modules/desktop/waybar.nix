@@ -158,7 +158,6 @@
             modules = [
               "battery"
               "idle_inhibitor"
-              "power-profiles-daemon"
             ];
           };
 
@@ -212,17 +211,6 @@
             };
           };
 
-          power-profiles-daemon = {
-            format = "{icon}";
-            tooltip-format = "Power profile: {profile}\nDriver: {driver}";
-            tooltip = true;
-            format-icons = {
-              default = "";
-              performance = "";
-              balanced = "";
-              power-saver = "";
-            };
-          };
 
           "group/hardware" = {
             orientation = "inherit";
@@ -405,21 +393,6 @@
           animation-direction: alternate;
         }
 
-        #power-profiles-daemon {
-          color: @base00;
-        }
-
-        #power-profiles-daemon.performance {
-          background: @base08;
-        }
-
-        #power-profiles-daemon.balanced {
-          background: @base0B;
-        }
-
-        #power-profiles-daemon.power-saver {
-          background: @base0D;
-        }
 
         #idle_inhibitor {
           background: @base02;

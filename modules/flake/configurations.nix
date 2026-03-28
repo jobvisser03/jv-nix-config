@@ -177,7 +177,7 @@ in {
         "desktop-apps"
         "nixos-desktop-apps"
         "affinity"
-        # Networking
+        "power-management"
         "nixos/networking/azure-vpn"
       ];
       extraModules = [

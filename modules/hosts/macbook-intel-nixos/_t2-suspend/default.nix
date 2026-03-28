@@ -10,6 +10,11 @@
 # - benstaker: Full driver teardown (bluetooth, touch bar, sparse_keymap) + PCI
 #   rescan on resume + separate resume service for reliability + IOMMU/PCIe compat
 #   kernel params.
+#
+# Future: https://github.com/deqrocks/apple-bce (no-state-suspend branch)
+#   proposes in-driver PM callbacks that rebuild USB controller state on resume,
+#   eliminating the need for module unload/reload and PipeWire teardown.
+#   Not yet stable as of 2026-03-28.
 {
   config,
   lib,
@@ -125,6 +130,12 @@
     ${pkgs.kmod}/bin/rmmod -f apple-bce 2>/dev/null || true
     sleep 1
     ''}
+
+    # 10. Disable USB wakeup to prevent T2 internal devices from triggering spurious wakes
+    echo "Disabling USB wakeup sources..."
+    for dev in /sys/bus/usb/devices/*/power/wakeup; do
+      [ -f "$dev" ] && echo "disabled" > "$dev" 2>/dev/null || true
+    done
 
     echo "=== T2 Suspend: Pre-suspend sequence complete ==="
   '';
@@ -287,29 +298,44 @@ in {
       };
     };
 
-    # Enable all ACPI wakeup devices at boot (benstaker fix)
-    systemd.services.t2-enable-wakeup-devices = {
-      description = "Enable all ACPI wakeup devices for T2 Mac suspend";
+    # Configure ACPI wakeup devices at boot
+    # Only allow LID0 (lid open) and PWRB (power button) to wake the system.
+    # XHC1/XHC2 (USB host controllers) cause spurious wakes on T2 Macs because
+    # the T2 chip's internal USB devices (keyboard, trackpad, touch bar) trigger
+    # false wake events.
+    systemd.services.t2-configure-wakeup-devices = {
+      description = "Configure ACPI wakeup sources for T2 Mac (LID0 + PWRB only)";
       after = ["multi-user.target"];
       wantedBy = ["multi-user.target"];
 
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
-        ExecStart = pkgs.writeShellScript "t2-enable-wakeup-devices.sh" ''
+        ExecStart = pkgs.writeShellScript "t2-configure-wakeup-devices.sh" ''
           set -euo pipefail
-          enabled=0
+
+          # Devices that should be allowed to wake the system
+          ALLOW_WAKE="LID0 PWRB"
+
           while IFS= read -r line; do
             dev=$(echo "$line" | ${pkgs.gawk}/bin/awk '{print $1}')
             status=$(echo "$line" | ${pkgs.gawk}/bin/awk '{print $3}')
             [ "$dev" = "Device" ] && continue
             [ -z "$dev" ] && continue
-            if [ "$status" = "*disabled" ]; then
+
+            is_allowed=false
+            for allowed in $ALLOW_WAKE; do
+              [ "$dev" = "$allowed" ] && is_allowed=true
+            done
+
+            if $is_allowed && [ "$status" = "*disabled" ]; then
+              echo "Enabling wakeup for $dev"
               echo "$dev" > /proc/acpi/wakeup 2>/dev/null || true
-              enabled=$((enabled + 1))
+            elif ! $is_allowed && [ "$status" = "*enabled" ]; then
+              echo "Disabling wakeup for $dev"
+              echo "$dev" > /proc/acpi/wakeup 2>/dev/null || true
             fi
           done < /proc/acpi/wakeup
-          echo "Enabled $enabled ACPI wakeup devices"
         '';
       };
     };
