@@ -33,14 +33,14 @@ in {
     };
 
     # Jellyfin widget configuration
-    # jellyfin = {
-    #   apiKeyFile = lib.mkOption {
-    #     type = lib.types.nullOr lib.types.path;
-    #     default = null;
-    #     description = "Path to file containing Jellyfin API key for widget stats";
-    #     example = "config.sops.secrets.jellyfin_api_key.path";
-    #   };
-    # };
+    jellyfin = {
+      apiKeyFile = lib.mkOption {
+        type = lib.types.nullOr lib.types.path;
+        default = null;
+        description = "Path to file containing Jellyfin API key for widget stats";
+        example = "config.sops.secrets.jellyfin_api_key.path";
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -128,24 +128,24 @@ in {
           };
 
         # Build Jellyfin entry with optional widget (when API key is provided)
-        # jellyfinEntry = lib.optional (hl.jellyfin.enable or false) {
-        #   "${hl.jellyfin.homepage.name}" =
-        #     {
-        #       icon = hl.jellyfin.homepage.icon;
-        #       description = hl.jellyfin.homepage.description;
-        #       href = "http://${homelab.hostname}:${toString hl.jellyfin.port}";
-        #       siteMonitor = "http://127.0.0.1:${toString hl.jellyfin.port}";
-        #     }
-        #     // lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
-        #       widget = {
-        #         type = "jellyfin";
-        #         url = "http://127.0.0.1:${toString hl.jellyfin.port}";
-        #         key = "{{HOMEPAGE_FILE_JELLYFIN_API_KEY}}";
-        #         enableBlocks = true;
-        #         enableNowPlaying = true;
-        #       };
-        #     };
-        # };
+        jellyfinEntry = lib.optional (hl.jellyfin.enable or false) {
+          "${hl.jellyfin.homepage.name}" =
+            {
+              icon = hl.jellyfin.homepage.icon;
+              description = hl.jellyfin.homepage.description;
+              href = "http://${homelab.hostname}:${toString hl.jellyfin.port}";
+              siteMonitor = "http://127.0.0.1:${toString hl.jellyfin.port}";
+            }
+            // lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
+              widget = {
+                type = "jellyfin";
+                url = "http://127.0.0.1:${toString hl.jellyfin.port}";
+                key = "{{HOMEPAGE_FILE_JELLYFIN_API_KEY}}";
+                enableBlocks = true;
+                enableNowPlaying = true;
+              };
+            };
+        };
 
         # Build spotify-player entry (no web UI, just service status)
         # spotify-player is controlled via Spotify apps (phone/desktop), not a web interface
@@ -160,7 +160,7 @@ in {
         # Group services by category
         mediaServices =
           (lib.optionals (hl.immich.enable or false) (mkServiceEntry "immich" hl.immich))
-          # ++ jellyfinEntry
+          ++ jellyfinEntry
           ++ spotifyEntry;
 
         smartHomeServices =
@@ -240,9 +240,9 @@ in {
 
     # Set up environment variables
     # Homepage uses HOMEPAGE_FILE_* convention to read secrets from files
-    # systemd.services.homepage-dashboard.environment =
-    #   lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
-    #     HOMEPAGE_FILE_JELLYFIN_API_KEY = cfg.jellyfin.apiKeyFile;
-    #   };
+    systemd.services.homepage-dashboard.environment =
+      lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
+        HOMEPAGE_FILE_JELLYFIN_API_KEY = cfg.jellyfin.apiKeyFile;
+      };
   };
 }
