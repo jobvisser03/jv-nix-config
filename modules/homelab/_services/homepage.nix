@@ -250,9 +250,7 @@ in {
         # Allow access from hostname and common patterns (localhost, IPs)
         # Homepage validates Host header, so we need to list all possible access methods
         # Wildcards are not supported, so we list patterns without ports (Caddy forwards on port 80)
-        HOMEPAGE_ALLOWED_HOSTS = lib.mkForce (lib.concatStringsSep "," (
-          ["${homelab.hostname}" "localhost" "127.0.0.1"] ++ cfg.extraAllowedHosts
-        ));
+        HOMEPAGE_ALLOWED_HOSTS = lib.mkForce "*";
       }
       // lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
         HOMEPAGE_FILE_JELLYFIN_API_KEY = cfg.jellyfin.apiKeyFile;
