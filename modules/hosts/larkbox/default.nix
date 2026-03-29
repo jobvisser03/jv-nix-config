@@ -59,6 +59,7 @@
       services.forgejo.enable = true;
       services.gitlab.enable = false;
       services.gitlab-runner.enable = false;
+      services.jellyfin.enable = false;
 
       services.immich = {
         enable = true;
@@ -69,10 +70,6 @@
       };
 
       services.homepage.enable = true;
-      services.homepage.extraAllowedHosts = [
-        "192.168.178.190" # LAN IP
-        "100.75.90.21" # Tailscale IP
-      ];
 
       services.radicale = {
         enable = false;
@@ -94,7 +91,7 @@
       };
 
       services.spotify-player = {
-        enable = true;
+        enable = false;
         clientId = null;
         credentialsFile = config.sops.secrets.spotify_credentials.path;
       };

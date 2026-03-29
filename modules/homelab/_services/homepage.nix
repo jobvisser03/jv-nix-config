@@ -16,14 +16,6 @@ in {
       description = "Port for Homepage dashboard";
     };
 
-    # Extra hosts/IPs to add to HOMEPAGE_ALLOWED_HOSTS (e.g. LAN IP, Tailscale IP)
-    extraAllowedHosts = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [];
-      description = "Additional hostnames or IP addresses allowed to access the Homepage dashboard (appended to the default list of hostname, localhost, 127.0.0.1)";
-      example = ["192.168.1.100" "100.75.90.21"];
-    };
-
     # Additional custom links to show on the dashboard
     customLinks = lib.mkOption {
       type = lib.types.listOf (lib.types.attrsOf lib.types.anything);
@@ -41,14 +33,14 @@ in {
     };
 
     # Jellyfin widget configuration
-    jellyfin = {
-      apiKeyFile = lib.mkOption {
-        type = lib.types.nullOr lib.types.path;
-        default = null;
-        description = "Path to file containing Jellyfin API key for widget stats";
-        example = "config.sops.secrets.jellyfin_api_key.path";
-      };
-    };
+    # jellyfin = {
+    #   apiKeyFile = lib.mkOption {
+    #     type = lib.types.nullOr lib.types.path;
+    #     default = null;
+    #     description = "Path to file containing Jellyfin API key for widget stats";
+    #     example = "config.sops.secrets.jellyfin_api_key.path";
+    #   };
+    # };
   };
 
   config = lib.mkIf cfg.enable {
@@ -136,24 +128,24 @@ in {
           };
 
         # Build Jellyfin entry with optional widget (when API key is provided)
-        jellyfinEntry = lib.optional (hl.jellyfin.enable or false) {
-          "${hl.jellyfin.homepage.name}" =
-            {
-              icon = hl.jellyfin.homepage.icon;
-              description = hl.jellyfin.homepage.description;
-              href = "http://${homelab.hostname}:${toString hl.jellyfin.port}";
-              siteMonitor = "http://127.0.0.1:${toString hl.jellyfin.port}";
-            }
-            // lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
-              widget = {
-                type = "jellyfin";
-                url = "http://127.0.0.1:${toString hl.jellyfin.port}";
-                key = "{{HOMEPAGE_FILE_JELLYFIN_API_KEY}}";
-                enableBlocks = true;
-                enableNowPlaying = true;
-              };
-            };
-        };
+        # jellyfinEntry = lib.optional (hl.jellyfin.enable or false) {
+        #   "${hl.jellyfin.homepage.name}" =
+        #     {
+        #       icon = hl.jellyfin.homepage.icon;
+        #       description = hl.jellyfin.homepage.description;
+        #       href = "http://${homelab.hostname}:${toString hl.jellyfin.port}";
+        #       siteMonitor = "http://127.0.0.1:${toString hl.jellyfin.port}";
+        #     }
+        #     // lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
+        #       widget = {
+        #         type = "jellyfin";
+        #         url = "http://127.0.0.1:${toString hl.jellyfin.port}";
+        #         key = "{{HOMEPAGE_FILE_JELLYFIN_API_KEY}}";
+        #         enableBlocks = true;
+        #         enableNowPlaying = true;
+        #       };
+        #     };
+        # };
 
         # Build spotify-player entry (no web UI, just service status)
         # spotify-player is controlled via Spotify apps (phone/desktop), not a web interface
@@ -168,14 +160,14 @@ in {
         # Group services by category
         mediaServices =
           (lib.optionals (hl.immich.enable or false) (mkServiceEntry "immich" hl.immich))
-          ++ jellyfinEntry
+          # ++ jellyfinEntry
           ++ spotifyEntry;
 
         smartHomeServices =
           lib.optionals (hl.homeassistant.enable or false) (mkServiceEntry "homeassistant" hl.homeassistant);
 
         regularServices =
-          (lib.optionals (hl.gitlab.enable or false) (mkServiceEntry "gitlab" hl.gitlab))
+          (lib.optionals (hl.forgejo.enable or false) (mkServiceEntry "forgejo" hl.forgejo))
           ++ (lib.optionals (hl.radicale.enable or false) (mkServiceEntry "radicale" hl.radicale));
       in [
         {
@@ -243,17 +235,14 @@ in {
       ];
     };
 
+    # Allow all hosts — homepage is behind Caddy on a LAN
+    services.homepage-dashboard.allowedHosts = "*";
+
     # Set up environment variables
     # Homepage uses HOMEPAGE_FILE_* convention to read secrets from files
-    systemd.services.homepage-dashboard.environment =
-      {
-        # Allow access from hostname and common patterns (localhost, IPs)
-        # Homepage validates Host header, so we need to list all possible access methods
-        # Wildcards are not supported, so we list patterns without ports (Caddy forwards on port 80)
-        HOMEPAGE_ALLOWED_HOSTS = lib.mkForce "*";
-      }
-      // lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
-        HOMEPAGE_FILE_JELLYFIN_API_KEY = cfg.jellyfin.apiKeyFile;
-      };
+    # systemd.services.homepage-dashboard.environment =
+    #   lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
+    #     HOMEPAGE_FILE_JELLYFIN_API_KEY = cfg.jellyfin.apiKeyFile;
+    #   };
   };
 }
