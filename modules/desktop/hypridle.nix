@@ -13,9 +13,7 @@
       services.hypridle = {
         enable = true;
 
-        settings = let
-          isLocked = command: "pgrep hyprlock && ${command}";
-        in {
+        settings = {
           general = {
             lock_cmd = "pgrep hyprlock || hyprlock";
             unlock_cmd = "pkill -SIGUSR1 hyprlock";
@@ -23,7 +21,7 @@
 
           listener =
             [
-              # Save brightness state early
+              # Save and restore brightness across idle
               {
                 timeout = 10;
                 on-timeout = "brightnessctl --save";
@@ -35,42 +33,27 @@
                 on-timeout = "brightnessctl --device *:kbd_backlight --save set 0";
                 on-resume = "brightnessctl --device *:kbd_backlight --restore";
               }
-              # Dim screen progressively
+              # Dim screen
               {
                 timeout = 120;
                 on-timeout = "brightnessctl set 50%-";
               }
+              # Lock screen
               {
-                timeout = 240;
-                on-timeout = "brightnessctl set 50%-";
-              }
-              # Lock screen (8 minutes)
-              {
-                timeout = 480;
+                timeout = 300;
                 on-timeout = "pgrep hyprlock || hyprlock --grace 3";
               }
               # Turn off display
               {
-                timeout = 540;
+                timeout = 360;
                 on-timeout = "hyprctl dispatch dpms off";
                 on-resume = "hyprctl dispatch dpms on";
               }
-
-              # If already locked - dim faster and turn off display sooner
-              {
-                timeout = 15;
-                on-timeout = isLocked "brightnessctl set 75%-";
-              }
-              {
-                timeout = 20;
-                on-timeout = isLocked "hyprctl dispatch dpms off";
-                on-resume = "hyprctl dispatch dpms on";
-              }
             ]
-            # Suspend (10 minutes) - only if suspendOnIdle is enabled
+            # Suspend - only if suspendOnIdle is enabled
             ++ lib.optionals config.hypridle.suspendOnIdle [
               {
-                timeout = 600;
+                timeout = 480;
                 on-timeout = "systemctl suspend";
               }
             ];

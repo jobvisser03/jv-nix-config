@@ -180,6 +180,11 @@
     ${pkgs.util-linux}/bin/rfkill unblock wifi 2>/dev/null || true
     ${pkgs.util-linux}/bin/rfkill unblock bluetooth 2>/dev/null || true
 
+    # 5b. Restart bluetooth service to reconnect paired devices
+    echo "Restarting bluetooth service..."
+    sleep 2
+    ${pkgs.systemd}/bin/systemctl restart bluetooth 2>/dev/null || true
+
     # 6. Enable WiFi radio
     echo "Enabling WiFi radio..."
     ${pkgs.networkmanager}/bin/nmcli radio wifi on 2>/dev/null || true

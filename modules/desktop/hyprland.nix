@@ -84,6 +84,10 @@
           General = {
             Experimental = true;
             UserspaceHID = true; # Helps with high-resolution scrolling/input
+            AutoEnable = true; # Auto-power adapter and reconnect paired devices
+          };
+          Policy = {
+            AutoEnable = true;
           };
         };
       };

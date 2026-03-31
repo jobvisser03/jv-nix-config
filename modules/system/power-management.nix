@@ -12,9 +12,9 @@
       # Common settings for all systems
       {
         # Enable suspend and set lid close to suspend
-        services.logind = {
-          lidSwitch = "suspend";
-          lidSwitchExternalPower = "suspend";
+        services.logind.settings.Login = {
+          HandleLidSwitch = "suspend";
+          HandleLidSwitchExternalPower = "suspend";
         };
       }
 
