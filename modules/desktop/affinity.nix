@@ -15,6 +15,7 @@
     home.packages = [
       inputs.affinity-nix.packages.${pkgs.stdenv.hostPlatform.system}.photo
       inputs.affinity-nix.packages.${pkgs.stdenv.hostPlatform.system}.designer
+      inputs.affinity-nix.packages.${pkgs.stdenv.hostPlatform.system}.publisher
     ];
 
     # Set Wine DPI to 192 (2x) for retina display scaling
