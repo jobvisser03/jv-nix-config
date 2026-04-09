@@ -91,9 +91,7 @@
       };
 
       services.spotify-player = {
-        enable = false;
-        clientId = null;
-        credentialsFile = config.sops.secrets.spotify_credentials.path;
+        enable = true;
       };
 
       services.cloudflare-ddns = {
