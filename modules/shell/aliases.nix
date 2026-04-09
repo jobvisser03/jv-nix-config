@@ -17,6 +17,9 @@
       nup = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#macbok-intel-nixos --upgrade";
       flup = "nix flake update --commit-lock-file";
 
+      # Larkbox remote commands
+      larkbox-spotify = "ssh larkbox 'HYPRLAND_INSTANCE_SIGNATURE=$(ls /tmp/hypr/) hyprctl dispatch togglespecialworkspace spotify'";
+
       # General utilities
       dup = "sudo systemctl list-units *docker*";
       venv = "source .venv/bin/activate";
