@@ -85,6 +85,13 @@
             Experimental = true;
             UserspaceHID = true; # Helps with high-resolution scrolling/input
             AutoEnable = true; # Auto-power adapter and reconnect paired devices
+            # Listen on both page-scan windows so peripherals (e.g. MX
+            # Anywhere 3) can re-page us reliably after suspend.
+            FastConnectable = true;
+            ReconnectAttempts = 7;
+            ReconnectIntervals = "1,2,4,8,16,32,64";
+            JustWorksRepairing = "always";
+            RememberPowered = true;
           };
           Policy = {
             AutoEnable = true;

@@ -180,10 +180,48 @@
     ${pkgs.util-linux}/bin/rfkill unblock wifi 2>/dev/null || true
     ${pkgs.util-linux}/bin/rfkill unblock bluetooth 2>/dev/null || true
 
-    # 5b. Restart bluetooth service to reconnect paired devices
+    # 5b. Wait for hci_bcm4377 to publish the controller, then restart
+    # bluetoothd against a known-good adapter and force a clean power cycle so
+    # paired HIDs (e.g. MX Anywhere 3) get reconnected promptly.
+    echo "Waiting for bluetooth controller to appear..."
+    for i in $(seq 1 20); do
+      if [ -e /sys/class/bluetooth/hci0 ]; then
+        echo "hci0 present (attempt $i/20)"
+        break
+      fi
+      sleep 0.5
+    done
+
     echo "Restarting bluetooth service..."
-    sleep 2
     ${pkgs.systemd}/bin/systemctl restart bluetooth 2>/dev/null || true
+
+    echo "Waiting for hci0 after bluetoothd restart..."
+    for i in $(seq 1 20); do
+      if [ -e /sys/class/bluetooth/hci0 ]; then
+        break
+      fi
+      sleep 0.5
+    done
+
+    # Give bluetoothd a beat to enumerate the adapter before we poke it.
+    sleep 1
+
+    # Explicitly initiate connection to every paired device that isn't already
+    # connected. We skip already-connected devices because issuing `connect` on
+    # an in-flight HID reconnect tends to race and drop the link.
+    echo "Triggering reconnect to paired devices..."
+    ${pkgs.bluez}/bin/bluetoothctl paired-devices 2>/dev/null \
+      | ${pkgs.gawk}/bin/awk '{print $2}' \
+      | while read -r mac; do
+          [ -n "$mac" ] || continue
+          if ${pkgs.bluez}/bin/bluetoothctl info "$mac" 2>/dev/null \
+              | ${pkgs.gnugrep}/bin/grep -q "Connected: yes"; then
+            echo "  $mac already connected"
+            continue
+          fi
+          echo "  connect $mac"
+          ${pkgs.bluez}/bin/bluetoothctl connect "$mac" 2>/dev/null || true
+        done
 
     # 6. Enable WiFi radio
     echo "Enabling WiFi radio..."
