@@ -9,6 +9,7 @@
   }: {
     home.packages = with pkgs; [
       alejandra # Nix formatter
+      nh # Nix helper CLI (https://github.com/nix-community/nh)
     ];
 
     programs = {
