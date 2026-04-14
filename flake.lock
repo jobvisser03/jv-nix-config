@@ -11,15 +11,15 @@
         ],
         "nixpkgs-wine": "nixpkgs-wine",
         "on-linux": "on-linux",
-        "plugin-loader": "plugin-loader",
+        "plugin-loader-src": "plugin-loader-src",
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1775783274,
-        "narHash": "sha256-Ebvn8gN4Vw4FJBQZxKm3sV9Cw+/99IwT7U83zIsboN8=",
+        "lastModified": 1776067772,
+        "narHash": "sha256-cvFa7mQ80lDhfk8g3uGNhQLA8HrL3y9EW3AJPPmzeKI=",
         "owner": "mrshmllow",
         "repo": "affinity-nix",
-        "rev": "1aa96ece7d3c39aee027b126005cf401cfb591f2",
+        "rev": "20fd4d95a634303e1beb55fab3d138f4e7ea6006",
         "type": "github"
       },
       "original": {
@@ -143,11 +143,11 @@
       },
       "locked": {
         "dir": "pkgs/firefox-addons",
-        "lastModified": 1775793785,
-        "narHash": "sha256-lLJpttuuF9sbmwM7GuNJ2/mKVqbim4Wla3rl/eMjAZo=",
+        "lastModified": 1776139376,
+        "narHash": "sha256-rBykvCL5GRT6VmiY39XnxAR10cohBsLeAENP0+3JM/0=",
         "owner": "rycee",
         "repo": "nur-expressions",
-        "rev": "65415051e904355712fc63e7a0bd14f20eddbe28",
+        "rev": "ccfaa2303117e22752bda4e1a1bb07d17f38ea2d",
         "type": "gitlab"
       },
       "original": {
@@ -343,11 +343,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1775781825,
-        "narHash": "sha256-L5yKTpR+alrZU2XYYvIxCeCP4LBHU5jhwSj7H1VAavg=",
+        "lastModified": 1776136611,
+        "narHash": "sha256-b2pu3Pb28W0bJzQVP3OJHZC5+dgOOeqjlli2WVakKEU=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "e35c39fca04fee829cecdf839a50eb9b54d8a701",
+        "rev": "8a423e444b17dde406097328604a64fc7429e34e",
         "type": "github"
       },
       "original": {
@@ -507,16 +507,21 @@
         "type": "github"
       }
     },
-    "plugin-loader": {
+    "plugin-loader-src": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-kNkJdzyH7hWjFNuXohGNYazYaqNgJQSpWFT3fRIdcsg=",
-        "type": "file",
-        "url": "https://github.com/noahc3/AffinityPluginLoader/releases/download/v0.3.0/affinitypluginloader-plus-winefix.tar.xz"
+        "lastModified": 1775508798,
+        "narHash": "sha256-cD2G3M83wCEXVMMl9YoHMLxPIvbXeESgQTkXiM+lzns=",
+        "owner": "noahc3",
+        "repo": "AffinityPluginLoader",
+        "rev": "bd93bbf9f84735d8ba6538596620bbe8d8b90efd",
+        "type": "github"
       },
       "original": {
-        "type": "file",
-        "url": "https://github.com/noahc3/AffinityPluginLoader/releases/download/v0.3.0/affinitypluginloader-plus-winefix.tar.xz"
+        "owner": "noahc3",
+        "ref": "v0.3.0",
+        "repo": "AffinityPluginLoader",
+        "type": "github"
       }
     },
     "root": {
@@ -541,11 +546,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1775682595,
-        "narHash": "sha256-0E9PohY/VuESLq0LR4doaH7hTag513sDDW5n5qmHd1Q=",
+        "lastModified": 1776119890,
+        "narHash": "sha256-Zm6bxLNnEOYuS/SzrAGsYuXSwk3cbkRQZY0fJnk8a5M=",
         "owner": "Mic92",
         "repo": "sops-nix",
-        "rev": "d2e8438d5886e92bc5e7c40c035ab6cae0c41f76",
+        "rev": "d4971dd58c6627bfee52a1ad4237637c0a2fb0cd",
         "type": "github"
       },
       "original": {
@@ -574,11 +579,11 @@
         "tinted-zed": "tinted-zed"
       },
       "locked": {
-        "lastModified": 1775429060,
-        "narHash": "sha256-wbFF5cRxQOCzL/wHOKYm21t5AHPH2Lfp0mVPCOAvEoc=",
+        "lastModified": 1776128773,
+        "narHash": "sha256-aV7fNAdum23uirlIEgRNq+Tz0bn0+asbYqaA/pCV8No=",
         "owner": "danth",
         "repo": "stylix",
-        "rev": "d27951a6539951d87f75cf0a7cda8a3a24016019",
+        "rev": "43e20cee100e5578eb8e709bec960e26ce653adf",
         "type": "github"
       },
       "original": {
