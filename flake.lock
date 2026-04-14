@@ -2,6 +2,7 @@
   "nodes": {
     "affinity-nix": {
       "inputs": {
+        "corefonts": "corefonts",
         "elemental-wine-source": "elemental-wine-source",
         "flake-compat": "flake-compat",
         "flake-parts": "flake-parts",
@@ -15,11 +16,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1776067772,
-        "narHash": "sha256-cvFa7mQ80lDhfk8g3uGNhQLA8HrL3y9EW3AJPPmzeKI=",
+        "lastModified": 1776166973,
+        "narHash": "sha256-ikdVMd+futcGBaao6uhdDLGYtFvBARSWYMxOtyw0Lu8=",
         "owner": "mrshmllow",
         "repo": "affinity-nix",
-        "rev": "20fd4d95a634303e1beb55fab3d138f4e7ea6006",
+        "rev": "b67a73fa2c4d40743fdece18a919435b2111720f",
         "type": "github"
       },
       "original": {
@@ -93,6 +94,22 @@
         "owner": "tinted-theming",
         "repo": "base16-vim",
         "rev": "577fe8125d74ff456cf942c733a85d769afe58b7",
+        "type": "github"
+      }
+    },
+    "corefonts": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1431183738,
+        "narHash": "sha256-610Km9GCtYWxi2SH5jH/XYPXc5f58q5lB05/5XxO/qM=",
+        "owner": "pushcx",
+        "repo": "corefonts",
+        "rev": "8f8627b0004b5f1b952c09cf6390e4ae46475e59",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pushcx",
+        "repo": "corefonts",
         "type": "github"
       }
     },
@@ -343,11 +360,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1776136611,
-        "narHash": "sha256-b2pu3Pb28W0bJzQVP3OJHZC5+dgOOeqjlli2WVakKEU=",
+        "lastModified": 1776184304,
+        "narHash": "sha256-No6QGBmIv5ChiwKCcbkxjdEQ/RO2ZS1gD7SFy6EZ7rc=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "8a423e444b17dde406097328604a64fc7429e34e",
+        "rev": "3c7524c68348ef79ce48308e0978611a050089b2",
         "type": "github"
       },
       "original": {
@@ -579,11 +596,11 @@
         "tinted-zed": "tinted-zed"
       },
       "locked": {
-        "lastModified": 1776128773,
-        "narHash": "sha256-aV7fNAdum23uirlIEgRNq+Tz0bn0+asbYqaA/pCV8No=",
+        "lastModified": 1776170745,
+        "narHash": "sha256-Tl1aZVP5EIlT+k0+iAKH018GLHJpLz3hhJ0LNQOWxCc=",
         "owner": "danth",
         "repo": "stylix",
-        "rev": "43e20cee100e5578eb8e709bec960e26ce653adf",
+        "rev": "e3861617645a43c9bbefde1aa6ac54dd0a44bfa9",
         "type": "github"
       },
       "original": {
