@@ -82,6 +82,7 @@
         powerOnBoot = true;
         settings = {
           General = {
+            Enable = "Source,Sink,Media,Socket";
             Experimental = true;
             UserspaceHID = true; # Helps with high-resolution scrolling/input
             AutoEnable = true; # Auto-power adapter and reconnect paired devices
