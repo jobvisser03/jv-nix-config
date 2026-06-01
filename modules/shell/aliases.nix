@@ -18,7 +18,7 @@
       flup = "nix flake update --commit-lock-file";
 
       # Larkbox remote commands
-      larkbox-spotify = "ssh larkbox 'HYPRLAND_INSTANCE_SIGNATURE=$(ls /tmp/hypr/) hyprctl dispatch togglespecialworkspace spotify'";
+      larkbox-spotify = "ssh larkbox 'XDG_RUNTIME_DIR=/run/user/$(id -u) HYPRLAND_INSTANCE_SIGNATURE=$(ls /run/user/$(id -u)/hypr/) hyprctl dispatch togglespecialworkspace spotify'";
 
       # General utilities
       dup = "sudo systemctl list-units *docker*";

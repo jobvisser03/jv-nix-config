@@ -47,6 +47,11 @@
     powerManagement.desktopMode = true;
     hardware.graphics.enable = true;
 
+    # Hardware error logging (MCE / PCIe AER / thermal events) persisted to
+    # /var/lib/rasdaemon/ras-mc_event.db so we can diagnose the next
+    # unexpected power-off / hard hang after reboot.
+    hardware.rasdaemon.enable = true;
+
     # Homelab services
     homelab = {
       enable = true;
@@ -56,7 +61,7 @@
 
       domain = "dutchdataworks.nl";
 
-      services.forgejo.enable = true;
+      services.forgejo.enable = false;
       services.gitlab.enable = false;
       services.gitlab-runner.enable = false;
       services.jellyfin.enable = false;

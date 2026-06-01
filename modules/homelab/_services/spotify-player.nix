@@ -14,7 +14,11 @@
 
   # Script that launches Spotify via hyprctl if not already running
   launchScript = pkgs.writeShellScript "spotify-launch" ''
-    HYPRLAND_INSTANCE_SIGNATURE=$(ls /tmp/hypr/ 2>/dev/null | head -1)
+    # Hyprland with UWSM stores sockets under XDG_RUNTIME_DIR, not /tmp
+    XDG_RUNTIME_DIR="/run/user/$(${pkgs.coreutils}/bin/id -u)"
+    export XDG_RUNTIME_DIR
+
+    HYPRLAND_INSTANCE_SIGNATURE=$(ls "$XDG_RUNTIME_DIR/hypr/" 2>/dev/null | head -1)
     export HYPRLAND_INSTANCE_SIGNATURE
 
     if [ -z "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
@@ -68,7 +72,7 @@
         def log_message(self, format, *args):
             print(f"[spotify-launcher] {args[0]}", flush=True)
 
-    server = http.server.HTTPServer(("127.0.0.1", PORT), Handler)
+    server = http.server.HTTPServer(("0.0.0.0", PORT), Handler)
     print(f"Spotify launcher listening on 127.0.0.1:{PORT}", flush=True)
     server.serve_forever()
   '';
@@ -104,6 +108,9 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    # Open firewall for launcher access on local network
+    networking.firewall.allowedTCPPorts = [cfg.port];
+
     # Systemd service for the HTTP launcher endpoint
     systemd.services.spotify-launcher = {
       description = "Spotify Launcher HTTP Endpoint";

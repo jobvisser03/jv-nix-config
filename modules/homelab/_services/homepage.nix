@@ -153,7 +153,8 @@ in {
           "${hl.spotify-player.homepage.name}" = {
             icon = hl.spotify-player.homepage.icon;
             description = hl.spotify-player.homepage.description;
-            # No href - controlled via Spotify Connect from phone/desktop apps
+            href = "http://${homelab.hostname}:${toString hl.spotify-player.port}";
+            siteMonitor = "http://127.0.0.1:${toString hl.spotify-player.port}";
           };
         };
 
