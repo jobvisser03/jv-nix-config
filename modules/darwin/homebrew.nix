@@ -41,6 +41,7 @@
         "slack"
         "obs"
         "opencode-desktop"
+        "handy"
       ];
 
       taps = ["hashicorp/tap"];
