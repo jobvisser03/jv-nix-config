@@ -221,7 +221,7 @@
             disable_splash_rendering = true;
             disable_hyprland_logo = true;
             allow_session_lock_restore = true;
-            vfr = true;
+            # vfr = true;
             animate_manual_resizes = true;
             focus_on_activate = true;
           };
