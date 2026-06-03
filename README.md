@@ -4,6 +4,12 @@ This repository contains my personal Nix configuration using flakes, supporting 
 
 ## Quick Reference
 
+Need to add a nix package? `modules/desktop/apps.nix`
+Need to add a home manager package? `modules/dev/tools.nix` or in a flake-part module
+Need to add a Homebrew package? `modules/darwin/homebrew.nix`
+Need to add a new flake-part module? `modules/[desktop|dev|shell]/[name].nix`
+Need to add a flake-part module to a host's configuration? `modules/flake/configurations.nix`
+
 ```bash
 # macOS (nix-darwin)
 darwin-rebuild switch --flake .#macbook-intel

@@ -79,6 +79,9 @@
       sops
       ssh-to-age
       darktable
+
+      # Dependency for microsoft-azure-storage-explorer on Darwin
+      dotnet-runtime_10
     ];
 
     programs.vscode = {
@@ -98,6 +101,6 @@
     programs.vscode = {
       package = pkgs.vscode.fhs;
     };
-    
+
   };
 }
