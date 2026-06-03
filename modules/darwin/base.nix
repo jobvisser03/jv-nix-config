@@ -7,6 +7,15 @@
     config,
     ...
   }: {
+    # .NET runtime required by apps like Azure Storage Explorer
+    environment.systemPackages = [ pkgs.dotnet-runtime_10 ];
+
+    # Expose DOTNET_ROOT to GUI apps (launchd) and terminal shells (/etc/zshenv).
+    # Storage Explorer's hub controller probes well-known paths; this env var
+    # makes nix's nix-store-based install visible to it.
+    launchd.user.envVariables.DOTNET_ROOT = "${pkgs.dotnet-runtime_10}/share/dotnet";
+    environment.variables.DOTNET_ROOT = "${pkgs.dotnet-runtime_10}/share/dotnet";
+
     # zsh is the default shell
     programs.zsh.enable = true;
 
