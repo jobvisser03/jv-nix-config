@@ -61,7 +61,7 @@
 
       domain = "dutchdataworks.nl";
 
-      services.forgejo.enable = false;
+      services.forgejo.enable = true;
       services.gitlab.enable = false;
       services.gitlab-runner.enable = false;
       services.jellyfin.enable = false;
