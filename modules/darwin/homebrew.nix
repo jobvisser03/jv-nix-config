@@ -1,4 +1,3 @@
-# Homebrew configuration for Darwin
 # Darwin only module
 {...}: {
   flake.modules.darwin.homebrew = {
@@ -34,13 +33,13 @@
         "cursor"
         "visual-studio-code"
         "microsoft-azure-storage-explorer"
-        "qobuz"
-        "proton-mail"
+        # "qobuz"
+        # "proton-mail"
         "proton-pass"
-        "keepassxc"
-        "slack"
-        "obs"
-        "opencode-desktop"
+        # "keepassxc"
+        # "slack"
+        # "obs"
+        # "opencode-desktop"
         "handy"
       ];
 
