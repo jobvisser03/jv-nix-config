@@ -5,6 +5,7 @@
     homeManager.home = {
       pkgs,
       lib,
+      inputs,
       ...
     }: {
       home.stateVersion = lib.mkDefault "24.11";
@@ -21,6 +22,9 @@
       fonts.fontconfig.enable = true;
       programs.home-manager.enable = true;
     };
+
+    # Handy speech-to-text module
+    homeManager.handy = inputs.handy.nixModules.handy.homeManagerModules.default;
 
     # macOS-specific home config
     homeManager.home-darwin = {pkgs, ...}: {

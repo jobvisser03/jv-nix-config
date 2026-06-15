@@ -16,6 +16,12 @@
       cryptomator
       signal-desktop
 
+      # Office
+      libreoffice-qt
+      hunspell
+      hunspellDicts.nl_NL
+      hunspellDicts.en_GB
+
       # Wallpaper daemon
       swww
     ];
