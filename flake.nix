@@ -64,47 +64,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-
-    import-tree.url = "github:vic/import-tree";
-
-    darwin = {
-      url = "github:LnL7/nix-darwin";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    home-manager = {
-      url = "github:nix-community/home-manager/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    nixos-hardware.url = "github:NixOS/nixos-hardware";
-
-    stylix = {
-      url = "github:danth/stylix/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    firefox-addons = {
-      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    affinity-nix = {
-      url = "github:mrshmllow/affinity-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
-
+  
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake {inherit inputs;} (inputs.import-tree ./modules);
 }
