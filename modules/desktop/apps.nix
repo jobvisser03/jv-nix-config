@@ -17,10 +17,7 @@
       signal-desktop
 
       # Office
-      libreoffice-qt
-      hunspell
-      hunspellDicts.nl_NL
-      hunspellDicts.en_GB
+      onlyoffice-desktopeditors
 
       # Wallpaper daemon
       swww
