@@ -81,6 +81,7 @@
       # Desktop applications
       keepassxc
       proton-pass
+      proton-authenticator
       drawio
       anki-bin
       docker-client
@@ -106,6 +107,5 @@
     programs.vscode = {
       package = pkgs.vscode.fhs;
     };
-
   };
 }
