@@ -29,7 +29,5 @@
         fi
       done
     '';
-
-    nixpkgs.config.allowUnfree = true;
   };
 }
