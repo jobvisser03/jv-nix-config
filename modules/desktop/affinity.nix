@@ -13,9 +13,9 @@
     dpiHex = "000000c0";
   in {
     home.packages = [
-      inputs.affinity-nix.packages.${pkgs.stdenv.hostPlatform.system}.affinity-photo
-      inputs.affinity-nix.packages.${pkgs.stdenv.hostPlatform.system}.affinity-designer
-      inputs.affinity-nix.packages.${pkgs.stdenv.hostPlatform.system}.affinity-publisher
+      pkgs.affinity-photo
+      pkgs.affinity-designer
+      pkgs.affinity-publisher
     ];
 
     # Set Wine DPI to 192 (2x) for retina display scaling
@@ -29,5 +29,7 @@
         fi
       done
     '';
+
+    nixpkgs.config.allowUnfree = true;
   };
 }

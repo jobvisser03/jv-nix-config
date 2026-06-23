@@ -6,6 +6,7 @@
     lib,
     config,
     username,
+    inputs,
     ...
   }: {
     # Timezone and locale
@@ -40,6 +41,12 @@
 
     # Allow unfree packages
     nixpkgs.config.allowUnfree = true;
+
+    # Allow insecure packages (e.g. logseq's electron)
+    nixpkgs.config.permittedInsecurePackages = [ "electron-39.8.10" ];
+
+    # Affinity suite overlay (unfree packages via wine)
+    nixpkgs.overlays = [ inputs.affinity-nix.overlays.default ];
 
     # Default state version
     system.stateVersion = lib.mkDefault "25.11";
