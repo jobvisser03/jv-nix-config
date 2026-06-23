@@ -79,7 +79,7 @@
             keepassxc-browser
             ublock-origin
             darkreader
-            vimium
+            vimium-c
           ];
         };
       };
