@@ -2,7 +2,12 @@
 # Provides common desktop applications not covered by other specific modules
 # Services (greetd, pipewire, etc.) are configured in hyprland.nix
 {...}: {
-  flake.modules.nixos.desktop-apps = {pkgs, ...}: {
+  flake.modules.nixos.desktop-apps = {pkgs, ...}: let
+    # Override with latest Electron to avoid EOL security warnings
+    logseq = pkgs.logseq.override {
+      electron_39 = pkgs.electron_41;
+    };
+  in {
     environment.systemPackages = with pkgs; [
       # Hardware management
       radeontop
