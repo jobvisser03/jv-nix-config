@@ -47,6 +47,19 @@
     powerManagement.desktopMode = true;
     hardware.graphics.enable = true;
 
+    # Larkbox is fanless - override the desktopMode 'performance' governor to
+    # 'powersave' so the Intel P-state driver scales frequency with actual load
+    # instead of pinning all cores at max speed continuously. The CPU still
+    # boosts when the workload needs it; it just doesn't sit at ~2.9 GHz while
+    # idle and bake itself.
+    powerManagement.cpuFreqGovernor = lib.mkForce "powersave";
+
+    # Intel thermal daemon: proactively limits package power before the CPU
+    # hits the 110 °C hardware thermal-protection cutoff that causes the
+    # sudden, unlogged power-off we've been seeing (fanless chassis, Immich ML
+    # + Firefox video + midnight cron jobs all running simultaneously).
+    services.thermald.enable = true;
+
     # Hardware error logging (MCE / PCIe AER / thermal events) persisted to
     # /var/lib/rasdaemon/ras-mc_event.db so we can diagnose the next
     # unexpected power-off / hard hang after reboot.
