@@ -21,5 +21,11 @@
       default = {};
       description = "Global metadata (users, appearance, programs)";
     };
+
+    profiles = lib.mkOption {
+      type = lib.types.attrsOf (lib.types.listOf lib.types.str);
+      default = {};
+      description = "Named module/profile lists used to compose hosts";
+    };
   };
 }

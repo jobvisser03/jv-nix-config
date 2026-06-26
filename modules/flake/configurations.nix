@@ -2,11 +2,108 @@
 {
   config,
   inputs,
+  lib,
   ...
 }: let
+  nixosModules = config.flake.modules.nixos or {};
+  darwinModules = config.flake.modules.darwin or {};
+  homeManagerModules = config.flake.modules.homeManager or {};
+  profileRegistry = {
+    common-nixos = [
+      "nix"
+      "home"
+      "sops"
+      "vscode-server"
+    ];
+
+    common-shell = [
+      "zsh"
+      "atuin"
+      "oh-my-posh"
+      "aliases"
+      "direnv"
+      "eza"
+      "fd"
+    ];
+
+    common-dev = [
+      "git"
+      "dev-tools"
+    ];
+
+    hyprland-desktop = [
+      "stylix"
+      "desktop-base"
+      "hyprland"
+      "waybar"
+      "hyprlock"
+      "hypridle"
+      "rofi"
+      "wezterm"
+      "kitty"
+      "firefox"
+      "desktop-apps"
+      "nixos-desktop-apps"
+    ];
+
+    laptop-hyprland = [
+      "common-nixos"
+      "common-shell"
+      "common-dev"
+      "hyprland-desktop"
+      "power-management"
+    ];
+
+    darwin-workstation = [
+      "nix"
+      "home"
+      "home-darwin"
+      "homebrew"
+      "common-shell"
+      "common-dev"
+      "wezterm"
+      "kitty"
+      "desktop-apps"
+    ];
+  };
+
+  expandProfileItems = items:
+    lib.concatMap (
+      item:
+        if builtins.hasAttr item profileRegistry
+        then expandProfileItems (builtins.getAttr item profileRegistry)
+        else [item]
+    )
+    items;
+
+  expandModuleNames = profileNames: moduleNames:
+    lib.unique ((expandProfileItems profileNames) ++ moduleNames);
+
+  requireModule = namespace: name:
+    if builtins.hasAttr name namespace
+    then builtins.getAttr name namespace
+    else throw "Missing flake module '${name}'";
+
+  modulesFrom = namespace: moduleNames:
+    builtins.map (name: builtins.getAttr name namespace) (
+      builtins.filter (name: builtins.hasAttr name namespace) moduleNames
+    );
+
+  ensureNixosModule = name:
+    if builtins.hasAttr name nixosModules || builtins.hasAttr name homeManagerModules
+    then name
+    else throw "Requested NixOS module '${name}' was not found in flake.modules.nixos or flake.modules.homeManager";
+
+  ensureDarwinModule = name:
+    if builtins.hasAttr name darwinModules || builtins.hasAttr name homeManagerModules
+    then name
+    else throw "Requested Darwin module '${name}' was not found in flake.modules.darwin or flake.modules.homeManager";
+
   # Load both NixOS and home-manager modules for a given list of module names
-  loadNixosAndHmModules = modules: user:
-    (builtins.map (module: config.flake.modules.nixos.${module} or {}) modules)
+  loadNixosAndHmModules = modules: user: let
+    moduleNames = builtins.map ensureNixosModule modules;
+  in
+    modulesFrom nixosModules moduleNames
     ++ [
       {
         imports = [inputs.home-manager.nixosModules.home-manager];
@@ -16,14 +113,16 @@
           backupFileExtension = "hm-backup";
           extraSpecialArgs = {inherit inputs;};
           users.${user}.imports =
-            builtins.map (module: config.flake.modules.homeManager.${module} or {}) modules;
+            modulesFrom homeManagerModules moduleNames;
         };
       }
     ];
 
   # Load Darwin modules with home-manager integration
-  loadDarwinAndHmModules = modules: user:
-    (builtins.map (module: config.flake.modules.darwin.${module} or {}) modules)
+  loadDarwinAndHmModules = modules: user: let
+    moduleNames = builtins.map ensureDarwinModule modules;
+  in
+    modulesFrom darwinModules moduleNames
     ++ [
       {
         imports = [inputs.home-manager.darwinModules.home-manager];
@@ -33,7 +132,7 @@
           backupFileExtension = "hm-backup";
           extraSpecialArgs = {inherit inputs;};
           users.${user}.imports =
-            builtins.map (module: config.flake.modules.homeManager.${module} or {}) modules;
+            modulesFrom homeManagerModules moduleNames;
         };
       }
     ];
@@ -42,10 +141,13 @@
   mkNixosSystem = {
     hostname,
     system ? "x86_64-linux",
+    profiles ? [],
     modules ? [],
     user ? "job",
     extraModules ? [],
-  }:
+  }: let
+    moduleNames = expandModuleNames profiles modules;
+  in
     inputs.nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = {
@@ -55,11 +157,11 @@
       modules =
         [
           # Always include base modules
-          config.flake.modules.nixos.base or {}
+          (requireModule nixosModules "base")
           # Host-specific module
-          config.flake.modules.nixos."hosts/${hostname}" or {}
+          (requireModule nixosModules "hosts/${hostname}")
         ]
-        ++ (loadNixosAndHmModules modules user)
+        ++ (loadNixosAndHmModules moduleNames user)
         ++ extraModules;
     };
 
@@ -67,10 +169,13 @@
   mkDarwinSystem = {
     hostname,
     system,
+    profiles ? [],
     modules ? [],
     user,
     extraModules ? [],
-  }:
+  }: let
+    moduleNames = expandModuleNames profiles modules;
+  in
     inputs.darwin.lib.darwinSystem {
       inherit system;
       specialArgs = {
@@ -80,14 +185,16 @@
       modules =
         [
           # Always include base darwin module
-          config.flake.modules.darwin.base or {}
+          (requireModule darwinModules "base")
           # Host-specific module
-          config.flake.modules.darwin."hosts/${hostname}" or {}
+          (requireModule darwinModules "hosts/${hostname}")
         ]
-        ++ (loadDarwinAndHmModules modules user)
+        ++ (loadDarwinAndHmModules moduleNames user)
         ++ extraModules;
     };
 in {
+  flake.profiles = profileRegistry;
+
   # Export functions to flake.lib
   flake.lib = {
     inherit loadNixosAndHmModules loadDarwinAndHmModules mkNixosSystem mkDarwinSystem;
@@ -100,39 +207,16 @@ in {
       hostname = "larkbox";
       system = "x86_64-linux";
       user = "job";
+      profiles = [
+        "common-nixos"
+        "common-shell"
+        "common-dev"
+        "hyprland-desktop"
+      ];
       modules = [
-        # Base modules
-        "nix"
-        "home"
-        "sops"
         "user-job"
         "power-management"
-        "vscode-server"
-        # Shell
-        "zsh"
-        "atuin"
-        "oh-my-posh"
-        "aliases"
-        "direnv"
-        "eza"
-        "fd"
-        # Dev tools
-        "git"
-        "dev-tools"
-        # Homelab
         "homelab"
-        # Desktop (Hyprland)
-        "stylix"
-        "hyprland"
-        "waybar"
-        "hyprlock"
-        "hypridle"
-        "rofi"
-        "wezterm"
-        "kitty"
-        "firefox"
-        "desktop-apps"
-        "nixos-desktop-apps"
       ];
       extraModules = [
         inputs.sops-nix.nixosModules.sops
@@ -146,38 +230,12 @@ in {
       hostname = "macbook-intel-nixos";
       system = "x86_64-linux";
       user = "job";
+      profiles = [
+        "laptop-hyprland"
+      ];
       modules = [
-        # Base modules
-        "nix"
-        "home"
-        "sops"
         "user-job"
-        "vscode-server"
-        # Shell
-        "zsh"
-        "atuin"
-        "oh-my-posh"
-        "aliases"
-        "direnv"
-        "eza"
-        "fd"
-        # Dev tools
-        "git"
-        "dev-tools"
-        # Desktop (Hyprland)
-        "stylix"
-        "hyprland"
-        "waybar"
-        "hyprlock"
-        "hypridle"
-        "rofi"
-        "wezterm"
-        "kitty"
-        "firefox"
-        "desktop-apps"
-        "nixos-desktop-apps"
         "affinity"
-        "power-management"
         "nixos/networking/azure-vpn"
       ];
       extraModules = [
@@ -192,25 +250,13 @@ in {
       hostname = "macbook-intel-nixos-sooph";
       system = "x86_64-linux";
       user = "sooph";
+      profiles = [
+        "common-nixos"
+        "common-shell"
+        "common-dev"
+      ];
       modules = [
-        # Base modules
-        "nix"
-        "home"
-        "sops"
         "user-sooph"
-        "vscode-server"
-        # Shell
-        "zsh"
-        "atuin"
-        "oh-my-posh"
-        "aliases"
-        "direnv"
-        "eza"
-        "fd"
-        # Dev tools
-        "git"
-        "dev-tools"
-        # Desktop
         "wezterm"
         "firefox"
         "desktop-apps"
@@ -226,29 +272,11 @@ in {
       hostname = "macbook-intel";
       system = "x86_64-darwin";
       user = "job";
+      profiles = [
+        "darwin-workstation"
+      ];
       modules = [
-        # Base modules
-        "nix"
-        "home"
-        "home-darwin"
-        "homebrew"
         "user-job"
-        # Shell
-        "zsh"
-        "atuin"
-        "oh-my-posh"
-        "aliases"
-        "direnv"
-        "eza"
-        "fd"
-        # Dev tools
-        "git"
-        "dev-tools"
-        # Terminals
-        "wezterm"
-        "kitty"
-        # Desktop apps
-        "desktop-apps"
       ];
     };
 
@@ -257,29 +285,11 @@ in {
       hostname = "macbook-silicon";
       system = "aarch64-darwin";
       user = "job.visser";
+      profiles = [
+        "darwin-workstation"
+      ];
       modules = [
-        # Base modules
-        "nix"
-        "home"
-        "home-darwin"
-        "homebrew"
         "user-job-work"
-        # Shell
-        "zsh"
-        "atuin"
-        "oh-my-posh"
-        "aliases"
-        "direnv"
-        "eza"
-        "fd"
-        # Dev tools
-        "git"
-        "dev-tools"
-        # Terminals
-        "wezterm"
-        "kitty"
-        # Desktop apps
-        "desktop-apps"
       ];
     };
   };

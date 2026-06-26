@@ -51,12 +51,12 @@
     # GPU-specific kernel params are managed by _gpu.nix based on gpuMode
 
     # Kernel modules for Docker networking and VPN tunnel
-    boot.kernelModules = [ "br_netfilter" "bridge" "veth" "tun" ];
+    boot.kernelModules = ["br_netfilter" "bridge" "veth" "tun"];
 
     # Docker systemd dependencies - just wait for NetworkManager, not network-online
     systemd.services.docker = {
-      after = [ "NetworkManager.service" ];
-      requires = [ "NetworkManager.service" ];
+      after = ["NetworkManager.service"];
+      requires = ["NetworkManager.service"];
       serviceConfig = {
         Restart = "on-failure";
         RestartSec = "5s";
@@ -101,14 +101,15 @@
           uid = 1000;
           gid = 100;
         };
-         pcloud- = {
+        pcloud- = {
           remote = "pcloud:PHOTOS/'TEMP Photo Library'";
           mountpoint = "/home/${username}/pcloud/temp-photo-library";
           cacheMode = "writes";
           readOnly = false;
           uid = 1000;
           gid = 100;
-        };     };
+        };
+      };
     };
 
     # Disable Tailscale temporarily
@@ -123,9 +124,9 @@
     # Printing
     services.printing = {
       enable = true;
-      drivers = [ pkgs.splix ];
+      drivers = [pkgs.splix];
     };
- 
+
     # Podman for OCI containers (Home Assistant, etc.)
     # virtualisation.podman = {
     #   enable = true;
@@ -153,6 +154,39 @@
     environment.systemPackages = with pkgs; [
       tree
     ];
+
+    home-manager.users.${username}.jv.hyprland = {
+      monitorv2 = [
+        {
+          output = "";
+          mode = "preferred";
+          position = "auto";
+          scale = "1.60";
+        }
+        {
+          output = "eDP-1";
+          mode = "3072x1920";
+          position = "512x1344";
+          scale = "1.60";
+        }
+        {
+          output = "DP-6";
+          mode = "3840x1600";
+          position = "0x0";
+          scale = "1.25";
+        }
+        {
+          output = "eDP-2";
+          disabled = true;
+        }
+      ];
+
+      workspaceRules = [
+        "1, monitor:eDP-1, default:true"
+        "2, monitor:eDP-1, default:true"
+        "3, monitor:eDP-1, default:true"
+      ];
+    };
 
     system.stateVersion = "25.05";
   };

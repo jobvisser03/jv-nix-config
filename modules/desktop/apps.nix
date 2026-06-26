@@ -1,6 +1,7 @@
 # Desktop applications module for NixOS and Darwin desktop systems
 # Provides common desktop applications not covered by other specific modules
-# Services (greetd, pipewire, etc.) are configured in hyprland.nix
+# Shared desktop services are configured in desktop-base; Hyprland session
+# services are configured in hyprland.nix.
 {...}: {
   flake.modules.nixos.desktop-apps = {pkgs, ...}: let
     # Override with latest Electron to avoid EOL security warnings
@@ -25,13 +26,17 @@
       onlyoffice-desktopeditors
 
       # Wallpaper daemon
-      swww
+      awww
     ];
   };
 
   # Cross-platform home-manager packages (works on both NixOS and Darwin)
-  flake.modules.homeManager.desktop-apps = {pkgs, ...}: {
-    home.packages = with pkgs; [
+  flake.modules.homeManager.desktop-apps = {
+    pkgs,
+    lib,
+    ...
+  }: let
+    packages = with pkgs; [
       # Core CLI tools
       curl
       ffmpeg
@@ -89,6 +94,10 @@
       ssh-to-age
       darktable
     ];
+  in {
+    home.packages =
+      builtins.filter (pkg: lib.meta.availableOn pkgs.stdenv.hostPlatform pkg)
+      packages;
 
     programs.vscode = {
       enable = true;

@@ -8,7 +8,8 @@ Need to add a nix package? `modules/desktop/apps.nix`
 Need to add a home manager package? `modules/dev/tools.nix` or in a flake-part module
 Need to add a Homebrew package? `modules/darwin/homebrew.nix`
 Need to add a new flake-part module? `modules/[desktop|dev|shell]/[name].nix`
-Need to add a flake-part module to a host's configuration? `modules/flake/configurations.nix`
+Need to add common modules to many hosts? add them to a profile in `modules/flake/configurations.nix`
+Need to add a one-off module to a host? add it to that host's `modules` list in `modules/flake/configurations.nix`
 
 ```bash
 # macOS (nix-darwin)
@@ -88,8 +89,9 @@ The configuration follows a **dendritic pattern** using `import-tree` to auto-im
 │   │   └── tools.nix          # ripgrep, bat, jq, etc.
 │   │
 │   ├── desktop/           # Desktop environment (NixOS/Hyprland)
+│   │   ├── base.nix           # Shared desktop plumbing
 │   │   ├── stylix.nix         # System-wide theming
-│   │   ├── hyprland.nix       # Hyprland compositor
+│   │   ├── hyprland.nix       # Hyprland compositor/session
 │   │   ├── waybar.nix         # Status bar
 │   │   ├── hyprlock.nix       # Lock screen
 │   │   ├── hypridle.nix       # Idle management
@@ -156,7 +158,7 @@ The configuration uses a **dendritic (tree-like) structure** with [import-tree](
 1. **`flake.nix`** calls `inputs.import-tree ./modules` — all `.nix` files are auto-imported
 2. **Paths with `/_`** are excluded (hardware configs, secrets, internal modules)
 3. **Each module** registers itself to `flake.modules.{nixos,darwin,homeManager}.<name>`
-4. **`modules/flake/configurations.nix`** composes modules into system configurations
+4. **`modules/flake/configurations.nix`** defines reusable profiles and composes them into system configurations
 
 ### Module Registration
 
@@ -181,7 +183,7 @@ Modules register themselves to be available for composition:
 
 ### Configuration Composition
 
-Systems are defined by composing modules. The `username` argument is automatically passed to all NixOS/Darwin modules via `specialArgs`:
+Systems are defined by composing profiles plus host-specific modules. Profiles expand to module names and missing modules fail evaluation with a clear error. The `username` argument is automatically passed to all NixOS/Darwin modules via `specialArgs`:
 
 ```nix
 # modules/flake/configurations.nix
@@ -189,14 +191,19 @@ flake.nixosConfigurations = {
   macbook-intel-nixos = mkNixosSystem {
     hostname = "macbook-intel-nixos";
     user = "job";           # exposed as `username` in all modules
+    profiles = [
+      "laptop-hyprland"
+    ];
     modules = [
-      "zsh" "atuin" "oh-my-posh"  # Shell
-      "git" "dev-tools"           # Dev
-      "hyprland" "waybar"         # Desktop
+      "user-job"                  # Host/user-specific leaves stay explicit
+      "affinity"
+      "nixos/networking/azure-vpn"
     ];
   };
 };
 ```
+
+Common profiles currently include `common-nixos`, `common-shell`, `common-dev`, `hyprland-desktop`, `laptop-hyprland`, and `darwin-workstation`.
 
 ## Available Configurations
 

@@ -1,57 +1,52 @@
 # Stylix theming configuration
 # NixOS and home-manager module
-{...}: {
+{config, ...}: let
+  appearance = config.flake.meta.appearance;
+in {
   flake.modules = {
     # NixOS stylix configuration
     nixos.stylix = {
       pkgs,
       lib,
-      config,
       ...
-    }: {
+    }: let
+      packageFrom = packagePath:
+        lib.attrByPath (lib.splitString "." packagePath)
+        (throw "Could not resolve appearance package '${packagePath}' in pkgs")
+        pkgs;
+    in {
       stylix = {
         enable = true;
-        image = ../../non-nix-configs/nix-wallpaper-binary-black.png;
-        polarity = "dark";
-        base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-material-dark-medium.yaml";
+        image = appearance.wallpaper;
+        polarity = appearance.polarity;
+        base16Scheme = "${pkgs.base16-schemes}/share/themes/${appearance.theme}.yaml";
 
         fonts = {
-          sizes = {
-            desktop = 14;
-            applications = 14;
-            popups = 14;
-            terminal = 13;
-          };
+          sizes = appearance.fonts.sizes;
           sansSerif = {
-            name = "Ubuntu Nerd Font";
-            package = pkgs.nerd-fonts.ubuntu;
+            inherit (appearance.fonts.sansSerif) name;
+            package = packageFrom appearance.fonts.sansSerif.package;
           };
           serif = {
-            name = "Ubuntu Nerd Font";
-            package = pkgs.nerd-fonts.ubuntu;
+            inherit (appearance.fonts.serif) name;
+            package = packageFrom appearance.fonts.serif.package;
           };
           monospace = {
-            name = "Iosevka Nerd Font";
-            package = pkgs.nerd-fonts.iosevka;
+            inherit (appearance.fonts.monospace) name;
+            package = packageFrom appearance.fonts.monospace.package;
           };
           emoji = {
-            name = "Noto Color Emoji";
-            package = pkgs.noto-fonts-color-emoji;
+            inherit (appearance.fonts.emoji) name;
+            package = packageFrom appearance.fonts.emoji.package;
           };
         };
 
         cursor = {
-          package = pkgs.bibata-cursors;
-          name = "Bibata-Modern-Classic";
-          size = 24;
+          inherit (appearance.cursor) name size;
+          package = packageFrom appearance.cursor.package;
         };
 
-        opacity = {
-          applications = 0.95;
-          desktop = 0.95;
-          popups = 0.75;
-          terminal = 0.95;
-        };
+        opacity = appearance.opacity;
 
         targets = {
           gnome.enable = false;
@@ -59,9 +54,8 @@
 
         icons = {
           enable = true;
-          package = pkgs.papirus-icon-theme;
-          light = "Papirus-Light";
-          dark = "Papirus-Dark";
+          package = packageFrom appearance.icons.package;
+          inherit (appearance.icons) light dark;
         };
       };
     };
