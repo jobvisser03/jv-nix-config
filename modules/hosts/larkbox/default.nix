@@ -60,6 +60,31 @@
     # + Firefox video + midnight cron jobs all running simultaneously).
     services.thermald.enable = true;
 
+    # Hard-cap the Intel P-state turbo headroom to 75 % of maximum.
+    # Background: thermald runs in polling mode (every 4 s) on this N4500 and
+    # never actually throttles anything - by the time it would react to a
+    # temperature spike the hardware thermal protection (110 °C) has already
+    # cut the power.  The crash on 2026-06-30 02:01 was caused by
+    # DatabaseBackupService + library scan (83 k rclone FUSE files) + video
+    # transcode + ML/OCR all firing simultaneously at 02:00:00, driving the
+    # CPU from idle to full turbo in under a second.
+    #
+    # 75 % of max (≈ 2.1 GHz on the N4500's 2.8 GHz turbo) still gives plenty
+    # of headroom for all homelab workloads while keeping peak thermals well
+    # below the hardware cutoff even under combined load.
+    systemd.services.intel-pstate-limit = {
+      description = "Cap Intel P-state max turbo to 75 % to prevent thermal shutdown";
+      wantedBy = ["multi-user.target"];
+      after = ["systemd-modules-load.service"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+      script = ''
+        echo 75 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
+      '';
+    };
+
     # Hardware error logging (MCE / PCIe AER / thermal events) persisted to
     # /var/lib/rasdaemon/ras-mc_event.db so we can diagnose the next
     # unexpected power-off / hard hang after reboot.
