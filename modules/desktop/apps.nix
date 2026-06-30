@@ -45,6 +45,10 @@
       yt-dlp
       fastfetch
 
+      # CLI maintenance
+      # scan folders and files for cleanup using a rust implementation of du
+      dust
+
       # Languages and formatters
       nil
       alejandra
