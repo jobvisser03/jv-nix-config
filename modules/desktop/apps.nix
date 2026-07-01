@@ -18,7 +18,7 @@
       brave
 
       # Desktop applications
-      logseq
+      # logseq
       cryptomator
       signal-desktop
 
@@ -86,6 +86,7 @@
       # TUI coding apps
       opencode
       claude-code
+      # pi-coding-agent is managed by modules/dev/pi.nix (pi.nix flake)
 
       # Desktop applications
       keepassxc

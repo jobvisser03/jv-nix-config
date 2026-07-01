@@ -44,6 +44,7 @@
       "firefox"
       "desktop-apps"
       "nixos-desktop-apps"
+      "pi"
     ];
 
     laptop-hyprland = [
@@ -64,6 +65,7 @@
       "wezterm"
       "kitty"
       "desktop-apps"
+      "pi"
     ];
   };
 
