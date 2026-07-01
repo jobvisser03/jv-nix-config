@@ -74,6 +74,8 @@
       item:
         if builtins.hasAttr item profileRegistry
         then expandProfileItems (builtins.getAttr item profileRegistry)
+        # Pass through leaf names — validated later by ensureNixos/DarwinModule.
+        # If a profile name is misspelled it will surface there with a clear error.
         else [item]
     )
     items;
@@ -81,15 +83,29 @@
   expandModuleNames = profileNames: moduleNames:
     lib.unique ((expandProfileItems profileNames) ++ moduleNames);
 
+  # Strict single-name lookup — throws if the name is absent.
   requireModule = namespace: name:
     if builtins.hasAttr name namespace
     then builtins.getAttr name namespace
     else throw "Missing flake module '${name}'";
 
-  modulesFrom = namespace: moduleNames:
+  # Intentional dual-namespace filter: a name may exist in nixosModules,
+  # homeManagerModules, or both.  ensureNixos/DarwinModule guarantees that
+  # every name is present in at least one namespace before this is called,
+  # so silent drops here are expected, not bugs.
+  filterModulesFrom = namespace: moduleNames:
     builtins.map (name: builtins.getAttr name namespace) (
       builtins.filter (name: builtins.hasAttr name namespace) moduleNames
     );
+
+  # Partition a mixed list into string names (resolved via namespace lookup)
+  # and direct module values (attrsets / functions, passed through as-is).
+  # This lets host configs reference flake.modules.nixos.foo directly for
+  # IDE traceability while keeping string names for profile-registry items.
+  partitionModules = modules: {
+    names = builtins.filter builtins.isString modules;
+    direct = builtins.filter (m: !builtins.isString m) modules;
+  };
 
   ensureNixosModule = name:
     if builtins.hasAttr name nixosModules || builtins.hasAttr name homeManagerModules
@@ -101,11 +117,16 @@
     then name
     else throw "Requested Darwin module '${name}' was not found in flake.modules.darwin or flake.modules.homeManager";
 
-  # Load both NixOS and home-manager modules for a given list of module names
+  # Load both NixOS and home-manager modules.
+  # `modules` may contain string names (looked up in both nixos + HM namespaces)
+  # OR direct module values (attrsets / functions, included at the nixos level
+  # only — use a string name when you also need HM integration).
   loadNixosAndHmModules = modules: user: let
-    moduleNames = builtins.map ensureNixosModule modules;
+    parts = partitionModules modules;
+    validatedNames = builtins.map ensureNixosModule parts.names;
   in
-    modulesFrom nixosModules moduleNames
+    filterModulesFrom nixosModules validatedNames
+    ++ parts.direct
     ++ [
       {
         imports = [inputs.home-manager.nixosModules.home-manager];
@@ -115,16 +136,19 @@
           backupFileExtension = "hm-backup";
           extraSpecialArgs = {inherit inputs;};
           users.${user}.imports =
-            modulesFrom homeManagerModules moduleNames;
+            filterModulesFrom homeManagerModules validatedNames;
         };
       }
     ];
 
-  # Load Darwin modules with home-manager integration
+  # Load Darwin modules with home-manager integration.
+  # Accepts the same mixed string / direct-value list as loadNixosAndHmModules.
   loadDarwinAndHmModules = modules: user: let
-    moduleNames = builtins.map ensureDarwinModule modules;
+    parts = partitionModules modules;
+    validatedNames = builtins.map ensureDarwinModule parts.names;
   in
-    modulesFrom darwinModules moduleNames
+    filterModulesFrom darwinModules validatedNames
+    ++ parts.direct
     ++ [
       {
         imports = [inputs.home-manager.darwinModules.home-manager];
@@ -134,7 +158,7 @@
           backupFileExtension = "hm-backup";
           extraSpecialArgs = {inherit inputs;};
           users.${user}.imports =
-            modulesFrom homeManagerModules moduleNames;
+            filterModulesFrom homeManagerModules validatedNames;
         };
       }
     ];
@@ -195,8 +219,6 @@
         ++ extraModules;
     };
 in {
-  flake.profiles = profileRegistry;
-
   # Export functions to flake.lib
   flake.lib = {
     inherit loadNixosAndHmModules loadDarwinAndHmModules mkNixosSystem mkDarwinSystem;

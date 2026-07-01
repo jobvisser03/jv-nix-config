@@ -1,6 +1,12 @@
 # Affinity creative suite (Photo & Designer) via Wine
-# Home-manager module for NixOS x86_64 systems
-{...}: {
+# NixOS module applies the affinity-nix overlay; HM module installs the packages.
+{inputs, ...}: {
+  # System-level: expose affinity packages via the overlay (required for HM
+  # to see pkgs.affinity-* when useGlobalPkgs = true).
+  flake.modules.nixos.affinity = {
+    nixpkgs.overlays = [inputs.affinity-nix.overlays.default];
+  };
+
   flake.modules.homeManager.affinity = {
     pkgs,
     inputs,

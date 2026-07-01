@@ -37,28 +37,47 @@
     # Global AGENTS.md — loaded by pi at startup from ~/.pi/agent/AGENTS.md.
     # Tailored for Python / Nix devenv / uv workflow.
     home.file.".pi/agent/AGENTS.md".text = ''
-      # Global Agent Instructions
+        # Global Agent Instructions
 
-      ## Environment
-      - Python projects use `uv` for package management (not pip, not poetry)
-      - Run `uv add <pkg>` / `uv remove <pkg>` to manage dependencies
-      - Run `uv sync` after editing pyproject.toml
-      - Nix dev environments are declared in `devenv.nix` (devenv / nix-community)
-      - Prefer `devenv shell` over manual shell activation
-      - Nix config is formatted with `alejandra` and linted via `nil`
+        ## Environment
+        - Python projects: `uv` for package management (not pip, not poetry)
+        - Source layout: `src/<package_name>/`, build backend: `hatchling`
+        - Nix dev environments declared in `devenv.nix` (devenv/nix-community)
+        - Nix config formatted with `alejandra`, linted with `nil`
 
-      ## Workflow
-      - Read existing code before suggesting changes
-      - Inspect `devenv.nix` first
-      - Prefer `nix flake check` over ad-hoc `nix-build` calls
-      - Run `nix fmt` after editing nix files
-      - For python projects use `uv` via devenv using `devenv shell -- uv run`
-      - Run tests using `devenv shell -- uv run pytest`
+        ## uv commands
+        - `uv add <pkg>` / `uv remove <pkg>` — add/remove deps (auto-updates `uv.lock`)
+        - `uv add --dev <pkg>` — add to `[dependency-groups] dev`
+        - `uv add --group <name> <pkg>` — add to named group
+        - `uv lock` — regenerate `uv.lock` after manual `pyproject.toml` edits
+        - `uv sync` — install from lock (no lock update); skip if `uv.sync.enable = true` in devenv.nix
+      (devenv does it on shell entry)
+        - `uv sync --frozen` — CI: install exact lock, no resolution
+        - `uv run <cmd>` — run command in project venv
+        - `uvx <tool>` — run tool ephemerally without installing
 
-      ## Style
-      - Be concise and minimal — avoid unnecessary abstractions
-      - Comment only what is non-obvious
-      - Prefer explicit over implicit
+        ## Workspace / monorepo
+        - Local packages declared in `[tool.uv.sources]` as `{ path = "packages/pkg", editable = true }`
+        - Add with `uv add <pkg>` after declaring source; do not use `pip install -e`
+
+        ## devenv workflow
+        - Read `devenv.nix` before making changes
+        - Enter shell: `devenv shell` (auto-runs `uv sync` if `uv.sync.enable = true`, installs git hooks)
+        - Inside shell: run `uv run <cmd>` directly (venv activated)
+        - Outside shell (one-shot): `devenv shell -- uv run <cmd>`
+        - Run tests: `devenv test` (runs `enterTest` block, preferred) or `uv run pytest` inside shell
+        - Pre-commit: use `prek` as drop-in replacement for pre-commit 
+        - Git hooks configured via `git-hooks.hooks` in devenv.nix; run manually with `prek run
+      --all-files`
+
+        ## Nix workflow
+        - Prefer `nix flake check` over ad-hoc `nix-build`
+        - Run `nix fmt` after editing `.nix` files
+
+        ## Style
+        - Be concise and minimal — avoid unnecessary abstractions
+        - Comment only what is non-obvious
+        - Prefer explicit over implicit
     '';
   };
 }

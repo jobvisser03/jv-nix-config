@@ -42,9 +42,6 @@
     # Allow unfree packages
     nixpkgs.config.allowUnfree = true;
 
-    # Affinity suite overlay (unfree packages via wine)
-    nixpkgs.overlays = [ inputs.affinity-nix.overlays.default ];
-
     # Default state version
     system.stateVersion = lib.mkDefault "25.11";
   };
