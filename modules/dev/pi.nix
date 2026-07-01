@@ -29,6 +29,7 @@
         packages = [
           # Web search, URL fetch, PDF extraction, GitHub clone
           "npm:pi-web-access"
+          "npm:pi-caveman"
         ];
       };
     };
@@ -43,14 +44,16 @@
       - Run `uv add <pkg>` / `uv remove <pkg>` to manage dependencies
       - Run `uv sync` after editing pyproject.toml
       - Nix dev environments are declared in `devenv.nix` (devenv / nix-community)
-      - Prefer `devenv shell` or direnv (`.envrc`) over manual shell activation
+      - Prefer `devenv shell` over manual shell activation
       - Nix config is formatted with `alejandra` and linted via `nil`
 
       ## Workflow
       - Read existing code before suggesting changes
-      - For nix projects, inspect `flake.nix` and `devenv.nix` first
+      - Inspect `devenv.nix` first
       - Prefer `nix flake check` over ad-hoc `nix-build` calls
       - Run `nix fmt` after editing nix files
+      - For python projects use `uv` via devenv using `devenv shell -- uv run`
+      - Run tests using `devenv shell -- uv run pytest`
 
       ## Style
       - Be concise and minimal — avoid unnecessary abstractions
