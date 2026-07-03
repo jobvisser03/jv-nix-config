@@ -16,6 +16,44 @@
       alsa.support32Bit = true;
       pulse.enable = true;
       jack.enable = true;
+
+      wireplumber.extraConfig = {
+        # Fix 1: prevent ALSA nodes from auto-suspending.
+        # T2's apple-bce audio node doesn't reliably wake → internal speakers
+        # only work at boot without this.
+        "10-alsa-no-suspend" = {
+          "monitor.alsa.rules" = [
+            {
+              matches = [{"node.name" = "~alsa_*";}];
+              actions."update-props" = {
+                "session.suspend-timeout-seconds" = 0;
+                "node.pause-on-idle" = false;
+              };
+            }
+          ];
+        };
+
+        # Fix 2: stable Bluetooth for Sony WH-1000XM6.
+        # - Explicit codec list enables LDAC/AAC/SBC-XQ instead of library defaults.
+        # - autoswitch-to-headset-profile = false keeps headphones in A2DP by default;
+        #   the A2DP→HFP auto-switch on T2's BCM4377 caused a connect/disconnect loop.
+        # - enable-msbc = false: XM6 only exposes CVSD for HFP anyway; being explicit
+        #   avoids WirePlumber wasting time negotiating mSBC.
+        # - Manual profile switching via `headphones-call` / `headphones-music` aliases.
+        "11-bluetooth" = {
+          "monitor.bluez.properties" = {
+            "bluez5.roles" = ["a2dp_sink" "a2dp_source" "hsp_hs" "hsp_ag" "hfp_hf" "hfp_ag"];
+            "bluez5.codecs" = ["sbc" "sbc_xq" "aac" "ldac" "aptx" "aptx_hd"];
+            "bluez5.enable-sbc-xq" = true;
+            "bluez5.enable-msbc" = false;
+            "bluez5.enable-hw-volume" = true;
+            "bluez5.hfphsp-backend" = "native";
+          };
+          "wireplumber.settings" = {
+            "bluetooth.autoswitch-to-headset-profile" = false;
+          };
+        };
+      };
     };
     security.rtkit.enable = true;
 
@@ -75,6 +113,9 @@
       file-roller
       vlc
       polkit_gnome
+      # PulseAudio CLI tools (pactl) for audio device/profile management.
+      # Works against PipeWire's pulse compat layer.
+      pulseaudio
     ];
 
     systemd.user.services.polkit-gnome-authentication-agent-1 = {

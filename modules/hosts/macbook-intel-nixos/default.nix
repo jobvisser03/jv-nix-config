@@ -155,6 +155,20 @@
       tree
     ];
 
+    # T2 internal mic has very low hardware gain via apple-bce.
+    # Set 250% software boost on login so browsers/Teams can pick it up.
+    # Uses pactl (PipeWire pulse compat) targeting the fixed PCI node name.
+    systemd.user.services.t2-mic-boost = {
+      description = "Boost T2 BuiltinMic gain (apple-bce low hardware gain)";
+      after = ["wireplumber.service"];
+      wantedBy = ["default.target"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${pkgs.pulseaudio}/bin/pactl set-source-volume alsa_input.pci-0000_04_00.3.BuiltinMic 250%";
+      };
+    };
+
     home-manager.users.${username}.jv.hyprland = {
       monitorv2 = [
         {

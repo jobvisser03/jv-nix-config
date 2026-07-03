@@ -151,6 +151,42 @@
       # Misc
       gignore = "git update-index --assume-unchanged";
 
+      # Switch Sony WH-1000XM6 to HFP (headset mic enabled, lower audio quality)
+      # Use before Teams calls; headset mic has proper gain vs. the T2 internal mic.
+      headphones-call = ''
+        for i in $(seq 1 10); do
+          pactl info >/dev/null 2>&1 && break
+          echo "Waiting for PipeWire..."
+          sleep 1
+        done
+        CARD=$(pactl list cards short | awk '/bluez/{print $2}' | head -1)
+        if [ -z "$CARD" ]; then echo "No Bluetooth audio card found"; return 1; fi
+        pactl set-card-profile "$CARD" headset-head-unit
+        sleep 1
+        SINK=$(pactl list sinks short | awk '/bluez_output/{print $2}' | head -1)
+        SOURCE=$(pactl list sources short | awk '/bluez_input/{print $2}' | head -1)
+        [ -n "$SINK" ] && pactl set-default-sink "$SINK"
+        [ -n "$SOURCE" ] && pactl set-default-source "$SOURCE"
+        echo "HFP: headset mic active, audio routed to headphones"
+      '';
+
+      # Switch back to A2DP LDAC (high quality audio, no mic)
+      headphones-music = ''
+        for i in $(seq 1 10); do
+          pactl info >/dev/null 2>&1 && break
+          echo "Waiting for PipeWire..."
+          sleep 1
+        done
+        CARD=$(pactl list cards short | awk '/bluez/{print $2}' | head -1)
+        if [ -z "$CARD" ]; then echo "No Bluetooth audio card found"; return 1; fi
+        pactl set-card-profile "$CARD" a2dp-sink
+        sleep 1
+        SINK=$(pactl list sinks short | awk '/bluez_output/{print $2}' | head -1)
+        [ -n "$SINK" ] && pactl set-default-sink "$SINK"
+        pactl set-default-source alsa_input.pci-0000_04_00.3.BuiltinMic
+        echo "A2DP LDAC: headphones active, internal mic active"
+      '';
+
       btsony = ''
         DEVICE_ID_XM6=$(blueutil --paired | grep "WH-1000XM6" | head -n 1 | awk -F '[,:] *' '{print $2}')
         if [ -n "$DEVICE_ID_XM6" ]; then

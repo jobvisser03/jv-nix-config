@@ -12,7 +12,6 @@
     environment.systemPackages = with pkgs; [
       # Hardware management
       radeontop
-      easyeffects
 
       # Browsers (brave as secondary, firefox handled by its own module)
       brave

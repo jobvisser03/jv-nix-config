@@ -206,7 +206,17 @@
     # Give bluetoothd a beat to enumerate the adapter before we poke it.
     sleep 1
 
-    # Explicitly initiate connection to every paired device that isn't already
+    # 6. Start PipeWire BEFORE reconnecting BT audio devices.
+    # WirePlumber must be running when headphones reconnect, otherwise it races
+    # with the in-flight A2DP negotiation and causes repeated connect/disconnect.
+    ${lib.optionalString cfg.stopAudio ''
+    echo "Starting PipeWire audio services..."
+    ${startAudioScript}
+    # Give WirePlumber a moment to load its BT monitor before devices connect.
+    sleep 2
+    ''}
+
+    # 7. Explicitly initiate connection to every paired device that isn't already
     # connected. We skip already-connected devices because issuing `connect` on
     # an in-flight HID reconnect tends to race and drop the link.
     echo "Triggering reconnect to paired devices..."
@@ -223,21 +233,15 @@
           ${pkgs.bluez}/bin/bluetoothctl connect "$mac" 2>/dev/null || true
         done
 
-    # 6. Enable WiFi radio
+    # 9. Enable WiFi radio
     echo "Enabling WiFi radio..."
     ${pkgs.networkmanager}/bin/nmcli radio wifi on 2>/dev/null || true
 
-    # 7. Start PipeWire (CRITICAL - must be after apple-bce loads)
-    ${lib.optionalString cfg.stopAudio ''
-    echo "Starting PipeWire audio services..."
-    ${startAudioScript}
-    ''}
-
-    # 8. Restart UPower (sees all re-appeared PCI devices)
+    # 10. Restart UPower (sees all re-appeared PCI devices)
     echo "Restarting UPower..."
     ${pkgs.systemd}/bin/systemctl restart upower 2>/dev/null || true
 
-    # 9. Restore keyboard backlight (poll for up to 15 seconds)
+    # 11. Restore keyboard backlight (poll for up to 15 seconds)
     echo "Restoring keyboard backlight..."
     for i in $(seq 1 15); do
       for kbd in /sys/class/leds/*kbd_backlight*/brightness; do
