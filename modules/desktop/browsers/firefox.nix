@@ -79,7 +79,8 @@
             };
           };
           extensions.packages = with inputs.firefox-addons.packages.${pkgs.stdenv.hostPlatform.system}; [
-            keepassxc-browser
+            # keepassxc-browser
+            proton-pass
             ublock-origin
             darkreader
             vimium-c
