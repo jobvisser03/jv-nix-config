@@ -64,6 +64,7 @@
       "common-dev"
       "wezterm"
       "kitty"
+      "firefox"
       "desktop-apps"
       "pi"
     ];

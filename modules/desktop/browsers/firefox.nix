@@ -10,13 +10,15 @@
   }: {
     programs.firefox = {
       enable = true;
-      configPath = ".mozilla/firefox";
       profiles = {
         default = {
           id = 0;
           name = "home";
           isDefault = true;
           settings = {
+            # Auto-enable extensions installed via extensions.packages
+            "extensions.autoDisableScopes" = 0;
+
             "browser.startup.homepage" = "https://duckduckgo.com";
             "browser.search.defaultenginename" = "ddg";
             "browser.search.order.1" = "ddg";
