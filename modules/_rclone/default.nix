@@ -154,12 +154,41 @@ in {
               then "--read-only"
               else "";
             extraArgsStr = lib.concatStringsSep " " mount.extraArgs;
+            # Resilience hardening for network (cloud) FUSE mounts.
+            #
+            # Problem this solves: a heavy metadata scan over the mount (e.g.
+            # Immich's nightly library scan stat()-ing tens of thousands of
+            # files) will, whenever the cloud backend stalls, park kernel
+            # threads in uninterruptible D-state inside vfs_statx waiting for
+            # rclone to answer. rclone's default --timeout is 5 minutes, so
+            # each stuck call blocks for up to 5 min - long enough to trip
+            # hung_task and pile up enough blocked threads to hard-hang the
+            # box (the root cause of the recurring 02:00 freezes on larkbox).
+            #
+            #   --timeout / --contimeout : cap how long a stalled backend
+            #       call blocks before rclone returns EIO to the kernel,
+            #       so a FUSE stat() fails fast instead of hanging in D-state.
+            #   --dir-cache-time         : keep directory listings cached so a
+            #       full-tree scan is served from memory, not the network.
+            #   --poll-interval          : still detect backend changes (pcloud
+            #       supports polling) so new uploads appear despite the cache.
+            #   --attr-timeout           : let the kernel cache file attrs a
+            #       little longer, cutting per-file stat round-trips.
+            hardeningArgs = lib.concatStringsSep " " [
+              "--timeout 1m"
+              "--contimeout 15s"
+              "--low-level-retries 3"
+              "--dir-cache-time 24h"
+              "--poll-interval 1m"
+              "--attr-timeout 5s"
+            ];
           in ''
             ${pkgs.rclone}/bin/rclone mount \
               --config=${cfg.configFile} \
               --vfs-cache-mode ${mount.cacheMode} \
               --allow-other \
               --allow-non-empty \
+              ${hardeningArgs} \
               ${uidArg} \
               ${gidArg} \
               ${readOnlyArg} \

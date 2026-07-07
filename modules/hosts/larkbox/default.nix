@@ -47,33 +47,27 @@
     powerManagement.desktopMode = true;
     hardware.graphics.enable = true;
 
-    # Larkbox is fanless - override the desktopMode 'performance' governor to
-    # 'powersave' so the Intel P-state driver scales frequency with actual load
-    # instead of pinning all cores at max speed continuously. The CPU still
-    # boosts when the workload needs it; it just doesn't sit at ~2.9 GHz while
-    # idle and bake itself.
+    # NOTE on the recurring "sudden shutdown" bug (Intel N100, fanless):
+    # The thermal hypothesis was DISPROVEN by measurement. Under a real
+    # all-core AVX x264 software transcode this box peaks at only ~63 °C and
+    # ~10 W package power - nowhere near the 110 °C hardware cutoff. There are
+    # also zero OOM events, zero USB/exfat/disk errors, no MCE, and an empty
+    # pstore across every crash boot. The failure is an instantaneous hard
+    # hang (black screen, unresponsive power button, fsck dirty-bit on the
+    # next boot) that always lands inside the 02:00 Immich job storm (library
+    # scan of ~83 k files over the rclone/pcloud FUSE mounts + transcode + ML).
+    # The only kernel artifact ever captured was Immich threads stuck 122 s in
+    # D-state in vfs_statx on those FUSE paths -> an I/O/FUSE stall, not a
+    # resource/thermal limit.
+    #
+    # The settings below (powersave governor + thermald + P-state cap) are kept
+    # because they are harmless and slightly reduce the load spike, but they
+    # are NOT the fix - see systemd.watchdog below for the actual mitigation.
     powerManagement.cpuFreqGovernor = lib.mkForce "powersave";
-
-    # Intel thermal daemon: proactively limits package power before the CPU
-    # hits the 110 °C hardware thermal-protection cutoff that causes the
-    # sudden, unlogged power-off we've been seeing (fanless chassis, Immich ML
-    # + Firefox video + midnight cron jobs all running simultaneously).
     services.thermald.enable = true;
 
-    # Hard-cap the Intel P-state turbo headroom to 75 % of maximum.
-    # Background: thermald runs in polling mode (every 4 s) on this N4500 and
-    # never actually throttles anything - by the time it would react to a
-    # temperature spike the hardware thermal protection (110 °C) has already
-    # cut the power.  The crash on 2026-06-30 02:01 was caused by
-    # DatabaseBackupService + library scan (83 k rclone FUSE files) + video
-    # transcode + ML/OCR all firing simultaneously at 02:00:00, driving the
-    # CPU from idle to full turbo in under a second.
-    #
-    # 75 % of max (≈ 2.1 GHz on the N4500's 2.8 GHz turbo) still gives plenty
-    # of headroom for all homelab workloads while keeping peak thermals well
-    # below the hardware cutoff even under combined load.
     systemd.services.intel-pstate-limit = {
-      description = "Cap Intel P-state max turbo to 75 % to prevent thermal shutdown";
+      description = "Cap Intel P-state max turbo to 75 % (load-shaving, not the root fix)";
       wantedBy = ["multi-user.target"];
       after = ["systemd-modules-load.service"];
       serviceConfig = {
@@ -83,6 +77,17 @@
       script = ''
         echo 75 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
       '';
+    };
+
+    # Arm the N100's iTCO hardware watchdog. This is the real mitigation: the
+    # crash is a hard hang with nothing logged, and today it requires a
+    # physical adapter reseat to recover. With the watchdog armed, systemd
+    # pets it from PID 1; if the box wedges hard enough that PID 1 can no
+    # longer run, the hardware resets it automatically (~2 min) instead of
+    # sitting dead until someone power-cycles it.
+    systemd.watchdog = {
+      runtimeTime = "20s"; # iTCO_wdt heartbeat is 30 s; stay under it
+      rebootTime = "10min"; # force reset if a clean reboot itself hangs
     };
 
     # Hardware error logging (MCE / PCIe AER / thermal events) persisted to
