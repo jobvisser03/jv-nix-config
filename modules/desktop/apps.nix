@@ -70,6 +70,9 @@
       tailscale
       speedtest-cli
 
+      # DevOps & CI/CD
+      glab
+
       # Android and Docker
       android-tools
 

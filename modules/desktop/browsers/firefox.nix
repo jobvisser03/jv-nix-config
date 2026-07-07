@@ -81,6 +81,7 @@
           extensions.packages = with inputs.firefox-addons.packages.${pkgs.stdenv.hostPlatform.system}; [
             # keepassxc-browser
             proton-pass
+            multi-account-containers
             ublock-origin
             darkreader
             vimium-c

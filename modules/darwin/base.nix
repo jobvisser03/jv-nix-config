@@ -33,8 +33,11 @@
         dock.autohide = true;
         loginwindow.GuestEnabled = false;
         NSGlobalDomain.AppleICUForce24HourTime = true;
-        NSGlobalDomain.KeyRepeat = 1;
-        NSGlobalDomain.InitialKeyRepeat = 14;
+        "com.apple.keyboard.fnState" = true; # Use F1, F2, etc. keys as standard function keys.
+	      "com.apple.sound.beep.volume" = 0.4723665; # 25%
+        NSGlobalDomain.KeyRepeat = 2;
+        NSGlobalDomain.InitialKeyRepeat = 15; 
+        ApplePressAndHoldEnabled = false; # When holding a char like e, we will not get a prompt for special chars like: è, ë etc.
       };
       stateVersion = 5;
     };
