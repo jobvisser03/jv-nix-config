@@ -56,8 +56,13 @@ in {
     # Use Podman as OCI backend
     virtualisation.oci-containers.backend = "podman";
 
-    # Allow DNS in podman network
+    # Allow DNS in podman networks (aardvark-dns listens on each bridge gateway).
+    # The default network uses podman0; the homelab network uses a fixed name below.
     networking.firewall.interfaces.podman0.allowedUDPPorts = [53];
+    networking.firewall.interfaces.homelab0 = {
+      allowedUDPPorts = [53];
+      allowedTCPPorts = [53];
+    };
 
     # Create a shared network for homelab containers
     # This allows containers to communicate by name (DNS resolution)
@@ -71,9 +76,10 @@ in {
       };
       path = [pkgs.podman];
       script = ''
-        # Create network if it doesn't exist
+        # Create network if it doesn't exist. Pin the bridge interface name so the
+        # firewall rule for DNS (port 53) matches a stable interface.
         if ! podman network exists homelab; then
-          podman network create homelab
+          podman network create --interface-name homelab0 homelab
           echo "Created homelab network"
         else
           echo "homelab network already exists"
