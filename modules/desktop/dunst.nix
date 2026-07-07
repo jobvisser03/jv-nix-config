@@ -1,10 +1,7 @@
 # Dunst notification daemon configuration
 # Home-manager module
 {...}: {
-  flake.modules.homeManager.dunst = {
-    config,
-    ...
-  }: let
+  flake.modules.homeManager.dunst = {config, ...}: let
     stylix = config.lib.stylix.colors.withHashtag;
   in {
     services.dunst = {

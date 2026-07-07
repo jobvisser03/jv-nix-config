@@ -33,8 +33,7 @@
   writeShellScript,
   writeShellScriptBin,
   libcap,
-}:
-let
+}: let
   pname = "microsoft-azurevpnclient";
   version = "3.0.0";
 
@@ -123,7 +122,7 @@ let
       hash = "sha256-nl02BDPR03TZoQUbspplED6BynTr6qNRVdHw6fyUV3s=";
     };
 
-    runtimeDependencies = [ zenity ];
+    runtimeDependencies = [zenity];
 
     nativeBuildInputs = [
       dpkg
@@ -194,10 +193,10 @@ let
       description = "Microsoft Azure VPN Client";
       homepage = "https://azure.microsoft.com/en-us/services/vpn-gateway/";
       license = lib.licenses.unfree;
-      platforms = [ "x86_64-linux" ];
-      maintainers = [ ];
+      platforms = ["x86_64-linux"];
+      maintainers = [];
       mainProgram = "microsoft-azurevpnclient";
     };
   };
 in
-wrapped
+  wrapped

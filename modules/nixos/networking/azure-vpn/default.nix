@@ -7,12 +7,10 @@
     pkgs,
     lib,
     ...
-  }:
-  let
+  }: let
     cfg = config.services.azure-vpn;
     azureVpn = pkgs.callPackage ./_package.nix {};
-  in
-  {
+  in {
     options.services.azure-vpn = {
       enable = lib.mkEnableOption "Microsoft Azure VPN Client";
 
@@ -97,8 +95,8 @@
       services.resolved = {
         enable = true;
         dnssec = "false";
-        domains = [ "~." ];
-        fallbackDns = [ "1.1.1.1" "8.8.8.8" ];
+        domains = ["~."];
+        fallbackDns = ["1.1.1.1" "8.8.8.8"];
         settings = {
           Resolve = {
             DNSStubListener = "yes";
@@ -111,7 +109,7 @@
       # systemd-resolved service configuration
       systemd.services.systemd-resolved = {
         serviceConfig = {
-          SupplementaryGroups = [ "systemd-network" ];
+          SupplementaryGroups = ["systemd-network"];
           BusName = "org.freedesktop.resolve1";
         };
       };
@@ -165,7 +163,7 @@
               <policy user="${cfg.user}">
                 <allow send_destination="org.freedesktop.resolve1"/>
               </policy>
-              ''}
+            ''}
             </busconfig>
           '';
         })
@@ -204,14 +202,14 @@
 
       # Firewall configuration
       networking.firewall = lib.mkIf cfg.openFirewall {
-        allowedUDPPorts = [ 1194 ];
+        allowedUDPPorts = [1194];
         checkReversePath = lib.mkDefault false;
       };
 
       # Ensure user is in required groups if specified
       users.users = lib.mkIf (cfg.user != "") {
         ${cfg.user} = {
-          extraGroups = [ "systemd-network" "network" "networkmanager" ];
+          extraGroups = ["systemd-network" "network" "networkmanager"];
         };
       };
     };

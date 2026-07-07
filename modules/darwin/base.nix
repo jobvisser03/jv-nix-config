@@ -8,7 +8,7 @@
     ...
   }: {
     # .NET runtime required by apps like Azure Storage Explorer
-    environment.systemPackages = [ pkgs.dotnet-runtime_10 ];
+    environment.systemPackages = [pkgs.dotnet-runtime_10];
 
     # Expose DOTNET_ROOT to GUI apps (launchd) and terminal shells (/etc/zshenv).
     # Storage Explorer's hub controller probes well-known paths; this env var
@@ -32,12 +32,14 @@
       defaults = {
         dock.autohide = true;
         loginwindow.GuestEnabled = false;
-        NSGlobalDomain.AppleICUForce24HourTime = true;
-        "com.apple.keyboard.fnState" = true; # Use F1, F2, etc. keys as standard function keys.
-	      "com.apple.sound.beep.volume" = 0.4723665; # 25%
-        NSGlobalDomain.KeyRepeat = 2;
-        NSGlobalDomain.InitialKeyRepeat = 15; 
-        ApplePressAndHoldEnabled = false; # When holding a char like e, we will not get a prompt for special chars like: è, ë etc.
+        NSGlobalDomain = {
+          AppleICUForce24HourTime = true;
+          "com.apple.keyboard.fnState" = true; # Use F1, F2, etc. keys as standard function keys.
+          "com.apple.sound.beep.volume" = 0.4723665; # 25%
+          KeyRepeat = 2;
+          InitialKeyRepeat = 15;
+          ApplePressAndHoldEnabled = false; # When holding a char like e, we will not get a prompt for special chars like: è, ë etc.
+        };
       };
       stateVersion = 5;
     };

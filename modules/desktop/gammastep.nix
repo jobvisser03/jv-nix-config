@@ -1,9 +1,7 @@
 # Gammastep color temperature configuration
 # Home-manager module for automatic blue light reduction
 {...}: {
-  flake.modules.homeManager.gammastep = {
-    ...
-  }: {
+  flake.modules.homeManager.gammastep = {...}: {
     services.gammastep = {
       enable = true;
       provider = "manual";

@@ -13,7 +13,11 @@
 
   config = {
     boot.extraModprobeConfig = ''
-      options apple-gmux force_igd=${if config.macbook.gpuMode == "igpu" then "y" else "n"}
+      options apple-gmux force_igd=${
+        if config.macbook.gpuMode == "igpu"
+        then "y"
+        else "n"
+      }
     '';
 
     boot.kernelParams =

@@ -211,7 +211,6 @@
             };
           };
 
-
           "group/hardware" = {
             orientation = "inherit";
 

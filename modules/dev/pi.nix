@@ -66,7 +66,7 @@
         - Inside shell: run `uv run <cmd>` directly (venv activated)
         - Outside shell (one-shot): `devenv shell -- uv run <cmd>`
         - Run tests: `devenv test` (runs `enterTest` block, preferred) or `uv run pytest` inside shell
-        - Pre-commit: use `prek` as drop-in replacement for pre-commit 
+        - Pre-commit: use `prek` as drop-in replacement for pre-commit
         - Git hooks configured via `git-hooks.hooks` in devenv.nix; run manually with `prek run
       --all-files`
 

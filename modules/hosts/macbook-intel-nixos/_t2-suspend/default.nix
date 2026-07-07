@@ -96,8 +96,8 @@
 
     # 3. Stop PipeWire to release audio handles (CRITICAL)
     ${lib.optionalString cfg.stopAudio ''
-    echo "Stopping PipeWire audio services..."
-    ${stopAudioScript}
+      echo "Stopping PipeWire audio services..."
+      ${stopAudioScript}
     ''}
 
     # 4. Disable WiFi radio via NetworkManager
@@ -126,9 +126,9 @@
 
     # 9. Unload apple-bce module (CRITICAL - must be after PipeWire stops)
     ${lib.optionalString cfg.unloadAppleBce ''
-    echo "Unloading apple-bce module..."
-    ${pkgs.kmod}/bin/rmmod -f apple-bce 2>/dev/null || true
-    sleep 1
+      echo "Unloading apple-bce module..."
+      ${pkgs.kmod}/bin/rmmod -f apple-bce 2>/dev/null || true
+      sleep 1
     ''}
 
     # 10. Disable USB wakeup to prevent T2 internal devices from triggering spurious wakes
@@ -147,19 +147,19 @@
 
     # 1. Reload apple-bce module (CRITICAL - must be before PipeWire starts)
     ${lib.optionalString cfg.unloadAppleBce ''
-    echo "Loading apple-bce module..."
-    ${pkgs.kmod}/bin/modprobe apple-bce 2>/dev/null || true
+      echo "Loading apple-bce module..."
+      ${pkgs.kmod}/bin/modprobe apple-bce 2>/dev/null || true
 
-    # Wait for apple-bce PCI binding (up to 15 seconds)
-    echo "Waiting for apple-bce PCI binding..."
-    for i in $(seq 1 15); do
-      if ls /sys/bus/pci/drivers/apple-bce/*:* >/dev/null 2>&1; then
-        echo "apple-bce PCI binding found (attempt $i/15)"
-        break
-      fi
-      sleep 1
-    done
-    sleep 2
+      # Wait for apple-bce PCI binding (up to 15 seconds)
+      echo "Waiting for apple-bce PCI binding..."
+      for i in $(seq 1 15); do
+        if ls /sys/bus/pci/drivers/apple-bce/*:* >/dev/null 2>&1; then
+          echo "apple-bce PCI binding found (attempt $i/15)"
+          break
+        fi
+        sleep 1
+      done
+      sleep 2
     ''}
 
     # 2. PCI bus rescan (discovers devices that disappeared during suspend)
@@ -210,10 +210,10 @@
     # WirePlumber must be running when headphones reconnect, otherwise it races
     # with the in-flight A2DP negotiation and causes repeated connect/disconnect.
     ${lib.optionalString cfg.stopAudio ''
-    echo "Starting PipeWire audio services..."
-    ${startAudioScript}
-    # Give WirePlumber a moment to load its BT monitor before devices connect.
-    sleep 2
+      echo "Starting PipeWire audio services..."
+      ${startAudioScript}
+      # Give WirePlumber a moment to load its BT monitor before devices connect.
+      sleep 2
     ''}
 
     # 7. Explicitly initiate connection to every paired device that isn't already

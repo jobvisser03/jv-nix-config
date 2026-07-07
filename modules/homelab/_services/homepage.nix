@@ -241,9 +241,8 @@ in {
 
     # Set up environment variables
     # Homepage uses HOMEPAGE_FILE_* convention to read secrets from files
-    systemd.services.homepage-dashboard.environment =
-      lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
-        HOMEPAGE_FILE_JELLYFIN_API_KEY = cfg.jellyfin.apiKeyFile;
-      };
+    systemd.services.homepage-dashboard.environment = lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
+      HOMEPAGE_FILE_JELLYFIN_API_KEY = cfg.jellyfin.apiKeyFile;
+    };
   };
 }
