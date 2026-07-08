@@ -30,7 +30,8 @@
         "darktable"
         "macfuse"
         "rancher"
-        "cursor"
+        # "cursor"
+        # "opencode-desktop"
         "visual-studio-code"
         "microsoft-azure-storage-explorer"
         # "qobuz"
@@ -39,7 +40,6 @@
         # "keepassxc"
         # "slack"
         # "obs"
-        # "opencode-desktop"
         "handy"
       ];
 
