@@ -24,11 +24,19 @@
       };
 
       initContent = lib.mkAfter ''
+        # Homebrew (Apple Silicon path; Intel uses /usr/local)
+        if [[ -x /opt/homebrew/bin/brew ]]; then
+          eval "$(/opt/homebrew/bin/brew shellenv)"
+        elif [[ -x /usr/local/bin/brew ]]; then
+          eval "$(/usr/local/bin/brew shellenv)"
+        fi
+
         export PATH="$HOME/.cargo/bin:$PATH"
         export PATH="$HOME/repos/experiments/flutter/bin:$PATH"
         export GEM_HOME=$HOME/.gem
         export PATH=$GEM_HOME/bin:$PATH
         export PATH="$HOME/.gem/ruby/3.3.0/bin:$PATH"
+        export PATH="$HOME/.omlx/bin:$PATH"
         export PATH="$HOME/.local/bin:$PATH"
         export PATH="$HOME/.rd/bin:$PATH"
 

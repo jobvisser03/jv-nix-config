@@ -17,8 +17,6 @@
         "hashicorp/tap/vault"
         "azure-cli"
         "docker-credential-helper"
-        "python@3.11" # required by omlx
-        "omlx"
       ];
 
       casks = [
@@ -47,11 +45,6 @@
 
       taps = [
         "hashicorp/tap"
-        {
-          name = "jundot/omlx";
-          clone_target = "https://github.com/jundot/omlx";
-          trusted = true;
-        }
       ];
     };
   };

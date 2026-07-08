@@ -66,6 +66,7 @@
       "kitty"
       "firefox"
       "desktop-apps"
+      "omlx"
       "pi"
     ];
   };
