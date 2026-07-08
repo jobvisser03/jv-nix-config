@@ -17,6 +17,7 @@
         "hashicorp/tap/vault"
         "azure-cli"
         "docker-credential-helper"
+        "python@3.11" # required by omlx
         "omlx"
       ];
 
@@ -49,6 +50,7 @@
         {
           name = "jundot/omlx";
           clone_target = "https://github.com/jundot/omlx";
+          trusted = true;
         }
       ];
     };
