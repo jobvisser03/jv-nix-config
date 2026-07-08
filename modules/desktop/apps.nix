@@ -108,6 +108,9 @@
 
     programs.vscode = {
       enable = true;
+      # On Darwin, VSCode is managed by Homebrew; skip installing the nix package
+      # to avoid copyApps rsync conflicts with the Homebrew app bundle.
+      package = lib.mkIf pkgs.stdenv.isDarwin null;
     };
   };
 

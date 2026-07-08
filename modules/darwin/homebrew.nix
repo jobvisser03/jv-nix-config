@@ -17,6 +17,7 @@
         "hashicorp/tap/vault"
         "azure-cli"
         "docker-credential-helper"
+        "omlx"
       ];
 
       casks = [
@@ -43,7 +44,13 @@
         "handy"
       ];
 
-      taps = ["hashicorp/tap"];
+      taps = [
+        "hashicorp/tap"
+        {
+          name = "jundot/omlx";
+          clone_target = "https://github.com/jundot/omlx";
+        }
+      ];
     };
   };
 }
