@@ -28,6 +28,7 @@
       (import ./_services/paperless.nix)
       (import ./_services/radicale.nix)
       (import ./_services/spotify-player.nix)
+      (import ./_services/remote-pi-relay.nix)
     ];
 
     config = lib.mkIf cfg.enable {

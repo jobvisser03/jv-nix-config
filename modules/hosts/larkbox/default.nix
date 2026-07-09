@@ -142,6 +142,10 @@
         enable = true;
       };
 
+      services.remote-pi-relay = {
+        enable = true;
+      };
+
       services.cloudflare-ddns = {
         enable = true;
         zoneId = "8d43a62314697fa92a98e8b77e771434";
