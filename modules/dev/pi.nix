@@ -30,6 +30,9 @@
           # Web search, URL fetch, PDF extraction, GitHub clone
           "npm:pi-web-access"
           "npm:pi-caveman"
+          "npm:@gaodes/pi-gitlab"
+          "npm:pi-subagents"
+          "npm:remote-pi"
         ];
       };
     };
