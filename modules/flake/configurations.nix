@@ -13,6 +13,7 @@
       "nix"
       "home"
       "sops"
+      "llm-secrets"
       "vscode-server"
     ];
 
@@ -59,6 +60,7 @@
       "nix"
       "home"
       "home-darwin"
+      "llm-secrets-darwin"
       "homebrew"
       "common-shell"
       "common-dev"

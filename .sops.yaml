@@ -16,8 +16,15 @@ keys:
   # Personal key for editing secrets (not for host decryption)
   - &personal age188usuuflnprxceyxxa4c79hgajgyzjzsuwrlpn0rntdfm4ujsv2swfx743
 
-  # Add more hosts here as needed:
-  # - &newhost age1yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+  # MacBook Intel (macOS/Darwin) user age key
+  # Generate ON that Mac: age-keygen -o ~/.config/sops/age/keys.txt
+  # Then add the printed public key here and run: sops updatekeys secrets/shared.yaml
+  # - &macbook_intel age1REPLACE_WITH_MACBOOK_INTEL_PUBKEY
+
+  # MacBook Silicon (macOS/Darwin) user age key
+  # Generate ON that Mac: age-keygen -o ~/.config/sops/age/keys.txt
+  # Then add the printed public key here and run: sops updatekeys secrets/shared.yaml
+  - &macbook_silicon age1aq9m7e2r22jfh94dp8ghrgugkckqpglj74znn6gmmf9cdjnnps2ssfusvk
 
 creation_rules:
   # Larkbox-specific secrets
@@ -35,10 +42,12 @@ creation_rules:
           - *personal
 
   # Shared secrets (all hosts can decrypt)
-  # Add more host keys here when you have multiple hosts
   - path_regex: secrets/shared\.yaml$
     key_groups:
       - age:
           - *larkbox
           - *personal
           - *mac_intel_nixos
+          # Uncomment after generating age keys on each Mac (see instructions above):
+          # - *macbook_intel
+          - *macbook_silicon
