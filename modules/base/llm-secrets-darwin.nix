@@ -13,7 +13,7 @@
     lib,
     ...
   }: {
-    imports = [inputs.sops-nix.homeManagerModules.sops-nix];
+    imports = [inputs.sops-nix.homeManagerModules.sops];
 
     sops = {
       # User's personal age key — must exist at this path on each Mac
