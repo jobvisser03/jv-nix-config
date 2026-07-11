@@ -45,6 +45,9 @@
         export PATH="$HOME/.local/bin:$PATH"
         export PATH="$HOME/.rd/bin:$PATH"
 
+        # SOPS age key: macOS defaults to ~/Library/Application Support, override for both platforms
+        export SOPS_AGE_KEY_FILE="$HOME/.config/sops/age/keys.txt"
+
         export PIP_REQUIRE_VIRTUALENV=1
         export PIP_USE_PEP517=1
         export MANPAGER="sh -c 'col -bx | bat -l man -p'"
