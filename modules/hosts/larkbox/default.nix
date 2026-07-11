@@ -33,6 +33,31 @@
       efi.canTouchEfiVariables = true;
     };
 
+    # ACTUAL ROOT-CAUSE FIX for the recurring hard hang (see NOTE below).
+    # The crash is load-independent: it has struck during the 02:00 Immich
+    # storm AND at ~idle while only playing a YouTube video in Firefox. Every
+    # crash is an instantaneous full-power-loss hard hang - empty pstore, no
+    # MCE/thermal/OOM/disk errors, and the RTC resets to a bogus date (the box
+    # loses all power and needs a physical adapter reseat).
+    #
+    # Iteration 1 (DISPROVEN): capped intel_idle at C1E to kill the buggy deep
+    # package C-states (kernel even flags "hpet: HPET dysfunctional in PC10").
+    # The cap verifiably applied (only POLL/C1 remain) but the box STILL hard-
+    # hung while playing a YouTube video -> CPU deep-idle is not the trigger.
+    #
+    # Iteration 2 (current): the surviving common thread across every crash is
+    # the Intel media/display engine - YouTube uses VA-API video decode and the
+    # 02:00 Immich storm uses Quick Sync transcode, both on i915. intel_idle
+    # does not govern the GPU/display power states, which is why iteration 1
+    # missed. Alder Lake-N is well known to hard-hang in the i915 display power
+    # states (DMC/DC) and Panel Self Refresh; disabling them is the standard
+    # mitigation and costs a headless-ish server nothing.
+    boot.kernelParams = [
+      "intel_idle.max_cstate=1" # keep: harmless, kills deep pkg C-states
+      "i915.enable_dc=0" # disable display C-states (DMC/DC power wells)
+      "i915.enable_psr=0" # disable Panel Self Refresh
+    ];
+
     # Firewall configuration - allow local network and Tailscale
     networking.firewall = {
       enable = true;

@@ -44,7 +44,7 @@ in {
 
     virtualisation.oci-containers.containers.remote-pi-relay = {
       image = cfg.image;
-      ports = ["127.0.0.1:${toString cfg.port}:${toString cfg.port}"];
+      ports = ["127.0.0.1:${toString (cfg.port + 1)}:${toString cfg.port}"];
       volumes = ["${cfg.dataDir}:/data"];
       environment = {
         REMOTEPI_RELAY_PORT = toString cfg.port;
@@ -57,7 +57,7 @@ in {
     services.caddy.virtualHosts = lib.mkIf homelab.services.enableReverseProxy {
       "http://${homelab.hostname}:${toString cfg.port}" = {
         extraConfig = ''
-          reverse_proxy http://127.0.0.1:${toString cfg.port}
+          reverse_proxy http://127.0.0.1:${toString (cfg.port + 1)}
         '';
       };
     };
