@@ -88,11 +88,11 @@
     # The settings below (powersave governor + thermald + P-state cap) are kept
     # because they are harmless and slightly reduce the load spike, but they
     # are NOT the fix - see systemd.watchdog below for the actual mitigation.
-    powerManagement.cpuFreqGovernor = lib.mkForce "powersave";
+    powerManagement.cpuFreqGovernor = lib.mkForce "performance";
     services.thermald.enable = true;
 
     systemd.services.intel-pstate-limit = {
-      description = "Cap Intel P-state max turbo to 75 % (load-shaving, not the root fix)";
+      description = "Cap Intel P-state max turbo to 90 % (load-shaving, not the root fix)";
       wantedBy = ["multi-user.target"];
       after = ["systemd-modules-load.service"];
       serviceConfig = {
@@ -100,7 +100,7 @@
         RemainAfterExit = true;
       };
       script = ''
-        echo 75 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
+        echo 90 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
       '';
     };
 
