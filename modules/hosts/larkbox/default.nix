@@ -33,29 +33,13 @@
       efi.canTouchEfiVariables = true;
     };
 
-    # ACTUAL ROOT-CAUSE FIX for the recurring hard hang (see NOTE below).
-    # The crash is load-independent: it has struck during the 02:00 Immich
-    # storm AND at ~idle while only playing a YouTube video in Firefox. Every
-    # crash is an instantaneous full-power-loss hard hang - empty pstore, no
-    # MCE/thermal/OOM/disk errors, and the RTC resets to a bogus date (the box
-    # loses all power and needs a physical adapter reseat).
-    #
-    # Iteration 1 (DISPROVEN): capped intel_idle at C1E to kill the buggy deep
-    # package C-states (kernel even flags "hpet: HPET dysfunctional in PC10").
-    # The cap verifiably applied (only POLL/C1 remain) but the box STILL hard-
-    # hung while playing a YouTube video -> CPU deep-idle is not the trigger.
-    #
-    # Iteration 2 (current): the surviving common thread across every crash is
-    # the Intel media/display engine - YouTube uses VA-API video decode and the
-    # 02:00 Immich storm uses Quick Sync transcode, both on i915. intel_idle
-    # does not govern the GPU/display power states, which is why iteration 1
-    # missed. Alder Lake-N is well known to hard-hang in the i915 display power
-    # states (DMC/DC) and Panel Self Refresh; disabling them is the standard
-    # mitigation and costs a headless-ish server nothing.
+    # Keep deep CPU and iGPU display power states disabled while diagnosing the
+    # recurring hard power loss. The latest crash happened during a CPU-heavy
+    # Nix build, so i915 is not established as the root cause. The inability to
+    # power on normally afterwards points to power delivery, EC, or firmware.
     boot.kernelParams = [
-      "intel_idle.max_cstate=1" # keep: harmless, kills deep pkg C-states
-      "i915.enable_dc=0" # disable display C-states (DMC/DC power wells)
-      "i915.enable_psr=0" # disable Panel Self Refresh
+      "intel_idle.max_cstate=1"
+      "i915.enable_dc=0"
     ];
 
     # Firewall configuration - allow local network and Tailscale
@@ -85,14 +69,13 @@
     # D-state in vfs_statx on those FUSE paths -> an I/O/FUSE stall, not a
     # resource/thermal limit.
     #
-    # The settings below (powersave governor + thermald + P-state cap) are kept
-    # because they are harmless and slightly reduce the load spike, but they
-    # are NOT the fix - see systemd.watchdog below for the actual mitigation.
-    powerManagement.cpuFreqGovernor = lib.mkForce "performance";
+    # Minimize sustained package and VRM load while hardware power delivery is
+    # investigated. max_perf_pct limits P-state, not CPU utilization or watts.
+    powerManagement.cpuFreqGovernor = lib.mkForce "powersave";
     services.thermald.enable = true;
 
     systemd.services.intel-pstate-limit = {
-      description = "Cap Intel P-state max turbo to 90 % (load-shaving, not the root fix)";
+      description = "Disable turbo and cap Intel P-state performance to 60 %";
       wantedBy = ["multi-user.target"];
       after = ["systemd-modules-load.service"];
       serviceConfig = {
@@ -100,16 +83,19 @@
         RemainAfterExit = true;
       };
       script = ''
-        echo 90 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
+        echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
+        echo 60 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
       '';
     };
 
-    # Arm the N100's iTCO hardware watchdog. This is the real mitigation: the
-    # crash is a hard hang with nothing logged, and today it requires a
-    # physical adapter reseat to recover. With the watchdog armed, systemd
-    # pets it from PID 1; if the box wedges hard enough that PID 1 can no
-    # longer run, the hardware resets it automatically (~2 min) instead of
-    # sitting dead until someone power-cycles it.
+    # Reduce concurrent Nix build load while diagnosing hard power loss.
+    nix.settings = {
+      max-jobs = 2;
+      cores = 2;
+    };
+
+    # Arm the N100's iTCO hardware watchdog. This can recover a kernel or
+    # userspace hang, but cannot recover a latched power or EC fault.
     systemd.watchdog = {
       runtimeTime = "20s"; # iTCO_wdt heartbeat is 30 s; stay under it
       rebootTime = "10min"; # force reset if a clean reboot itself hangs
