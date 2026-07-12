@@ -34,6 +34,9 @@
       # build time so it is always present regardless of home dir state.
       extensions = [./pi/plan-mode.ts];
 
+      # Custom themes — cobalt2 ported from wesbos/cobalt2-vscode.
+      themes = [./pi/themes/cobalt2.json];
+
       environment.OPENAI_API_KEY = secretPath "openai_api_key";
       environment.ENEXIS_API_KEY = secretPath "enexis_api_key";
       environment.ENEXIS_AZURE_OPENAI_BASE_URL = secretPath "enexis_azure_openai_base_url";
