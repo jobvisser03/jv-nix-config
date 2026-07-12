@@ -91,7 +91,7 @@
       # pi-coding-agent is managed by modules/dev/pi.nix (pi.nix flake)
 
       # Desktop applications
-      keepassxc
+      # keepassxc # moved to homebrew (qtmacextras/cctools linker crash)
       proton-pass
       proton-authenticator
       drawio
