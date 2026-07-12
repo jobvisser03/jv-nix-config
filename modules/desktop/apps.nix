@@ -33,6 +33,7 @@
   flake.modules.homeManager.desktop-apps = {
     pkgs,
     lib,
+    inputs,
     ...
   }: let
     packages = with pkgs; [
@@ -43,6 +44,7 @@
       hurl
       yt-dlp
       fastfetch
+      inputs.herdr.packages.${pkgs.system}.default
 
       # CLI maintenance
       # scan folders and files for cleanup using a rust implementation of du
