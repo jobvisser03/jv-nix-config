@@ -1,6 +1,6 @@
 # LLM provider API keys — home-manager module for nix-darwin
 # sops-nix HM module decrypts secrets to ~/.config/sops-nix/secrets/*.
-# Keys exported directly into zsh via $(cat ...) — no intermediate template file.
+# Paths consumed by modules/dev/pi.nix via config.sops.secrets.*.
 #
 # One-time setup per Mac (run ON the Mac):
 #   mkdir -p ~/.config/sops/age
@@ -9,8 +9,8 @@
 #   # cd ~/repos/jv-nix-config && sops updatekeys secrets/shared.yaml
 {inputs, ...}: {
   flake.modules.homeManager.llm-secrets-darwin = {
-    config,
     lib,
+    config,
     ...
   }: {
     imports = [inputs.sops-nix.homeManagerModules.sops];
@@ -27,13 +27,5 @@
         openrouter_api_key = {};
       };
     };
-
-    programs.zsh.initExtra = ''
-      export OPENAI_API_KEY="$(cat ${config.sops.secrets.openai_api_key.path})"
-      export ENEXIS_AZURE_OPENAI_BASE_URL="$(cat ${config.sops.secrets.enexis_azure_openai_base_url.path})"
-      export ENEXIS_API_KEY="$(cat ${config.sops.secrets.enexis_api_key.path})"
-      export ENEXIS_GITLAB_API_KEY="$(cat ${config.sops.secrets.enexis_gitlab_api_key.path})"
-      export OPENROUTER_API_KEY="$(cat ${config.sops.secrets.openrouter_api_key.path})"
-    '';
   };
 }

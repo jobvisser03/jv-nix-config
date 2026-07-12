@@ -11,8 +11,19 @@
   flake.modules.homeManager.pi = {
     pkgs,
     lib,
+    config,
+    # osConfig = NixOS/darwin system config; present in both NixOS and nix-darwin HM.
+    # NixOS: has sops.secrets (system sops-nix). Darwin: no sops at system level.
+    osConfig ? {},
     ...
-  }: {
+  }: let
+    # NixOS: secrets live at /run/secrets/<name> via system sops-nix → use osConfig.
+    # Darwin: secrets live in ~/.config/sops-nix/secrets/<name> via HM sops-nix → use config.
+    secretPath = name:
+      if pkgs.stdenv.isLinux
+      then osConfig.sops.secrets.${name}.path
+      else config.sops.secrets.${name}.path;
+  in {
     # Pull in the pi.nix option declarations so programs.pi.coding-agent exists.
     imports = [inputs.pi.homeModules.default];
 
@@ -22,6 +33,12 @@
       # Plan-mode extension — stored in the nix config, path injected at
       # build time so it is always present regardless of home dir state.
       extensions = [./pi/plan-mode.ts];
+
+      environment.OPENAI_API_KEY = secretPath "openai_api_key";
+      environment.ENEXIS_API_KEY = secretPath "enexis_api_key";
+      environment.ENEXIS_AZURE_OPENAI_BASE_URL = secretPath "enexis_azure_openai_base_url";
+      environment.ENEXIS_GITLAB_API_KEY = secretPath "enexis_gitlab_api_key";
+      environment.OPENROUTER_API_KEY = secretPath "openrouter_api_key";
 
       # Declarative settings merged into ~/.pi/agent/settings.json on each
       # activation.  pi auto-installs npm packages listed here on first run.
