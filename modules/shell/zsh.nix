@@ -24,11 +24,6 @@
       };
 
       initContent = lib.mkAfter ''
-        # LLM provider API keys (decrypted by sops-nix at boot, NixOS only)
-        [[ -f /run/secrets/llm-env.sh ]] && source /run/secrets/llm-env.sh
-        # LLM provider API keys (decrypted by sops-nix HM module, Darwin)
-        [[ -f "''${XDG_CONFIG_HOME:-$HOME/.config}/sops-nix/secrets/llm-env.sh" ]] && source "''${XDG_CONFIG_HOME:-$HOME/.config}/sops-nix/secrets/llm-env.sh"
-
         # Homebrew (Apple Silicon path; Intel uses /usr/local)
         if [[ -x /opt/homebrew/bin/brew ]]; then
           eval "$(/opt/homebrew/bin/brew shellenv)"
