@@ -93,7 +93,6 @@
       # Desktop applications
       # keepassxc # moved to homebrew (qtmacextras/cctools linker crash)
       proton-pass
-      proton-authenticator
       drawio
       anki-bin
       docker-client
