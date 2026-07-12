@@ -29,7 +29,6 @@
     # macOS-specific home config
     homeManager.home-darwin = {pkgs, ...}: {
       home.packages = with pkgs; [
-        blueutil
       ];
       nix.package = pkgs.nix;
     };

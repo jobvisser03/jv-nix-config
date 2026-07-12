@@ -17,6 +17,7 @@
         "hashicorp/tap/vault"
         "azure-cli"
         "docker-credential-helper"
+        "blueutil"
       ];
 
       casks = [
