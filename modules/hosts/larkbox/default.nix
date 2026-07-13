@@ -130,6 +130,15 @@
 
       services.homepage.enable = true;
 
+      # Keep crash telemetry locally. Future external Hetzner VPS should enable
+      # uptime-kuma and provide this host with its push-monitor URL via SOPS.
+      services.grafana.enable = true;
+      services.prometheus.enable = true;
+      services.uptime-kuma = {
+        enable = false;
+        heartbeat.enable = false;
+      };
+
       services.radicale = {
         enable = false;
         passwordFile = config.sops.secrets.radicale_htpasswd.path;
