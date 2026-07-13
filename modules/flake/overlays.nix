@@ -13,6 +13,7 @@
       inherit system;
       config.allowUnfree = true;
       overlays = [
+        inputs.nix4vscode.overlays.default
         # inputs.self.overlays.modifications
       ];
     };

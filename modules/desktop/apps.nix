@@ -107,12 +107,6 @@
       builtins.filter (pkg: lib.meta.availableOn pkgs.stdenv.hostPlatform pkg)
       packages;
 
-    programs.vscode = {
-      enable = true;
-      # On Darwin, VSCode is managed by Homebrew; skip installing the nix package
-      # to avoid copyApps rsync conflicts with the Homebrew app bundle.
-      package = lib.mkIf pkgs.stdenv.isDarwin null;
-    };
   };
 
   # NixOS-only home-manager packages (Linux-specific applications)
@@ -124,8 +118,5 @@
       retroarch-free
     ];
 
-    programs.vscode = {
-      package = pkgs.vscode.fhs;
-    };
   };
 }
