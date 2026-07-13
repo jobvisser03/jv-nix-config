@@ -54,7 +54,8 @@ in {
     services.homepage-dashboard = {
       enable = true;
       listenPort = cfg.port;
-      openFirewall = !homelab.services.enableReverseProxy;
+      # Homepage listens directly on cfg.port; no Caddy vhost proxies this service.
+      openFirewall = true;
 
       # Custom CSS for cleaner look
       customCSS = ''
@@ -99,6 +100,12 @@ in {
           }
           {
             Services = {
+              header = true;
+              style = "column";
+            };
+          }
+          {
+            Observability = {
               header = true;
               style = "column";
             };
@@ -170,12 +177,20 @@ in {
         regularServices =
           (lib.optionals (hl.forgejo.enable or false) (mkServiceEntry "forgejo" hl.forgejo))
           ++ (lib.optionals (hl.radicale.enable or false) (mkServiceEntry "radicale" hl.radicale));
+
+        observabilityServices =
+          (lib.optionals (hl.grafana.enable or false) (mkServiceEntry "grafana" hl.grafana))
+          ++ (lib.optionals (hl.prometheus.enable or false) (mkServiceEntry "prometheus" hl.prometheus))
+          ++ (lib.optionals (hl.uptime-kuma.enable or false) (mkServiceEntry "uptime-kuma" hl.uptime-kuma));
       in [
         {
           Media = mediaServices;
         }
         {
           Services = regularServices;
+        }
+        {
+          Observability = observabilityServices;
         }
         {
           "Smart Home" = smartHomeServices;
