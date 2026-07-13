@@ -21,6 +21,9 @@
             "*.yaml"
             "*.yml"
           ];
+          # Reformatting SOPS documents rewrites encrypted metadata without
+          # improving plaintext formatting and creates noisy secret diffs.
+          excludes = ["secrets/*.yaml"];
         };
       };
     };

@@ -240,6 +240,51 @@ The homelab module (`modules/homelab/`) provides a complete self-hosted services
 | Tailscale | `http://100.x.y.z` | WireGuard encrypted |
 | MagicDNS | `http://larkbox.tailnet.ts.net` | WireGuard encrypted |
 
+### Home Assistant backup and restore
+
+Larkbox creates encrypted Restic backups of Home Assistant and Zigbee2MQTT state:
+
+- Local: `/mnt/usb-drive/Backups/Restic/larkbox-homeassistant` at 04:30 daily
+- Off-site: `pcloud:Backups/Restic/larkbox-homeassistant` through Restic's rclone backend at 05:15 daily
+- Local repository check: Sunday 06:30
+- Automated restore and SQLite integrity test: monthly
+
+Home Assistant and Zigbee2MQTT stop only while `/var/backup/homeassistant/current` is refreshed. Uploads run after services restart.
+
+Check backup state:
+
+```bash
+systemctl status restic-backups-homeassistant-local
+systemctl status restic-backups-homeassistant-offsite
+systemctl list-timers 'restic-backups-homeassistant-*' 'homeassistant-backup-*'
+journalctl -u restic-backups-homeassistant-local
+```
+
+Restore latest local snapshot:
+
+```bash
+sudo systemctl stop podman-homeassistant podman-zigbee2mqtt
+sudo mv /var/lib/homeassistant "/var/lib/homeassistant.broken-$(date +%s)"
+sudo mkdir -p /var/lib/homeassistant
+sudo restic \
+  --repo /mnt/usb-drive/Backups/Restic/larkbox-homeassistant \
+  --password-file /run/secrets/restic-password \
+  restore latest --target /tmp/homeassistant-restore
+sudo rsync -a /tmp/homeassistant-restore/var/backup/homeassistant/current/homeassistant/ \
+  /var/lib/homeassistant/
+sudo chown -R homelab:homelab /var/lib/homeassistant
+sudo sqlite3 /var/lib/homeassistant/home-assistant_v2.db 'PRAGMA integrity_check;'
+sudo systemctl start podman-zigbee2mqtt podman-homeassistant
+```
+
+Restore Zigbee2MQTT from the same snapshot when needed:
+
+```bash
+sudo rsync -a /tmp/homeassistant-restore/var/backup/homeassistant/current/zigbee2mqtt/ \
+  /var/lib/zigbee2mqtt/
+sudo chown -R homelab:homelab /var/lib/zigbee2mqtt
+```
+
 ## Adding a New Host
 
 ### NixOS Host

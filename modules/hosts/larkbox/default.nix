@@ -134,6 +134,17 @@
       # uptime-kuma and provide this host with its push-monitor URL via SOPS.
       services.grafana.enable = true;
       services.prometheus.enable = true;
+      services.loki.enable = true;
+      services.backup = {
+        enable = true;
+        passwordFile = config.sops.secrets.restic_password.path;
+        homeassistant.enable = true;
+        local.enable = true;
+        offsite = {
+          enable = true;
+          rcloneConfigFile = config.sops.secrets.rclone_config.path;
+        };
+      };
       services.uptime-kuma = {
         enable = false;
         heartbeat.enable = false;

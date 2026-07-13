@@ -7,6 +7,10 @@
 }: let
   cfg = config.homelab.services.grafana;
   homelab = config.homelab;
+  dashboards = pkgs.runCommand "homelab-grafana-dashboards" {} ''
+    mkdir -p $out
+    cp ${../_dashboards/homeassistant-observability.json} $out/homeassistant-observability.json
+  '';
 in {
   options.homelab.services.grafana = {
     enable = lib.mkEnableOption "Grafana metrics dashboards";
@@ -57,6 +61,22 @@ in {
       };
     };
 
+    services.grafana.provision = {
+      enable = true;
+      dashboards.settings = {
+        apiVersion = 1;
+        providers = [
+          {
+            name = "Homelab";
+            type = "file";
+            disableDeletion = true;
+            editable = true;
+            options.path = dashboards;
+          }
+        ];
+      };
+    };
+
     # Grafana 11+ requires a stable, user-provided encryption key. Generate it
     # once in Grafana's persistent state directory instead of the Nix store.
     systemd.services.grafana.preStart = lib.mkBefore ''
@@ -73,5 +93,8 @@ in {
         '';
       };
     };
+
+    # Caddy accepts LAN connections on Grafana's public port.
+    networking.firewall.allowedTCPPorts = [cfg.port];
   };
 }

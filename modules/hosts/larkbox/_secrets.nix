@@ -36,6 +36,14 @@
         path = "/run/secrets/rclone.conf";
       };
 
+      # Encryption key shared by local and off-site Restic repositories.
+      restic_password = {
+        owner = "root";
+        group = "root";
+        mode = "0400";
+        path = "/run/secrets/restic-password";
+      };
+
       # GitLab database password
       # Note: All secrets use root:root ownership because users may not exist during early boot
       # Mode 0444 (world-readable) is safe because /run/secrets directory itself has restricted permissions

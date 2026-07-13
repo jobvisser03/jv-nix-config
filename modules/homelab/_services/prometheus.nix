@@ -104,6 +104,7 @@ in {
         datasources = [
           {
             name = "Prometheus";
+            uid = "prometheus";
             type = "prometheus";
             url = prometheusUrl;
             isDefault = true;
@@ -120,5 +121,8 @@ in {
         '';
       };
     };
+
+    # Caddy accepts LAN connections on Prometheus's public port.
+    networking.firewall.allowedTCPPorts = [cfg.port];
   };
 }
