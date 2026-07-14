@@ -41,9 +41,6 @@
             "wesbos.theme-cobalt2"
             "ms-azuretools.vscode-azure-github-copilot"
             "ms-azuretools.vscode-azure-mcp-server"
-            "ms-azuretools.vscode-azureresourcegroups"
-            "ms-azuretools.vscode-azurestaticwebapps"
-            "ms-azuretools.vscode-azureterraform"
             "ms-azuretools.vscode-containers"
             "ms-azuretools.vscode-docker"
             "ms-python.debugpy"
@@ -60,10 +57,6 @@
             "ms-vscode-remote.remote-containers"
             "ms-vscode-remote.remote-ssh"
             "ms-vscode-remote.remote-ssh-edit"
-            "ms-vscode.remote-explorer"
-            "ms-vscode.remote-repositories"
-            "ms-vscode.vscode-speech"
-            "ms-vsliveshare.vsliveshare"
             "ms-windows-ai-studio.windows-ai-studio"
             "pkief.material-icon-theme"
             "redhat.vscode-yaml"
@@ -105,7 +98,6 @@
             };
             "github.copilot.nextEditSuggestions.enabled" = true;
             "gitlens.ai.model" = "vscode";
-            "gitlens.ai.vscode.model" = "copilot:gpt-4.1";
             "jupyter.askForKernelRestart" = false;
             "nix.formatterPath" = "alejandra";
 
