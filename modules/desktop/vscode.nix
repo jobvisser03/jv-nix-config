@@ -57,7 +57,6 @@
             "ms-vscode-remote.remote-containers"
             "ms-vscode-remote.remote-ssh"
             "ms-vscode-remote.remote-ssh-edit"
-            "ms-windows-ai-studio.windows-ai-studio"
             "pkief.material-icon-theme"
             "redhat.vscode-yaml"
             "tamasfe.even-better-toml"
