@@ -34,7 +34,16 @@
         config.window_close_confirmation = 'NeverPrompt'
 
         -- Colors (match previous working theme)
-        config.color_scheme = 'Cobalt Neon (Gogh)'
+        --config.color_scheme = 'Catppuccin Mocha (Gogh)'
+        -- config.color_scheme = 'Chalkboard'
+        -- config.color_scheme = 'Earthsong (Gogh)'
+        -- config.color_scheme = 'Cobalt 2 (Gogh)' -- white cursor
+        -- config.color_scheme = 'Chameleon (Gogh)' -- brown, too dark
+        --config.color_scheme = 'Ciapre' -- brown
+        -- config.color_scheme = 'Cobalt 2 (Gogh)'
+        -- config.color_scheme = 'Cobalt Neon (Gogh)'
+        config.color_scheme = 'Cobalt2'
+        -- config.color_scheme = 'Tomorrow (dark) (terminal.sexy)'
         config.colors = {
           split = wezterm.color.get_builtin_schemes()[config.color_scheme].ansi[2],
         }
@@ -53,7 +62,7 @@
           inactive_titlebar_bg = TITLEBAR_COLOR,
         }
 
-        config.window_background_opacity = 0.9
+        config.window_background_opacity = 0.96
 
         wezterm.on('window-resized', function(window, pane)
           local overrides = window:get_config_overrides() or {}

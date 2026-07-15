@@ -99,7 +99,7 @@
             "gitlens.ai.model" = "vscode";
             "jupyter.askForKernelRestart" = false;
             "nix.formatterPath" = "alejandra";
-
+            "dbcode.ai.inlineCompletion" = false;
             "vim.easymotion" = true;
             "vim.useSystemClipboard" = true;
             "vim.cursorStylePerMode.insert" = "line";
