@@ -15,6 +15,8 @@
         window_padding_width = 20;
       };
 
+      themeFile = "Cobalt2";
+
       keybindings = {
         "ctrl+shift+t" = "new_tab_with_cwd";
       };

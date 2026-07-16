@@ -52,15 +52,9 @@
         config.max_fps = 120
         config.animation_fps = 120
 
-        local TITLEBAR_COLOR = '#333333'
-        config.native_macos_fullscreen_mode = true
-        config.window_decorations = 'INTEGRATED_BUTTONS|RESIZE'
-        config.window_frame = {
-          font = wezterm.font { family = '${fontName}', weight = 'Bold' },
-          font_size = ${toString (fontSize - 1)},
-          active_titlebar_bg = TITLEBAR_COLOR,
-          inactive_titlebar_bg = TITLEBAR_COLOR,
-        }
+        config.native_macos_fullscreen_mode = false
+        config.window_decorations = 'RESIZE'
+        config.use_fancy_tab_bar = false
 
         config.window_background_opacity = 0.96
 
@@ -69,6 +63,56 @@
           local is_fullscreen = window:get_dimensions().is_full_screen
           window:set_config_overrides(overrides)
         end)
+
+        -- Tab bar configuration
+        local known_shells = {
+          bash = true, zsh = true, sh = true
+        }
+
+        local function basename(path)
+          return path:gsub('(.*[/\\])(.*)', '%2'):gsub('[%.][eE][xX][eE]$', ''')
+        end
+
+        local function ternary(a, b)
+          if a and a ~= ''' then
+            return a
+          end
+          return b
+        end
+
+        local function get_title(tab, foreground)
+          -- Figure out what title to show
+          local pane = tab.active_pane
+          local raw_title = tab.tab_title
+          local ran_cmd = pane.user_vars.WEZTERM_CMD or '''
+          local pane_title = pane.title
+          local base_pane_title = basename(pane_title)
+          local is_shell = base_pane_title ~= ''' and known_shells[base_pane_title]
+          local proc_name = basename(pane.foreground_process_name)
+          if raw_title == ''' then
+            if pane_title == ''' then
+              raw_title = ternary(ran_cmd, proc_name)
+            elseif ran_cmd == ''' then
+              if is_shell then
+                raw_title = ternary(proc_name, base_pane_title)
+              else
+                raw_title = ternary(pane_title, proc_name)
+              end
+            else
+              if is_shell then
+                raw_title = ternary(ran_cmd, base_pane_title)
+              else
+                raw_title = ternary(pane_title, ran_cmd)
+              end
+            end
+          end
+          if raw_title == ''' then
+            raw_title = ternary(proc_name, basename(os.getenv('WEZTERM_EXECUTABLE')))
+          else
+            raw_title = raw_title:gsub('[%.][eE][xX][eE]$', ''')
+          end
+
+        end
 
         config.keys = {
           { key = 'Enter', mods = 'ALT', action = act.ToggleFullScreen, },
@@ -105,6 +149,13 @@
             action = act.SendKey { key = 'f', mods = 'ALT' },
           }
         }
+
+        table.insert(config.keys, {
+          key = '4', mods = 'ALT|CTRL',
+          action = wezterm.action.SpawnCommandInNewTab {
+            args = {'code', '~/repos/jv-nix-config'},
+          },
+        })
 
         return config
       '';
