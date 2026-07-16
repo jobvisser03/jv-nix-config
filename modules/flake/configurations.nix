@@ -22,7 +22,6 @@
       "atuin"
       "oh-my-posh"
       "aliases"
-      "direnv"
       "eza"
       "fd"
     ];

@@ -80,7 +80,6 @@ The configuration follows a **dendritic pattern** using `import-tree` to auto-im
 │   │   ├── atuin.nix          # Shell history sync
 │   │   ├── oh-my-posh.nix     # Prompt theme
 │   │   ├── aliases.nix        # Shell aliases
-│   │   ├── direnv.nix         # Directory environments
 │   │   ├── eza.nix            # Modern ls replacement
 │   │   └── fd.nix             # Modern find replacement
 │   │
@@ -207,13 +206,13 @@ Common profiles currently include `common-nixos`, `common-shell`, `common-dev`, 
 
 ## Available Configurations
 
-| Configuration | Type | Architecture | User | Description |
-|---|---|---|---|---|
-| `larkbox` | NixOS | x86_64-linux | job | Homelab server + Hyprland desktop |
-| `macbook-intel-nixos` | NixOS | x86_64-linux | job | Intel MacBook running NixOS with Hyprland |
-| `macbook-intel-nixos-sooph` | NixOS | x86_64-linux | sooph | Intel MacBook running NixOS (sooph's account) |
-| `macbook-intel` | Darwin | x86_64-darwin | job | Intel MacBook running macOS |
-| `macbook-silicon` | Darwin | aarch64-darwin | job.visser | Apple Silicon MacBook running macOS |
+| Configuration               | Type   | Architecture   | User       | Description                                   |
+| --------------------------- | ------ | -------------- | ---------- | --------------------------------------------- |
+| `larkbox`                   | NixOS  | x86_64-linux   | job        | Homelab server + Hyprland desktop             |
+| `macbook-intel-nixos`       | NixOS  | x86_64-linux   | job        | Intel MacBook running NixOS with Hyprland     |
+| `macbook-intel-nixos-sooph` | NixOS  | x86_64-linux   | sooph      | Intel MacBook running NixOS (sooph's account) |
+| `macbook-intel`             | Darwin | x86_64-darwin  | job        | Intel MacBook running macOS                   |
+| `macbook-silicon`           | Darwin | aarch64-darwin | job.visser | Apple Silicon MacBook running macOS           |
 
 ## Homelab Architecture
 
@@ -234,11 +233,11 @@ The homelab module (`modules/homelab/`) provides a complete self-hosted services
 
 ### Access Methods
 
-| Method | URL | Security |
-|--------|-----|----------|
-| Local LAN | `http://larkbox` | Trusted network |
-| Tailscale | `http://100.x.y.z` | WireGuard encrypted |
-| MagicDNS | `http://larkbox.tailnet.ts.net` | WireGuard encrypted |
+| Method    | URL                             | Security            |
+| --------- | ------------------------------- | ------------------- |
+| Local LAN | `http://larkbox`                | Trusted network     |
+| Tailscale | `http://100.x.y.z`              | WireGuard encrypted |
+| MagicDNS  | `http://larkbox.tailnet.ts.net` | WireGuard encrypted |
 
 ## Adding a New Host
 
