@@ -86,6 +86,8 @@
               ".github/instructions" = true;
             };
             "chat.viewSessions.orientation" = "stacked";
+            "chat.utilityModel" = "customendpoint/claude-haiku-4.5-bedrock";
+            "chat.utilitySmallModel" = "customendpoint/claude-haiku-4.5-bedrock";
             "claudeCode.preferredLocation" = "panel";
             "claudeCode.selectedModel" = "opus";
             "docker.extension.enableComposeLanguageServer" = false;

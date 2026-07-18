@@ -100,13 +100,13 @@
       docker-client
       sops
       ssh-to-age
+      secretspec
       darktable
     ];
   in {
     home.packages =
       builtins.filter (pkg: lib.meta.availableOn pkgs.stdenv.hostPlatform pkg)
       packages;
-
   };
 
   # NixOS-only home-manager packages (Linux-specific applications)
@@ -117,6 +117,5 @@
       spotify
       retroarch-free
     ];
-
   };
 }

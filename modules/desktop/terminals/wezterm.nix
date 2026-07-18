@@ -128,8 +128,8 @@
           { key = 'j', mods = 'SHIFT|ALT', action = act.AdjustPaneSize {'Down', 4}, },
           { key = 'k', mods = 'SHIFT|ALT', action = act.AdjustPaneSize {'Up', 4}, },
 
-          { key = 'd', mods = 'ALT', action = act.SplitVertical, },
-          { key = 'r', mods = 'ALT', action = act.SplitHorizontal, },
+          { key = '-', mods = 'ALT', action = act.SplitVertical, },
+          { key = 'v', mods = 'ALT', action = act.SplitHorizontal, },
 
           { key = '[', mods = 'ALT', action = act.ActivateTabRelative(-1), },
           { key = ']', mods = 'ALT', action = act.ActivateTabRelative(1), },
@@ -153,7 +153,8 @@
         table.insert(config.keys, {
           key = '4', mods = 'ALT|CTRL',
           action = wezterm.action.SpawnCommandInNewTab {
-            args = {'code', '~/repos/jv-nix-config'},
+            cwd = os.getenv('HOME') .. '/repos/jv-nix-config',
+            args = {'/bin/zsh', '-lc', 'code .'},
           },
         })
 

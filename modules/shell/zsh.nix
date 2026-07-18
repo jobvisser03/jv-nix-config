@@ -24,21 +24,15 @@
       };
 
       initContent = lib.mkAfter ''
-        # Homebrew (Apple Silicon path; Intel uses /usr/local)
-        if [[ -x /opt/homebrew/bin/brew ]]; then
-          eval "$(/opt/homebrew/bin/brew shellenv)"
-        elif [[ -x /usr/local/bin/brew ]]; then
-          eval "$(/usr/local/bin/brew shellenv)"
-        fi
+        # Hardcoded brew env (avoids slow eval of brew shellenv)
+        export HOMEBREW_PREFIX="/opt/homebrew"
+        export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
+        export HOMEBREW_REPOSITORY="/opt/homebrew"
+        export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+        export MANPATH="/opt/homebrew/share/man:$MANPATH"
+        export INFOPATH="/opt/homebrew/share/info:$INFOPATH"
 
-        export PATH="$HOME/.cargo/bin:$PATH"
-        export PATH="$HOME/repos/experiments/flutter/bin:$PATH"
-        export GEM_HOME=$HOME/.gem
-        export PATH=$GEM_HOME/bin:$PATH
-        export PATH="$HOME/.gem/ruby/3.3.0/bin:$PATH"
-        export PATH="$HOME/.omlx/bin:$PATH"
-        export PATH="$HOME/.local/bin:$PATH"
-        export PATH="$HOME/.rd/bin:$PATH"
+        export PATH="$HOME/.cargo/bin:$HOME/.omlx/bin:$HOME/.local/bin:$HOME/.rd/bin:$PATH"
 
         # SOPS age key: macOS defaults to ~/Library/Application Support, override for both platforms
         export SOPS_AGE_KEY_FILE="$HOME/.config/sops/age/keys.txt"
@@ -51,17 +45,7 @@
         export LC_ALL="en_US.UTF-8"
         export LANGUAGE="en_US.UTF-8"
 
-        pip() {
-            if ! type -P pip &> /dev/null
-            then
-                uv pip "$@"
-            else
-                command pip "$@"
-            fi
-        }
-
         bindkey "^ " autosuggest-accept
-        test -e "$HOME/.iterm2_shell_integration.zsh" && source "$HOME/.iterm2_shell_integration.zsh"
 
         eval "$(devenv hook zsh)"
       '';
