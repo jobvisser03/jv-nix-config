@@ -75,7 +75,7 @@
     services.thermald.enable = true;
 
     systemd.services.intel-pstate-limit = {
-      description = "Disable turbo and cap Intel P-state performance to 60 %";
+      description = "Disable turbo and cap Intel P-state performance to 80 %";
       wantedBy = ["multi-user.target"];
       after = ["systemd-modules-load.service"];
       serviceConfig = {
@@ -84,7 +84,7 @@
       };
       script = ''
         echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
-        echo 60 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
+        echo 80 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
       '';
     };
 
@@ -132,9 +132,9 @@
 
       # Keep crash telemetry locally. Future external Hetzner VPS should enable
       # uptime-kuma and provide this host with its push-monitor URL via SOPS.
-      services.grafana.enable = true;
-      services.prometheus.enable = true;
-      services.loki.enable = true;
+      services.grafana.enable = false;
+      services.prometheus.enable = false;
+      services.loki.enable = false;
       services.backup = {
         enable = true;
         passwordFile = config.sops.secrets.restic_password.path;
