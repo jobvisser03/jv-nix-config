@@ -32,7 +32,10 @@
 
       # Plan-mode extension — stored in the nix config, path injected at
       # build time so it is always present regardless of home dir state.
-      extensions = [./pi/plan-mode.ts];
+      extensions = [
+        ./pi/plan-mode.ts
+        ./pi/gitlab-mr-discussion.ts
+      ];
 
       # Custom themes — cobalt2 ported from wesbos/cobalt2-vscode.
       themes = [./pi/themes/cobalt2.json];
