@@ -101,9 +101,17 @@
           uid = 1000;
           gid = 100;
         };
-        pcloud- = {
+        pcloud-temp-photo-library = {
           remote = "pcloud:PHOTOS/'TEMP Photo Library'";
           mountpoint = "/home/${username}/pcloud/temp-photo-library";
+          cacheMode = "writes";
+          readOnly = false;
+          uid = 1000;
+          gid = 100;
+        };
+        pcloud-data-mastery = {
+          remote = "pcloud:'DATA MASTERY'";
+          mountpoint = "/home/${username}/pcloud/data-mastery";
           cacheMode = "writes";
           readOnly = false;
           uid = 1000;
