@@ -44,7 +44,6 @@
       hurl
       yt-dlp
       fastfetch
-      inputs.herdr.packages.${pkgs.system}.default
 
       # CLI maintenance
       # scan folders and files for cleanup using a rust implementation of du
@@ -68,6 +67,7 @@
       # Cloud and networking
       google-cloud-sdk
       azure-cli
+      azure-storage-azcopy
       cachix
       tailscale
       speedtest-cli
@@ -90,6 +90,7 @@
       # TUI coding apps
       opencode
       claude-code
+      inputs.herdr.packages.${pkgs.system}.default
       # pi-coding-agent is managed by modules/dev/pi.nix (pi.nix flake)
 
       # Desktop applications

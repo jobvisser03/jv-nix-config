@@ -75,7 +75,7 @@
 
     pi.url = "github:lukasl-dev/pi.nix";
 
-    herdr.url = "github:ogulcancelik/herdr/latest";
+    herdr.url = "github:ogulcancelik/herdr/v0.8.0";
   };
 
   outputs = inputs:
