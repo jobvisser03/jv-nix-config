@@ -44,7 +44,6 @@
       hurl
       yt-dlp
       fastfetch
-      # inputs.herdr.packages.${pkgs.system}.default
 
       # CLI maintenance
       # scan folders and files for cleanup using a rust implementation of du
@@ -68,6 +67,7 @@
       # Cloud and networking
       google-cloud-sdk
       azure-cli
+      azure-storage-azcopy
       cachix
       tailscale
       speedtest-cli
@@ -90,6 +90,7 @@
       # TUI coding apps
       opencode
       claude-code
+      inputs.herdr.packages.${pkgs.system}.default
       # pi-coding-agent is managed by modules/dev/pi.nix (pi.nix flake)
 
       # Desktop applications
@@ -100,19 +101,13 @@
       docker-client
       sops
       ssh-to-age
+      secretspec
       darktable
     ];
   in {
     home.packages =
       builtins.filter (pkg: lib.meta.availableOn pkgs.stdenv.hostPlatform pkg)
       packages;
-
-    programs.vscode = {
-      enable = true;
-      # On Darwin, VSCode is managed by Homebrew; skip installing the nix package
-      # to avoid copyApps rsync conflicts with the Homebrew app bundle.
-      package = lib.mkIf pkgs.stdenv.isDarwin null;
-    };
   };
 
   # NixOS-only home-manager packages (Linux-specific applications)
@@ -123,9 +118,5 @@
       spotify
       retroarch-free
     ];
-
-    programs.vscode = {
-      package = pkgs.vscode.fhs;
-    };
   };
 }

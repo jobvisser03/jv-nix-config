@@ -36,6 +36,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix4vscode = {
+      url = "github:nix-community/nix4vscode";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     handy = {
       url = "github:cjpais/Handy";
       # Using main branch; consider pinning to a specific commit for reproducibility
@@ -70,7 +75,7 @@
 
     pi.url = "github:lukasl-dev/pi.nix";
 
-    herdr.url = "github:ogulcancelik/herdr/v0.7.3";
+    herdr.url = "github:ogulcancelik/herdr/v0.8.0";
   };
 
   outputs = inputs:

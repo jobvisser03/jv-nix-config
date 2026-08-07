@@ -22,7 +22,6 @@
       "atuin"
       "oh-my-posh"
       "aliases"
-      "direnv"
       "eza"
       "fd"
     ];
@@ -44,6 +43,7 @@
       "kitty"
       "firefox"
       "desktop-apps"
+      "vscode"
       "nixos-desktop-apps"
       "pi"
     ];
@@ -68,6 +68,7 @@
       "kitty"
       "firefox"
       "desktop-apps"
+      "vscode"
       "omlx"
       "pi"
     ];
@@ -288,6 +289,7 @@ in {
         "wezterm"
         "firefox"
         "desktop-apps"
+        "vscode"
         "nixos-desktop-apps"
       ];
     };
