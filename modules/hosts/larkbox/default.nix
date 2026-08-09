@@ -75,7 +75,7 @@
     services.thermald.enable = true;
 
     systemd.services.intel-pstate-limit = {
-      description = "Disable turbo and cap Intel P-state performance to 60 %";
+      description = "Disable turbo and cap Intel P-state performance to 90 %";
       wantedBy = ["multi-user.target"];
       after = ["systemd-modules-load.service"];
       serviceConfig = {
@@ -84,7 +84,7 @@
       };
       script = ''
         echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
-        echo 60 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
+        echo 90 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
       '';
     };
 
