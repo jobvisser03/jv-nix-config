@@ -83,7 +83,6 @@
             proton-pass
             multi-account-containers
             ublock-origin
-            darkreader
             vimium-c
           ];
         };
