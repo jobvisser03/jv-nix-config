@@ -56,9 +56,13 @@
           "npm:@gaodes/pi-gitlab"
           "npm:pi-subagents"
           "npm:remote-pi"
+          "npm:pi-mcp-adapter"
         ];
       };
     };
+
+    # MCP server configuration — loaded by pi-mcp-adapter from ~/.pi/agent/mcp.json.
+    home.file.".pi/agent/mcp.json".text = builtins.readFile ./pi/mcp.json;
 
     # Global AGENTS.md — loaded by pi at startup from ~/.pi/agent/AGENTS.md.
     # Tailored for Python / Nix devenv / uv workflow.
