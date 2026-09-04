@@ -54,8 +54,8 @@
           "npm:pi-web-access"
           "npm:pi-caveman"
           "npm:@gaodes/pi-gitlab"
-          "npm:pi-subagents"
-          "npm:remote-pi"
+          # "npm:pi-subagents"
+          # "npm:remote-pi"
           "npm:pi-mcp-adapter"
         ];
       };
