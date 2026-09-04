@@ -117,6 +117,14 @@
           uid = 1000;
           gid = 100;
         };
+        pcloud-dutch-dataworks = {
+          remote = "pcloud:'DUTCH DATAWORKS'";
+          mountpoint = "/home/${username}/pcloud/dutch-dataworks";
+          cacheMode = "writes";
+          readOnly = false;
+          uid = 1000;
+          gid = 100;
+        };
       };
     };
 
