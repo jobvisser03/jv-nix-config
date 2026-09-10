@@ -104,7 +104,6 @@
       docker-client
       sops
       ssh-to-age
-      secretspec
       darktable
     ];
   in {
