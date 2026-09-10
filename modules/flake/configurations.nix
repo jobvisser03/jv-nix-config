@@ -297,19 +297,6 @@ in {
 
   # Darwin configurations
   flake.darwinConfigurations = {
-    # Personal MacBook (Intel)
-    macbook-intel = mkDarwinSystem {
-      hostname = "macbook-intel";
-      system = "x86_64-darwin";
-      user = "job";
-      profiles = [
-        "darwin-workstation"
-      ];
-      modules = [
-        "user-job"
-      ];
-    };
-
     # Work MacBook (Apple Silicon)
     macbook-silicon = mkDarwinSystem {
       hostname = "macbook-silicon";
