@@ -17,36 +17,38 @@
   };
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    # Stable for host laptops and servers (and anything else that wants stability)
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
 
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
-      # inputs.nixpkgs.lib.follows = "nixpkgs";
-    };
-
-    import-tree.url = "github:vic/import-tree";
+    # Home Manager package pool (rolling, devenv-patched)
+    nixpkgs-devenv.url = "github:cachix/devenv-nixpkgs/rolling";
 
     darwin = {
       url = "github:LnL7/nix-darwin";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-devenv";
     };
 
     home-manager = {
       url = "github:nix-community/home-manager/master";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-devenv";
     };
+
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+    };
+
+    import-tree.url = "github:vic/import-tree";
 
     nix4vscode = {
       url = "github:nix-community/nix4vscode";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-devenv";
     };
 
     handy = {
       url = "github:cjpais/Handy";
-      # Using main branch; consider pinning to a specific commit for reproducibility
     };
 
-    nixos-hardware.url = "github:NixOS/nixos-hardware";
 
     stylix = {
       url = "github:danth/stylix/master";
