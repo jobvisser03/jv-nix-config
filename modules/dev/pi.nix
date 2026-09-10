@@ -40,11 +40,11 @@
       # Custom themes — cobalt2 ported from wesbos/cobalt2-vscode.
       themes = [./pi/themes/cobalt2.json];
 
-      environment.OPENAI_API_KEY = secretPath "openai_api_key";
-      environment.ENEXIS_API_KEY = secretPath "enexis_api_key";
-      environment.ENEXIS_AZURE_OPENAI_BASE_URL = secretPath "enexis_azure_openai_base_url";
-      environment.ENEXIS_GITLAB_API_KEY = secretPath "enexis_gitlab_api_key";
-      environment.OPENROUTER_API_KEY = secretPath "openrouter_api_key";
+      environment.OPENAI_API_KEY.file = secretPath "openai_api_key";
+      environment.ENEXIS_API_KEY.file = secretPath "enexis_api_key";
+      environment.ENEXIS_AZURE_OPENAI_BASE_URL.file = secretPath "enexis_azure_openai_base_url";
+      environment.ENEXIS_GITLAB_API_KEY.file = secretPath "enexis_gitlab_api_key";
+      environment.OPENROUTER_API_KEY.file = secretPath "openrouter_api_key";
 
       # Declarative settings merged into ~/.pi/agent/settings.json on each
       # activation.  pi auto-installs npm packages listed here on first run.

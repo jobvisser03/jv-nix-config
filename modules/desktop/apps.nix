@@ -93,6 +93,9 @@
       inputs.herdr.packages.${pkgs.system}.default
       # pi-coding-agent is managed by modules/dev/pi.nix (pi.nix flake)
 
+      # Reduce LLM token consumption
+      rtk
+
       # Desktop applications
       # keepassxc # moved to homebrew (qtmacextras/cctools linker crash)
       proton-pass
