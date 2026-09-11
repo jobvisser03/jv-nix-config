@@ -5,8 +5,13 @@
     pkgs,
     lib,
     config,
+    inputs,
     ...
   }: {
+    # Exposes pkgs.unstable.<pkg> for dev tools that want to move faster
+    # than the stable base (see modules/flake/overlays.nix)
+    nixpkgs.overlays = [inputs.self.overlays.unstable-packages];
+
     # .NET runtime required by apps like Azure Storage Explorer
     environment.systemPackages = [pkgs.dotnet-runtime_10];
 

@@ -21,6 +21,12 @@
     # Host identity
     networking.hostName = "larkbox";
 
+    # Immich 2.x is EOL/insecure upstream, but required by this stable
+    # nixpkgs release until Immich 3.x lands in a later release.
+    nixpkgs.config.permittedInsecurePackages = [
+      "immich-2.7.5"
+    ];
+
     # Enable sudo for wheel group members
     security.sudo = {
       enable = true;

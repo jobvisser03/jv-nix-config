@@ -42,6 +42,10 @@
     # Allow unfree packages
     nixpkgs.config.allowUnfree = true;
 
+    # Exposes pkgs.unstable.<pkg> for dev tools that want to move faster
+    # than the stable 26.05 base (see modules/flake/overlays.nix)
+    nixpkgs.overlays = [inputs.self.overlays.unstable-packages];
+
     # Default state version
     system.stateVersion = lib.mkDefault "25.11";
   };

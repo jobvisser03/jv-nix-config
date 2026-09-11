@@ -21,16 +21,35 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
+    # Rolling pool for dev tools that want to move faster than the stable base
+    # (exposed as `pkgs.unstable.<pkg>` via modules/flake/overlays.nix)
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+
     # Home Manager package pool (rolling, devenv-patched)
     nixpkgs-devenv.url = "github:cachix/devenv-nixpkgs/rolling";
+
+    # Pinned to release-26.05 to match the stable nixpkgs base — avoids
+    # OS-level module/option drift between HM and the system it configures.
+    home-manager = {
+      url = "github:nix-community/home-manager/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Pinned to release-26.05 (stylix master is rolling and expects inputs in lockstep)
+    stylix = {
+      url = "github:nix-community/stylix/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    herdr.url = "github:ogulcancelik/herdr/v0.9.0";
 
     darwin = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs-devenv";
     };
 
-    home-manager = {
-      url = "github:nix-community/home-manager/master";
+    nix4vscode = {
+      url = "github:nix-community/nix4vscode";
       inputs.nixpkgs.follows = "nixpkgs-devenv";
     };
 
@@ -40,19 +59,8 @@
 
     import-tree.url = "github:vic/import-tree";
 
-    nix4vscode = {
-      url = "github:nix-community/nix4vscode";
-      inputs.nixpkgs.follows = "nixpkgs-devenv";
-    };
-
     handy = {
       url = "github:cjpais/Handy";
-    };
-
-
-    stylix = {
-      url = "github:danth/stylix/master";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     firefox-addons = {
@@ -76,8 +84,6 @@
     };
 
     pi.url = "github:lukasl-dev/pi.nix";
-
-    herdr.url = "github:ogulcancelik/herdr/v0.9.0";
   };
 
   outputs = inputs:

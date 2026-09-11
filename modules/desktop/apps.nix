@@ -55,9 +55,9 @@
       shfmt
 
       # Shells and terminals
-      vim
-      helix
-      wezterm
+      pkgs.unstable.vim
+      pkgs.unstable.helix
+      pkgs.unstable.wezterm
 
       # Fonts
       (nerd-fonts.caskaydia-cove)
@@ -84,17 +84,17 @@
       # Image manipulation
       imagemagick
 
-      # Development tools
-      devenv
+      # Development tools (unstable: moves faster than the stable base)
+      pkgs.unstable.devenv
 
       # TUI coding apps
-      opencode
-      claude-code
+      pkgs.unstable.opencode
+      pkgs.unstable.claude-code
       inputs.herdr.packages.${pkgs.system}.default
       # pi-coding-agent is managed by modules/dev/pi.nix (pi.nix flake)
 
       # Reduce LLM token consumption
-      rtk
+      pkgs.unstable.rtk
 
       # Desktop applications
       # keepassxc # moved to homebrew (qtmacextras/cctools linker crash)
