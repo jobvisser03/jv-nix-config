@@ -19,6 +19,7 @@
   in {
     programs.wezterm = {
       enable = true;
+      package = pkgs.unstable.wezterm;
       enableZshIntegration = true;
       enableBashIntegration = true;
       extraConfig = ''
