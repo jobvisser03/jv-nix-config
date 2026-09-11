@@ -55,6 +55,8 @@
           "npm:pi-caveman"
           "npm:@gaodes/pi-gitlab"
           # "npm:pi-subagents"
+          "npm:pi-herdr-agents"
+          "npm:pi-rtk-optimizer"
           # "npm:remote-pi"
           "npm:pi-mcp-adapter"
         ];
