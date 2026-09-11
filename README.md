@@ -11,6 +11,41 @@ Need to add a new flake-part module? `modules/[desktop|dev|shell]/[name].nix`
 Need to add common modules to many hosts? add them to a profile in `modules/flake/configurations.nix`
 Need to add a one-off module to a host? add it to that host's `modules` list in `modules/flake/configurations.nix`
 
+## Package channels and update policy
+
+Most hosts use stable `nixpkgs` (`nixos-26.05`) as their system package set. This keeps kernel, systemd, NixOS options, and Home Manager aligned. Rolling packages are available through the `pkgs.unstable` overlay backed by `nixpkgs-unstable`:
+
+```nix
+pkgs.git                 # stable base
+pkgs.unstable.devenv     # selected rolling package
+pkgs.unstable.wezterm    # selected rolling package
+```
+
+Use `pkgs.unstable.<name>` only for packages that need newer versions. Updating `nixpkgs-unstable` can update every package selected from that tree, but it does not change stable packages or stable-host OS modules.
+
+Update inputs deliberately:
+
+```bash
+# Rolling packages only (normal update for dev tools)
+nix flake lock --update-input nixpkgs-unstable
+
+# Stable OS release and packages (review before deploying)
+nix flake lock --update-input nixpkgs
+
+# One flake input, when it is independent of the nixpkgs tree
+nix flake lock --update-input nix4vscode
+```
+
+Avoid routine `nix flake update`: it updates every input and can change OS modules, hardware support, and package versions together. Review with `git diff flake.lock`, then evaluate/build the target before switching:
+
+```bash
+nix flake check
+nix build .#nixosConfigurations.<host>.config.system.build.toplevel --no-link
+sudo nixos-rebuild switch --flake .#<host>
+```
+
+For project-specific toolchains, prefer `devenv`/direnv flakes so those dependencies update independently of this system flake.
+
 ```bash
 # macOS (nix-darwin)
 darwin-rebuild switch --flake .#macbook-intel

@@ -126,7 +126,7 @@
   # `modules` may contain string names (looked up in both nixos + HM namespaces)
   # OR direct module values (attrsets / functions, included at the nixos level
   # only — use a string name when you also need HM integration).
-  loadNixosAndHmModules = homeManager: modules: user: let
+  loadNixosAndHmModules = modules: user: let
     parts = partitionModules modules;
     validatedNames = builtins.map ensureNixosModule parts.names;
   in
@@ -134,7 +134,7 @@
     ++ parts.direct
     ++ [
       {
-        imports = [homeManager.nixosModules.home-manager];
+        imports = [inputs.home-manager.nixosModules.home-manager];
         home-manager = {
           useGlobalPkgs = true;
           useUserPackages = true;
@@ -172,8 +172,6 @@
   mkNixosSystem = {
     hostname,
     system ? "x86_64-linux",
-    nixpkgs ? inputs.nixpkgs,
-    homeManager ? inputs.home-manager,
     profiles ? [],
     modules ? [],
     user ? "job",
@@ -181,7 +179,7 @@
   }: let
     moduleNames = expandModuleNames profiles modules;
   in
-    nixpkgs.lib.nixosSystem {
+    inputs.nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = {
         inherit inputs;
@@ -194,7 +192,7 @@
           # Host-specific module
           (requireModule nixosModules "hosts/${hostname}")
         ]
-        ++ (loadNixosAndHmModules homeManager moduleNames user)
+        ++ (loadNixosAndHmModules moduleNames user)
         ++ extraModules;
     };
 
@@ -260,8 +258,6 @@ in {
     macbook-intel-nixos = mkNixosSystem {
       hostname = "macbook-intel-nixos";
       system = "x86_64-linux";
-      nixpkgs = inputs.nixpkgs-unstable;
-      homeManager = inputs.home-manager-unstable;
       user = "job";
       profiles = [
         "laptop-hyprland"
@@ -273,7 +269,7 @@ in {
       ];
       extraModules = [
         inputs.sops-nix.nixosModules.sops
-        inputs.stylix-unstable.nixosModules.stylix
+        inputs.stylix.nixosModules.stylix
         inputs.nixos-hardware.nixosModules.apple-t2
       ];
     };
