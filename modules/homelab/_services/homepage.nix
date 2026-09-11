@@ -254,6 +254,15 @@ in {
     # Allow all hosts — homepage is behind Caddy on a LAN
     services.homepage-dashboard.allowedHosts = "*";
 
+    # Caddy reverse proxy
+    services.caddy.virtualHosts = lib.mkIf homelab.services.enableReverseProxy {
+      "http://${homelab.hostname}:${toString cfg.port}" = {
+        extraConfig = ''
+          reverse_proxy http://127.0.0.1:${toString cfg.port}
+        '';
+      };
+    };
+
     # Set up environment variables
     # Homepage uses HOMEPAGE_FILE_* convention to read secrets from files
     systemd.services.homepage-dashboard.environment = lib.optionalAttrs (cfg.jellyfin.apiKeyFile != null) {
