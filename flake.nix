@@ -41,12 +41,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    darwin = {
-      url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     herdr.url = "github:ogulcancelik/herdr/v0.9.0";
+    
+    darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs-devenv";
+    };
 
     nix4vscode = {
       url = "github:nix-community/nix4vscode";
