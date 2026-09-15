@@ -53,6 +53,8 @@
           # Web search, URL fetch, PDF extraction, GitHub clone
           "npm:pi-web-access"
           "npm:pi-caveman"
+          "npm:@majorgilles/pi-grill-me"
+          "npm:@czottmann/pi-automode"
           "npm:@gaodes/pi-gitlab"
           # "npm:pi-subagents"
           "npm:pi-herdr-agents"
