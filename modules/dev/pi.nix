@@ -57,7 +57,9 @@
           "npm:@czottmann/pi-automode"
           "npm:@gaodes/pi-gitlab"
           # "npm:pi-subagents"
-          "npm:pi-herdr-agents"
+          # Local reproducible fork. Child agents enter each repository's
+          # devenv before Pi starts.
+          "${./pi/pi-herdr-agents}"
           "npm:pi-rtk-optimizer"
           # "npm:remote-pi"
           "npm:pi-mcp-adapter"
