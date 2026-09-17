@@ -21,8 +21,13 @@
     # Darwin: secrets live in ~/.config/sops-nix/secrets/<name> via HM sops-nix → use config.
     secretPath = name:
       if pkgs.stdenv.isLinux
-      then osConfig.sops.secrets.${name}.path
-      else config.sops.secrets.${name}.path;
+      then
+        if builtins.hasAttr "sops" osConfig && builtins.hasAttr name osConfig.sops.secrets
+        then osConfig.sops.secrets.${name}.path
+        else "/dev/null"
+      else if builtins.hasAttr "sops" config && builtins.hasAttr name config.sops.secrets
+      then config.sops.secrets.${name}.path
+      else "/dev/null";
   in {
     # Pull in the pi.nix option declarations so programs.pi.coding-agent exists.
     imports = [inputs.pi.homeModules.default];

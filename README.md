@@ -246,8 +246,13 @@ Common profiles currently include `common-nixos`, `common-shell`, `common-dev`, 
 | `larkbox`                   | NixOS  | x86_64-linux   | job        | Homelab server + Hyprland desktop             |
 | `macbook-intel-nixos`       | NixOS  | x86_64-linux   | job        | Intel MacBook running NixOS with Hyprland     |
 | `macbook-intel-nixos-sooph` | NixOS  | x86_64-linux   | sooph      | Intel MacBook running NixOS (sooph's account) |
+| `framework-13-pro`          | NixOS  | x86_64-linux   | job        | Framework Laptop 13 Pro, Intel Core Ultra     |
 | `macbook-intel`             | Darwin | x86_64-darwin  | job        | Intel MacBook running macOS                   |
 | `macbook-silicon`           | Darwin | aarch64-darwin | job.visser | Apple Silicon MacBook running macOS           |
+
+## Framework 13 Pro
+
+Framework install, disko, LUKS2, impermanence, Secure Boot, TPM2 unlock, and hibernation instructions live in [`docs/framework-13-pro.md`](docs/framework-13-pro.md).
 
 ## Homelab Architecture
 
