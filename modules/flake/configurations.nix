@@ -274,6 +274,23 @@ in {
       ];
     };
 
+    # Framework Laptop 13 Pro
+    framework-13-pro = mkNixosSystem {
+      hostname = "framework-13-pro";
+      system = "x86_64-linux";
+      user = "job";
+      profiles = [
+        "laptop-hyprland"
+      ];
+      modules = [
+        "user-job"
+      ];
+      extraModules = [
+        inputs.sops-nix.nixosModules.sops
+        inputs.stylix.nixosModules.stylix
+      ];
+    };
+
     # MacBook running NixOS
     macbook-intel-nixos-sooph = mkNixosSystem {
       hostname = "macbook-intel-nixos-sooph";
