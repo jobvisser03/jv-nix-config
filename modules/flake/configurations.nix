@@ -56,6 +56,30 @@
       "power-management"
     ];
 
+    niri-desktop = [
+      "stylix"
+      "desktop-base"
+      "niri"
+      "waybar"
+      "hyprlock"
+      "rofi"
+      "wezterm"
+      "kitty"
+      "firefox"
+      "desktop-apps"
+      "vscode"
+      "nixos-desktop-apps"
+      "pi"
+    ];
+
+    laptop-niri = [
+      "common-nixos"
+      "common-shell"
+      "common-dev"
+      "niri-desktop"
+      "power-management"
+    ];
+
     darwin-workstation = [
       "nix"
       "home"
