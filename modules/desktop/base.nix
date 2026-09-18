@@ -104,6 +104,8 @@
       satty
       grim
       slurp
+      swayidle
+      xwayland-satellite
       wl-screenrec
       hyprpicker
       playerctl

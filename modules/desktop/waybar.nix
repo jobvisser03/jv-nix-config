@@ -10,7 +10,14 @@
     stylix = config.lib.stylix.colors.withHashtag;
     borderRadius = "10";
     borderSize = "2";
+    compositor = config.jv.waybar.compositor;
   in {
+    options.jv.waybar.compositor = lib.mkOption {
+      type = lib.types.enum ["hyprland" "niri"];
+      default = "hyprland";
+      description = "Waybar compositor integration";
+    };
+
     systemd.user.services.waybar.Service.ExecStartPre = "${pkgs.coreutils}/bin/sleep 3";
 
     programs.waybar = {
@@ -26,8 +33,8 @@
 
           modules-left = [
             "custom/actions"
-            "hyprland/workspaces"
-            "hyprland/window"
+            "${compositor}/workspaces"
+            "${compositor}/window"
           ];
 
           modules-center = [
@@ -35,14 +42,15 @@
             "clock"
           ];
 
-          modules-right = [
-            "hyprland/submap"
-            "backlight"
-            "wireplumber"
-            "group/power"
-            "group/hardware"
-            "tray"
-          ];
+          modules-right =
+            lib.optional (compositor == "hyprland") "hyprland/submap"
+            ++ [
+              "backlight"
+              "wireplumber"
+              "group/power"
+              "group/hardware"
+              "tray"
+            ];
 
           "custom/actions" = {
             format = "";
@@ -50,36 +58,44 @@
             on-click = "rofi -show drun";
           };
 
-          "hyprland/workspaces" = {
-            show-special = true;
-            special-visible-only = true;
-            format = "{icon}";
+          "${compositor}/workspaces" =
+            if compositor == "hyprland"
+            then {
+              show-special = true;
+              special-visible-only = true;
+              format = "{icon}";
 
-            format-icons = {
-              "monitor" = "󰍹";
-              "logseq" = "";
-              "spotify" = "";
-              "default" = "";
-              "1" = "1";
-              "2" = "2";
-              "3" = "3";
-              "4" = "4";
-              "5" = "5";
-              "6" = "6";
-              "7" = "7";
-              "8" = "8";
-              "9" = "9";
+              format-icons = {
+                "monitor" = "󰍹";
+                "logseq" = "";
+                "spotify" = "";
+                "default" = "";
+                "1" = "1";
+                "2" = "2";
+                "3" = "3";
+                "4" = "4";
+                "5" = "5";
+                "6" = "6";
+                "7" = "7";
+                "8" = "8";
+                "9" = "9";
+              };
+
+              persistent-workspaces = {
+                "*" = 5;
+              };
+            }
+            else {
+              format = "{value}";
+              format-icons = {
+                "default" = "";
+                "empty" = "";
+              };
             };
 
-            persistent-workspaces = {
-              "*" = 5;
-            };
-          };
-
-          "hyprland/window" = {
+          "${compositor}/window" = {
             max-length = 50;
             format = "{title}";
-            icon = true;
           };
 
           privacy = {
@@ -228,11 +244,14 @@
             ];
           };
 
-          "custom/monitor" = {
-            format = "";
-            tooltip = false;
-            on-click = "hyprctl dispatch togglespecialworkspace monitor";
-          };
+          "custom/monitor" =
+            {
+              format = "";
+              tooltip = false;
+            }
+            // lib.optionalAttrs (compositor == "hyprland") {
+              on-click = "hyprctl dispatch togglespecialworkspace monitor";
+            };
 
           disk = {
             format = "󰋊 {percentage_free}%";
