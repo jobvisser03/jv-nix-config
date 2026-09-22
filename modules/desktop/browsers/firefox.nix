@@ -10,7 +10,6 @@
   }: {
     programs.firefox = {
       enable = true;
-      configPath = ".mozilla/firefox";
       profiles = {
         default = {
           id = 0;
