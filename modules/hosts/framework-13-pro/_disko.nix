@@ -4,7 +4,7 @@
   disko.devices = {
     disk.main = {
       type = "disk";
-      device = "/dev/disk/by-id/nvme-FRAMEWORK-13-PRO-REPLACE-ME";
+      device = "/dev/disk/by-id/nvme-WD_BLACK_SN7100_2TB_2552AW402011";
       content = {
         type = "gpt";
         partitions = {
