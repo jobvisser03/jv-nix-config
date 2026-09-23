@@ -17,11 +17,11 @@
   boot.initrd.availableKernelModules = [
     "nvme"
     "xhci_pci"
-    "usbhid"
+    "thunderbolt"
     "usb_storage"
     "sd_mod"
   ];
-  boot.initrd.kernelModules = [];
+  boot.initrd.kernelModules = ["dm-snapshot"];
   boot.kernelModules = ["kvm-intel"];
   boot.extraModulePackages = [];
 
@@ -31,5 +31,6 @@
   networking.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  hardware.cpu.intel.npu.enable = true;
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
