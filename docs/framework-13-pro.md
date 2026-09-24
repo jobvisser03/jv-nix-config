@@ -12,9 +12,9 @@ NixOS host for Framework Laptop 13 Pro with Intel Core Ultra X7 358H, integrated
 - Boot: UEFI, Lanzaboote, Secure Boot, `sbctl`
 - Encryption: LUKS2 with TPM2 PCR 7 unlock and passphrase fallback
 - Storage: GPT → 1 GiB ESP → LUKS2 → LVM → BTRFS
-- BTRFS subvolumes: `/root`, `/home`, `/nix`, `/persist`
+- BTRFS subvolumes: `/root`, `/home`, `/nix`
 - Swap: 40 GiB LVM LV for 32 GiB RAM and hibernation
-- Impermanence: `/root` resets each boot; `/home`, `/nix`, and explicit `/persist` state survive
+- Persistent root filesystem: `/root`, `/home`, and `/nix` survive reboots
 
 ## Before installation
 
@@ -139,29 +139,19 @@ The second command lists enrolled slots. Store and test the LUKS passphrase befo
 
 Do not remove the passphrase slot. TPM unlock is convenience, not recovery.
 
-## Impermanence
+## Persistence
 
-The initrd deletes and recreates the BTRFS `/root` subvolume before `sysroot.mount`. `/home`, `/nix`, and `/persist` are separate BTRFS subvolumes and survive reboot. `/nix` persistence is required: deleting `/nix/store` would remove the installed system closure.
+No impermanence reset runs on this host. `/root`, `/home`, and `/nix` are ordinary persistent BTRFS subvolumes. All system state, passwords, SSH host keys, NetworkManager state, and Secure Boot keys remain across reboot.
 
-Test after installation:
+Verify after installation:
 
 ```sh
-sudo touch /nix/framework-13-pro-persistence-test
-sudo touch /persist/framework-13-pro-persistence-test
+sudo touch /root/framework-13-pro-persistence-test
 sudo reboot
-sudo test -e /nix/framework-13-pro-persistence-test
-sudo test -e /persist/framework-13-pro-persistence-test
+sudo test -e /root/framework-13-pro-persistence-test
 ```
 
-`/persist` explicitly keeps:
-
-- SSH host keys and machine ID.
-- NetworkManager and Tailscale state.
-- NixOS identity and fprint state.
-- systemd random seed.
-- Lanzaboote/sbctl key material.
-
-User data belongs in `/home`. Caches and unlisted service state are intentionally ephemeral. Add new service data to the persistence allowlist only after deciding whether it should survive root reset.
+User data belongs in `/home`; system state remains under `/etc` and `/var` as normal NixOS state.
 
 ## Hibernation acceptance
 
@@ -193,7 +183,7 @@ These commands do not format disks. Do not use `--mode disko` outside installati
 
 - [ ] Replace disko device placeholder with intended NVMe by-id path.
 - [ ] Replace generic hardware template with generated `--no-filesystems` output.
-- [ ] Verify `/`, `/home`, `/nix`, and `/persist` subvolume mounts.
+- [ ] Verify `/`, `/home`, and `/nix` subvolume mounts.
 - [ ] Reboot and confirm `/nix/store` remains available.
 - [ ] Confirm Pi starts before LLM secret enrollment.
 - [ ] Add real Framework age recipient and run `sops updatekeys secrets/shared.yaml`.
@@ -202,6 +192,28 @@ These commands do not format disks. Do not use `--mode disko` outside installati
 - [ ] Test Secure Boot enforcement and hibernation resume.
 
 ## Recovery
+
+If replacing an existing impermanent installation, prefer clean reinstall after backing up `/home`. Existing installs may contain `/etc` and `/var` symlinks into the old `/persist` tree; an in-place install needs manual state migration.
+
+From USB installer for clean reinstall:
+
+```sh
+# Clone updated repo, verify device and backups first.
+git clone <repo-url> /tmp/jv-nix-config
+cd /tmp/jv-nix-config
+nix flake check
+
+# Destructive: recreates target disk without /persist.
+sudo nix run github:nix-community/disko -- --mode disko --flake .#framework-13-pro
+sudo nix run github:nix-community/disko -- --mode mount --flake .#framework-13-pro
+sudo nixos-generate-config --no-filesystems --root /mnt
+cp /mnt/etc/nixos/hardware-configuration.nix \
+  modules/hosts/framework-13-pro/_hardware-configuration.nix
+sudo nixos-install --flake .#framework-13-pro --root /mnt
+sudo nixos-enter --root /mnt -c 'passwd job'
+```
+
+`nixos-install` prompts for root password. Set `job` password from `nixos-enter`; do not commit `initialPassword` or password hashes. Keep Secure Boot disabled during initial install. If preserving current disk, mount existing `/root`, `/home`, `/nix`, and `/boot`, run only `nixos-install` (not disko), then migrate old `/persist` state before reboot.
 
 - **TPM unlock fails:** enter LUKS passphrase. Re-enroll TPM after confirming Secure Boot and PCR 7 state.
 - **Secure Boot fails:** disable enforcement temporarily or return firmware to setup mode, boot a recovery generation, restore `/var/lib/sbctl`, and rebuild Lanzaboote artifacts.
