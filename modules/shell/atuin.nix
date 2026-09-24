@@ -9,6 +9,8 @@
   }: {
     programs.atuin = {
       enable = true;
+      # Stable Atuin cannot read databases migrated by newer Atuin releases.
+      package = pkgs.unstable.atuin;
       settings = {
         style = "compact";
         enter_accept = true;
