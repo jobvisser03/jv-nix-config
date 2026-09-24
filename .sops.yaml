@@ -13,13 +13,12 @@ keys:
   # Run: ssh-keyscan job-mac-nixos 2>/dev/null | grep ed25519 | ssh-to-age
   - &mac_intel_nixos age1swfmvcexzr04argh8ms5asd9rvaxfj4at2j7eaj9qj03gevvwakswkt62s
 
+  # Framework 13 Pro host key
+  # Run: ssh-keyscan framework-13-pro 2>/dev/null | grep ed25519 | ssh-to-age
+  - &framework_13_pro age1jhv83lmmvljj8a8s68nhed458d7lprg6rp36fjc75jzg9skke3hq2we6cx
+
   # Personal key for editing secrets (not for host decryption)
   - &personal age188usuuflnprxceyxxa4c79hgajgyzjzsuwrlpn0rntdfm4ujsv2swfx743
-
-  # MacBook Intel (macOS/Darwin) user age key
-  # Generate ON that Mac: age-keygen -o ~/.config/sops/age/keys.txt
-  # Then add the printed public key here and run: sops updatekeys secrets/shared.yaml
-  # - &macbook_intel age1REPLACE_WITH_MACBOOK_INTEL_PUBKEY
 
   # MacBook Silicon (macOS/Darwin) user age key
   # Generate ON that Mac: age-keygen -o ~/.config/sops/age/keys.txt
@@ -48,6 +47,5 @@ creation_rules:
           - *larkbox
           - *personal
           - *mac_intel_nixos
-          # Uncomment after generating age keys on each Mac (see instructions above):
-          # - *macbook_intel
+          - *framework_13_pro
           - *macbook_silicon
