@@ -252,7 +252,7 @@ Common profiles currently include `common-nixos`, `common-shell`, `common-dev`, 
 
 ## Framework 13 Pro
 
-Framework install, disko, LUKS2, impermanence, Secure Boot, TPM2 unlock, and hibernation instructions live in [`docs/framework-13-pro.md`](docs/framework-13-pro.md).
+Framework install, disko, LUKS2, Secure Boot, TPM2 unlock, and hibernation instructions live in [`docs/framework-13-pro.md`](docs/framework-13-pro.md).
 
 ## Homelab Architecture
 

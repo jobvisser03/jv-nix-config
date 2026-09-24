@@ -11,42 +11,12 @@
     inputs,
     ...
   }: let
-    persistenceDirectories = [
-      "/etc/ssh"
-      "/etc/NetworkManager/system-connections"
-      "/var/lib/fprint"
-      "/var/lib/NetworkManager"
-      "/var/lib/nixos"
-      "/var/lib/sbctl"
-      "/var/lib/tailscale"
-    ];
-    persistenceFiles = [
-      "/etc/machine-id"
-      "/var/lib/systemd/random-seed"
-    ];
-    persistedDirectory = path:
-      lib.any (
-        entry:
-          if builtins.isString entry
-          then entry == path
-          else entry.directory == path
-      )
-      config.environment.persistence."/persist".directories;
-    persistedFile = path:
-      lib.any (
-        entry:
-          if builtins.isString entry
-          then entry == path
-          else entry.file == path
-      )
-      config.environment.persistence."/persist".files;
     crypttabExtraOpts = ["tpm2-device=auto" "tpm2-pcrs=7"];
   in {
     imports = [
       ./_hardware-configuration.nix
       ./_disko.nix
       inputs.disko.nixosModules.disko
-      inputs.impermanence.nixosModules.impermanence
       inputs.lanzaboote.nixosModules.lanzaboote
       inputs.nixos-hardware.nixosModules.framework-intel-core-ultra-series3
     ];
@@ -58,7 +28,7 @@
     llmSecrets.enable = false;
 
     # Lanzaboote replaces systemd-boot. Keys are generated and enrolled on
-    # the installed laptop; /var/lib/sbctl is persisted below.
+    # the installed laptop; /var/lib/sbctl remains on the normal root filesystem.
     boot.loader = {
       systemd-boot.enable = lib.mkForce false;
       efi.canTouchEfiVariables = true;
@@ -69,7 +39,7 @@
       enable = true;
       pkiBundle = "/var/lib/sbctl";
       # Initial installation runs with Secure Boot disabled. This service uses
-      # sbctl to create keys on first boot; /var/lib/sbctl is persisted below.
+      # sbctl to create keys on first boot; /var/lib/sbctl remains on root.
       autoGenerateKeys.enable = true;
     };
 
@@ -79,52 +49,7 @@
     boot.initrd.luks.devices.cryptroot.crypttabExtraOpts = crypttabExtraOpts;
     boot.resumeDevice = "/dev/vg/swap";
 
-    # The root subvolume is reset before sysroot.mount. /home and /persist
-    # are separate subvolumes and survive this reset.
-    boot.initrd.systemd.services.rollback-root = {
-      description = "Reset ephemeral BTRFS root subvolume";
-      wantedBy = ["initrd.target"];
-      after = [
-        "systemd-cryptsetup@cryptroot.service"
-        "dev-vg-root.device"
-      ];
-      before = ["sysroot.mount"];
-      requires = ["dev-vg-root.device"];
-      unitConfig.DefaultDependencies = "no";
-      serviceConfig.Type = "oneshot";
-      path = with pkgs; [
-        btrfs-progs
-        coreutils
-        util-linux
-      ];
-      script = ''
-        set -eu
-        mkdir -p /mnt
-        mount -t btrfs -o subvolid=5 /dev/vg/root /mnt
-        if btrfs subvolume show /mnt/root >/dev/null 2>&1; then
-          btrfs subvolume list -o /mnt/root | cut -f9- -d' ' | while read -r subvolume; do
-            btrfs subvolume delete "/mnt/$subvolume"
-          done
-          btrfs subvolume delete /mnt/root
-        fi
-        btrfs subvolume create /mnt/root
-        umount /mnt
-      '';
-    };
-
-    # Impermanence needs persistent storage available before initrd and
-    # local-fs activation create links into it. /nix is a separate persistent
-    # subvolume, so root reset never removes the installed Nix store.
-    fileSystems."/nix".neededForBoot = true;
-    fileSystems."/persist".neededForBoot = true;
-
     environment.systemPackages = [pkgs.sbctl];
-
-    environment.persistence."/persist" = {
-      hideMounts = true;
-      directories = persistenceDirectories;
-      files = persistenceFiles;
-    };
 
     assertions = [
       {
@@ -150,22 +75,6 @@
       {
         assertion = lib.elem "subvol=/nix" config.fileSystems."/nix".options;
         message = "Framework Nix filesystem must mount BTRFS subvolume nix.";
-      }
-      {
-        assertion = config.fileSystems."/nix".neededForBoot;
-        message = "Framework Nix filesystem must be available during boot.";
-      }
-      {
-        assertion = config.fileSystems."/persist".fsType == "btrfs";
-        message = "Framework persistence filesystem must use BTRFS.";
-      }
-      {
-        assertion = lib.elem "subvol=/persist" config.fileSystems."/persist".options;
-        message = "Framework persistence filesystem must mount BTRFS subvolume persist.";
-      }
-      {
-        assertion = config.fileSystems."/persist".neededForBoot;
-        message = "Framework persistence filesystem must be available during boot.";
       }
       {
         assertion = config.disko.devices.disk.main.content.partitions.luks.content.content.type == "lvm_pv";
@@ -206,26 +115,6 @@
       {
         assertion = config.boot.initrd.luks.devices.cryptroot.crypttabExtraOpts == crypttabExtraOpts;
         message = "Framework LUKS unlock must use TPM2 PCR 7 with passphrase fallback.";
-      }
-      {
-        assertion = persistedDirectory "/etc/ssh";
-        message = "Framework SSH host keys must persist across root resets.";
-      }
-      {
-        assertion = persistedFile "/etc/machine-id";
-        message = "Framework NixOS machine identity must persist across root resets.";
-      }
-      {
-        assertion = persistedDirectory "/var/lib/NetworkManager";
-        message = "Framework NetworkManager state must persist across root resets.";
-      }
-      {
-        assertion = persistedFile "/var/lib/systemd/random-seed";
-        message = "Framework systemd random seed must persist across root resets.";
-      }
-      {
-        assertion = persistedDirectory "/var/lib/sbctl";
-        message = "Framework Secure Boot signing keys must persist outside the ephemeral root.";
       }
     ];
 
