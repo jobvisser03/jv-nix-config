@@ -25,7 +25,7 @@
 
     # Bootstrap without shared SOPS secrets. Enable after enrolling this
     # machine's SSH-derived age recipient and running sops updatekeys.
-    llmSecrets.enable = false;
+    llmSecrets.enable = true;
 
     # Lanzaboote replaces systemd-boot. Keys are generated and enrolled on
     # the installed laptop; /var/lib/sbctl remains on the normal root filesystem.
