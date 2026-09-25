@@ -14,7 +14,8 @@ jobs:
       matrix:
         config:
           - larkbox
-          - macbook-intel-nixos
+          - framework-13-pro
+          # - macbook-intel-nixos
           # - macbook-intel-nixos-sooph
     steps:
       - uses: actions/checkout@v4
