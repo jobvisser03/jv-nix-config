@@ -949,24 +949,22 @@
         "type": "github"
       }
     },
-    "npm-lockfile-fix": {
+    "noctalia": {
       "inputs": {
-        "nixpkgs": [
-          "hermes-agent",
-          "nixpkgs"
-        ]
+        "nixpkgs": "nixpkgs_7"
       },
       "locked": {
-        "lastModified": 1775903712,
-        "narHash": "sha256-2GV79U6iVH4gKAPWYrxUReB0S41ty/Y3dBLquU8AlaA=",
-        "owner": "jeslie0",
-        "repo": "npm-lockfile-fix",
-        "rev": "c6093acb0c0548e0f9b8b3d82918823721930fe8",
+        "lastModified": 1790315733,
+        "narHash": "sha256-6ckNInpT2WBybo1k/79NBKTPAantxiBGleDgKhLdYfQ=",
+        "owner": "noctalia-dev",
+        "repo": "noctalia",
+        "rev": "273439338a50c51bdef105ba243175d7a914965a",
         "type": "github"
       },
       "original": {
-        "owner": "jeslie0",
-        "repo": "npm-lockfile-fix",
+        "owner": "noctalia-dev",
+        "ref": "cachix",
+        "repo": "noctalia",
         "type": "github"
       }
     },
@@ -1140,6 +1138,7 @@
         "nixpkgs": "nixpkgs_7",
         "nixpkgs-devenv": "nixpkgs-devenv",
         "nixpkgs-unstable": "nixpkgs-unstable",
+        "noctalia": "noctalia",
         "pi": "pi",
         "sops-nix": "sops-nix",
         "stylix": "stylix",

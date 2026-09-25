@@ -60,9 +60,6 @@
       "stylix"
       "desktop-base"
       "niri"
-      "waybar"
-      "hyprlock"
-      "rofi"
       "wezterm"
       "kitty"
       "firefox"
@@ -304,7 +301,7 @@ in {
       system = "x86_64-linux";
       user = "job";
       profiles = [
-        "laptop-hyprland"
+        "laptop-niri"
       ];
       modules = [
         "user-job"

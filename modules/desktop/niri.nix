@@ -1,6 +1,6 @@
 # Niri window manager configuration
 # NixOS and home-manager modules
-{...}: {
+{inputs, ...}: {
   flake.modules = {
     # Niri system configuration
     nixos.niri = {
@@ -9,6 +9,8 @@
       username,
       ...
     }: {
+      imports = [inputs.noctalia.nixosModules.default];
+
       programs.niri = {
         enable = true;
         useNautilus = true;
@@ -16,9 +18,13 @@
 
       # Niri's package provides niri-session and its Wayland session entry.
       services.displayManager.defaultSession = "niri";
+      programs.noctalia.enable = true;
+      services.gnome.gnome-keyring.enable = true;
 
-      # Keep login behavior aligned with Hyprland: greetd presents a session
-      # chooser, then starts the selected profile's compositor automatically.
+      # Niri needs the imported user-manager PATH rather than NixOS's stripped default.
+      systemd.user.services.niri.enableDefaultPath = false;
+
+      # Start the compositor selected by this host's desktop profile at login.
       services.greetd = {
         enable = true;
         settings = {
@@ -45,22 +51,18 @@
       config,
       lib,
       pkgs,
+      inputs,
       ...
     }: let
       stylix = config.lib.stylix.colors.withHashtag;
       niri = lib.getExe pkgs.niri;
+      noctalia = lib.getExe config.programs.noctalia.package;
       terminal = lib.getExe pkgs.wezterm;
-      launcher = "${lib.getExe pkgs.rofi} -show drun";
-      lock = lib.getExe pkgs.hyprlock;
-      wlPaste = lib.getExe' pkgs.wl-clipboard "wl-paste";
-      wlCopy = lib.getExe' pkgs.wl-clipboard "wl-copy";
+      launcher = "${noctalia} msg panel-toggle launcher";
+      lock = "${noctalia} msg session lock";
 
       startupScript = pkgs.writeShellScriptBin "niri-startup" ''
-        ${lib.getExe' pkgs.awww "awww-daemon"} &
-        ${wlPaste} --type text --watch ${lib.getExe pkgs.cliphist} store &
-        ${wlPaste} --type image --watch ${lib.getExe pkgs.cliphist} store &
         ${pkgs.networkmanagerapplet}/bin/nm-applet --indicator &
-        ${lib.getExe' pkgs.swayosd "swayosd-server"} &
       '';
 
       regionScreenshot = pkgs.writeShellScriptBin "niri-region-screenshot" ''
@@ -115,9 +117,19 @@
           (lib.getExe suspend)
         ];
     in {
+      imports = [inputs.noctalia.homeModules.default];
+
       options.niri.suspendOnIdle = lib.mkEnableOption "Suspend system after idle timeout" // {default = true;};
 
       config = {
+        programs.noctalia = {
+          enable = true;
+          settings.wallpaper = {
+            enabled = true;
+            default.path = toString config.stylix.image;
+          };
+        };
+
         xdg.configFile."niri/config.kdl".text = ''
           input {
             keyboard {
@@ -130,7 +142,6 @@
             }
             touchpad {
               tap
-              natural-scroll false
               dwt
             }
             mouse {
@@ -145,6 +156,7 @@
           }
 
           layout {
+            background-color "transparent"
             gaps 10
             focus-ring {
               width 2
@@ -156,9 +168,24 @@
             }
           }
 
+          overview {
+            workspace-shadow {
+              off
+            }
+          }
+
+          layer-rule {
+            match namespace="^noctalia-wallpaper"
+            place-within-backdrop true
+          }
+
           prefer-no-csd
           hotkey-overlay {
             skip-at-startup
+          }
+
+          debug {
+            honor-xdg-activation-with-invalid-serial
           }
 
           xwayland-satellite {
@@ -166,6 +193,14 @@
           }
 
           spawn-at-startup "${lib.getExe startupScript}"
+          spawn-at-startup "${noctalia}"
+
+          window-rule {
+            match app-id="^dev.noctalia.Noctalia$"
+            open-floating true
+            default-column-width { fixed 1080; }
+            default-window-height { fixed 920; }
+          }
 
           window-rule {
             match app-id="^firefox$" title="^Picture-in-Picture$"
@@ -181,6 +216,9 @@
             "Mod+Return" { spawn-sh "${terminal}"; }
             "Mod+D" { spawn-sh "${launcher}"; }
             "Mod+R" { spawn-sh "${launcher}"; }
+            "Mod+S" { spawn-sh "${noctalia} msg panel-toggle control-center"; }
+            "Mod+Comma" { spawn-sh "${noctalia} msg settings-toggle"; }
+            "Alt+Tab" { spawn-sh "${noctalia} msg window-switcher"; }
 
             "Mod+Q" { close-window; }
             "Mod+F" { maximize-column; }
@@ -188,7 +226,7 @@
             "Mod+Space" { toggle-window-floating; }
             "Mod+C" { center-column; }
             "Mod+Shift+E" { quit; }
-            "Mod+Ctrl+L" { spawn-sh "loginctl lock-session"; }
+            "Mod+Alt+L" { spawn-sh "${lock}"; }
 
             "Mod+H" { focus-column-left; }
             "Mod+J" { focus-window-down; }
@@ -246,17 +284,17 @@
             "Print" { spawn-sh "${lib.getExe regionScreenshot}"; }
             "Shift+Print" { screenshot-screen; }
             "Mod+Shift+S" { spawn-sh "${lib.getExe regionScreenshot}"; }
-            "Mod+Shift+C" { spawn-sh "${lib.getExe pkgs.cliphist} list | ${lib.getExe pkgs.rofi} -dmenu | ${lib.getExe pkgs.cliphist} decode | ${wlCopy}"; }
+            "Mod+Shift+C" { spawn-sh "${noctalia} msg panel-toggle clipboard"; }
 
-            "XF86AudioMute" allow-when-locked=true { spawn-sh "${lib.getExe' pkgs.wireplumber "wpctl"} set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
-            "XF86AudioRaiseVolume" allow-when-locked=true { spawn-sh "${lib.getExe' pkgs.wireplumber "wpctl"} set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"; }
-            "XF86AudioLowerVolume" allow-when-locked=true { spawn-sh "${lib.getExe' pkgs.wireplumber "wpctl"} set-volume @DEFAULT_AUDIO_SINK@ 5%-"; }
+            "XF86AudioMute" allow-when-locked=true { spawn-sh "${noctalia} msg volume-mute"; }
+            "XF86AudioRaiseVolume" allow-when-locked=true { spawn-sh "${noctalia} msg volume-up"; }
+            "XF86AudioLowerVolume" allow-when-locked=true { spawn-sh "${noctalia} msg volume-down"; }
             "XF86AudioPlay" allow-when-locked=true { spawn-sh "${lib.getExe pkgs.playerctl} play-pause"; }
             "XF86AudioPause" allow-when-locked=true { spawn-sh "${lib.getExe pkgs.playerctl} play-pause"; }
             "XF86AudioNext" allow-when-locked=true { spawn-sh "${lib.getExe pkgs.playerctl} next"; }
             "XF86AudioPrev" allow-when-locked=true { spawn-sh "${lib.getExe pkgs.playerctl} previous"; }
-            "XF86MonBrightnessUp" allow-when-locked=true { spawn-sh "${lib.getExe pkgs.brightnessctl} set +10%"; }
-            "XF86MonBrightnessDown" allow-when-locked=true { spawn-sh "${lib.getExe pkgs.brightnessctl} set 10%-"; }
+            "XF86MonBrightnessUp" allow-when-locked=true { spawn-sh "${noctalia} msg brightness-up"; }
+            "XF86MonBrightnessDown" allow-when-locked=true { spawn-sh "${noctalia} msg brightness-down"; }
           }
         '';
 

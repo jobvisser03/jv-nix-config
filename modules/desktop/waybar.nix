@@ -12,11 +12,15 @@
     borderSize = "2";
     compositor = config.jv.waybar.compositor;
   in {
-    options.jv.waybar.compositor = lib.mkOption {
-      type = lib.types.enum ["hyprland" "niri"];
-      default = "hyprland";
-      description = "Waybar compositor integration";
-    };
+    imports = [
+      {
+        options.jv.waybar.compositor = lib.mkOption {
+          type = lib.types.enum ["hyprland" "niri"];
+          default = "hyprland";
+          description = "Waybar compositor integration";
+        };
+      }
+    ];
 
     systemd.user.services.waybar.Service.ExecStartPre = "${pkgs.coreutils}/bin/sleep 3";
 

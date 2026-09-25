@@ -1,8 +1,8 @@
 # Framework Laptop 13 Pro host.
 #
-# This host intentionally keeps hardware policy separate from the shared
-# laptop-hyprland profile. Replace _hardware-configuration.nix with the
-# machine-generated file before installation.
+# This host intentionally keeps hardware policy separate from its desktop
+# profile. Select laptop-niri or laptop-hyprland in configurations.nix.
+# Replace _hardware-configuration.nix with the machine-generated file before installation.
 {...}: {
   flake.modules.nixos."hosts/framework-13-pro" = {
     config,
