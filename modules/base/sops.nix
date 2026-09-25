@@ -1,14 +1,17 @@
 # Base SOPS secret management configuration
 {inputs, ...}: {
-  flake.modules.nixos.sops = {
+  flake.modules.nixos.sops = {pkgs, ...}: {
     imports = [inputs.sops-nix.nixosModules.sops];
+
+    environment.systemPackages = with pkgs; [age sops ssh-to-age];
 
     sops = {
       age = {
-        # Use SSH host key for decryption (converted to age format automatically by sops-nix)
+        # sops-nix converts this SSH host key to the matching ssh-to-age identity.
+        # Keep .sops.yaml recipients in ssh-to-age age format, not native SSH format.
         sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
 
-        # Don't use a separate age key file - SSH host key is sufficient
+        # Host key supplies the system identity; no separate age key file needed.
         keyFile = null;
       };
     };

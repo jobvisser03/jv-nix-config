@@ -1,9 +1,10 @@
 # sops-nix configuration
 # See: https://github.com/Mic92/sops-nix
+# NixOS host recipients are ssh-to-age-derived age keys. Do not add native
+# OpenSSH recipients: SOPS and sops-nix derive different age identities.
 
 keys:
-  # Host keys - convert SSH host key to age format:
-  # ssh-keyscan <hostname> 2>/dev/null | grep ed25519 | ssh-to-age
+  # Host keys - convert SSH host public keys to age recipients with ssh-to-age.
   #
   # To get larkbox's key:
   # ssh-keyscan larkbox.local 2>/dev/null | grep ed25519 | ssh-to-age
@@ -13,12 +14,15 @@ keys:
   # Run: ssh-keyscan job-mac-nixos 2>/dev/null | grep ed25519 | ssh-to-age
   - &mac_intel_nixos age1swfmvcexzr04argh8ms5asd9rvaxfj4at2j7eaj9qj03gevvwakswkt62s
 
-  # Framework 13 Pro host key
-  # Run: ssh-keyscan framework-13-pro 2>/dev/null | grep ed25519 | ssh-to-age
+  # Framework's /etc/ssh/ssh_host_ed25519_key, converted via ssh-to-age.
+  # sops-nix uses this host key at activation via sops.age.sshKeyPaths.
+  # Derive from host public key: ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub
   - &framework_13_pro age1jhv83lmmvljj8a8s68nhed458d7lprg6rp36fjc75jzg9skke3hq2we6cx
 
-  # Personal key for editing secrets (not for host decryption)
-  - &personal age188usuuflnprxceyxxa4c79hgajgyzjzsuwrlpn0rntdfm4ujsv2swfx743
+  # Personal editing keys (~/.config/sops/age/keys.txt on each host).
+  - &larkbox_user age188usuuflnprxceyxxa4c79hgajgyzjzsuwrlpn0rntdfm4ujsv2swfx743
+  - &mac_intel_user age1n2pfff2ss6pdrfj59sjt74rz3cun7segxel2ppcsm5a9dj35k54sdlwead
+  - &framework_user age1d90yc6z65gjjt8scxgt2mnknn0an5l5w52ca3fksg5rcg29r4d2szq5zqs
 
   # MacBook Silicon (macOS/Darwin) user age key
   # Generate ON that Mac: age-keygen -o ~/.config/sops/age/keys.txt
@@ -31,21 +35,29 @@ creation_rules:
     key_groups:
       - age:
           - *larkbox
-          - *personal
+          - *larkbox_user
+          - *mac_intel_user
+          - *framework_user
+          - *macbook_silicon
 
   # Mac Intel NixOS-specific secrets
   - path_regex: secrets/mac-intel-nixos\.yaml$
     key_groups:
       - age:
           - *mac_intel_nixos
-          - *personal
+          - *larkbox_user
+          - *mac_intel_user
+          - *framework_user
+          - *macbook_silicon
 
   # Shared secrets (all hosts can decrypt)
   - path_regex: secrets/shared\.yaml$
     key_groups:
       - age:
           - *larkbox
-          - *personal
           - *mac_intel_nixos
           - *framework_13_pro
+          - *larkbox_user
+          - *mac_intel_user
+          - *framework_user
           - *macbook_silicon

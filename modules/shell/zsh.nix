@@ -34,8 +34,12 @@
 
         export PATH="$HOME/.cargo/bin:$HOME/.omlx/bin:$HOME/.local/bin:$HOME/.rd/bin:$PATH"
 
-        # SOPS age key: macOS defaults to ~/Library/Application Support, override for both platforms
-        export SOPS_AGE_KEY_FILE="$HOME/.config/sops/age/keys.txt"
+        # Use personal age identity when present; Framework can use its host key instead.
+        if [[ -f "$HOME/.config/sops/age/keys.txt" ]]; then
+          export SOPS_AGE_KEY_FILE="$HOME/.config/sops/age/keys.txt"
+        else
+          unset SOPS_AGE_KEY_FILE
+        fi
 
         export PIP_REQUIRE_VIRTUALENV=1
         export PIP_USE_PEP517=1

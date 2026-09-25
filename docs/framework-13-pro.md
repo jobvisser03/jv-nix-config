@@ -59,27 +59,22 @@ sudo nixos-install --flake .#framework-13-pro --root /mnt
 
 The generic template contains safe NVMe/initrd defaults only. Generated output is authoritative for PCI, USB, storage, and platform-specific hardware details.
 
-## SOPS bootstrap
+## SOPS
 
-Framework disables shared LLM secrets during initial installation. Pi and its Home Manager app configuration still install, but Pi starts without API keys. This avoids a first-boot dependency on an SSH-derived age identity that does not exist yet.
+NixOS uses `/etc/ssh/ssh_host_ed25519_key` as its system identity. `sops-nix` converts it to the matching age identity at activation via `sops.age.sshKeyPaths` in `modules/base/sops.nix`. The `&framework_13_pro` recipient in `.sops.yaml` and `secrets/shared.yaml` must remain an age recipient produced by `ssh-to-age`; do not use SOPS native SSH recipients, which derive a different identity.
 
-After first boot:
+The host recipient is enrolled for sops-nix activation via `sops.age.sshKeyPaths`; bare `sops` instead uses Framework's personal age identity in `~/.config/sops/age/keys.txt`. Its public recipient is `&framework_user` in `.sops.yaml`. All four hosts have separate personal editing identities; NixOS host-key recipients remain for activation. Do not commit private identities or decrypted secrets.
 
-```sh
-# Confirm persistent SSH host identity exists.
-sudo ls -l /etc/ssh/ssh_host_ed25519_key /etc/ssh/ssh_host_ed25519_key.pub
-
-# Derive public age recipient. Copy output into .sops.yaml on a trusted workstation.
-ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub
-```
-
-On a trusted workstation, add the real recipient as `&framework_13_pro` in `.sops.yaml`, add `*framework_13_pro` to the `secrets/shared.yaml` age group, then re-encrypt its data keys:
+From the repository root, after recipient envelopes are updated, edit normally:
 
 ```sh
-sops updatekeys secrets/shared.yaml
+sops secrets/shared.yaml
+sops secrets/larkbox.yaml
 ```
 
-Do not commit the SSH private key, decrypted secrets, or recipient placeholder. After recipient enrollment, set `llmSecrets.enable = true` in `modules/hosts/framework-13-pro/default.nix`, rebuild, and verify:
+Changing `.sops.yaml` alone does not update existing ciphertext. Run `sops updatekeys` on each encrypted file while you still have an identity listed in its current metadata, then confirm proposed recipient changes.
+
+Verify Framework decryption:
 
 ```sh
 sudo nixos-rebuild switch --flake .#framework-13-pro
@@ -185,9 +180,9 @@ These commands do not format disks. Do not use `--mode disko` outside installati
 - [ ] Replace generic hardware template with generated `--no-filesystems` output.
 - [ ] Verify `/`, `/home`, and `/nix` subvolume mounts.
 - [ ] Reboot and confirm `/nix/store` remains available.
-- [ ] Confirm Pi starts before LLM secret enrollment.
-- [ ] Add real Framework age recipient and run `sops updatekeys secrets/shared.yaml`.
-- [ ] Enable `llmSecrets`, rebuild, and verify `/run/secrets/openai_api_key`.
+- [ ] Confirm Framework host recipient in `.sops.yaml` and `secrets/shared.yaml` match.
+- [ ] Verify host-key-based `sops updatekeys` workflow when recipient list changes.
+- [ ] Rebuild and verify `/run/secrets/openai_api_key`.
 - [ ] Test TPM unlock and passphrase fallback.
 - [ ] Test Secure Boot enforcement and hibernation resume.
 

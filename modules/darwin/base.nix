@@ -12,8 +12,13 @@
     # than the stable base (see modules/flake/overlays.nix)
     nixpkgs.overlays = [inputs.self.overlays.unstable-packages];
 
-    # .NET runtime required by apps like Azure Storage Explorer
-    environment.systemPackages = [pkgs.dotnet-runtime_10];
+    # System-level secret management CLI tools
+    environment.systemPackages = with pkgs; [
+      age
+      sops
+      ssh-to-age
+      dotnet-runtime_10
+    ];
 
     # Expose DOTNET_ROOT to GUI apps (launchd) and terminal shells (/etc/zshenv).
     # Storage Explorer's hub controller probes well-known paths; this env var

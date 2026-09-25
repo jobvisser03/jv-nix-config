@@ -23,8 +23,8 @@
 
     networking.hostName = "framework-13-pro";
 
-    # Bootstrap without shared SOPS secrets. Enable after enrolling this
-    # machine's SSH-derived age recipient and running sops updatekeys.
+    # The shared SOPS file includes this host's ssh-to-age recipient.
+    # sops-nix decrypts it at activation using /etc/ssh/ssh_host_ed25519_key.
     llmSecrets.enable = true;
 
     # Lanzaboote replaces systemd-boot. Keys are generated and enrolled on

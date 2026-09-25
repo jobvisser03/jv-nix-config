@@ -102,8 +102,6 @@
       drawio
       anki-bin
       docker-client
-      sops
-      ssh-to-age
       darktable
     ];
   in {
