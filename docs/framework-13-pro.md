@@ -63,7 +63,7 @@ The generic template contains safe NVMe/initrd defaults only. Generated output i
 
 NixOS uses `/etc/ssh/ssh_host_ed25519_key` as its system identity. `sops-nix` converts it to the matching age identity at activation via `sops.age.sshKeyPaths` in `modules/base/sops.nix`. The `&framework_13_pro` recipient in `.sops.yaml` and `secrets/shared.yaml` must remain an age recipient produced by `ssh-to-age`; do not use SOPS native SSH recipients, which derive a different identity.
 
-The host recipient is enrolled for sops-nix activation via `sops.age.sshKeyPaths`; bare `sops` uses Framework's personal age identity in `~/.config/sops/age/keys.txt`. Its public recipient is `&framework_user` in `.sops.yaml`. All four hosts have separate personal editing identities; NixOS host-key recipients remain for activation. Do not commit private identities or decrypted secrets.
+The host recipient is enrolled for sops-nix activation via `sops.age.sshKeyPaths`; bare `sops` uses Framework's personal age identity in `~/.config/sops/age/keys.txt`. Its public recipient is `&framework_13_pro_user` in `.sops.yaml`. All four hosts have separate personal editing identities; NixOS host-key recipients remain for activation. Do not commit private identities or decrypted secrets.
 
 LLM secrets and shared `rclone_config` live in `secrets/shared.yaml`. Framework consumes `rclone_config` through sops-nix and mounts the same pCloud paths as Mac Intel NixOS. Larkbox keeps its homelab service secrets in `secrets/larkbox.yaml` and reads `rclone_config` from `shared.yaml`.
 
