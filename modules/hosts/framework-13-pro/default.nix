@@ -9,6 +9,7 @@
     lib,
     pkgs,
     inputs,
+    username,
     ...
   }: let
     crypttabExtraOpts = ["tpm2-device=auto" "tpm2-pcrs=7"];
@@ -16,6 +17,7 @@
     imports = [
       ./_hardware-configuration.nix
       ./_disko.nix
+      ../../_rclone
       inputs.disko.nixosModules.disko
       inputs.lanzaboote.nixosModules.lanzaboote
       inputs.nixos-hardware.nixosModules.framework-intel-core-ultra-series3
@@ -26,6 +28,61 @@
     # The shared SOPS file includes this host's ssh-to-age recipient.
     # sops-nix decrypts it at activation using /etc/ssh/ssh_host_ed25519_key.
     llmSecrets.enable = true;
+
+    sops.secrets.rclone_config = {
+      sopsFile = ../../../secrets/shared.yaml;
+      owner = "root";
+      group = "root";
+      mode = "0400";
+      path = "/run/secrets/rclone.conf";
+    };
+
+    services.rclone = {
+      enable = true;
+      configFile = config.sops.secrets.rclone_config.path;
+      mounts = {
+        pcloud-keepass = {
+          remote = "pcloud:keepass-vault";
+          mountpoint = "/home/${username}/pcloud/keepass-vault";
+          cacheMode = "writes";
+          readOnly = false;
+          uid = 1000;
+          gid = 100;
+        };
+        pcloud-persoonlijk-job = {
+          remote = "pcloud:'Persoonlijk Job'";
+          mountpoint = "/home/${username}/pcloud/persoonlijk-job";
+          cacheMode = "writes";
+          readOnly = false;
+          uid = 1000;
+          gid = 100;
+        };
+        pcloud-temp-photo-library = {
+          remote = "pcloud:PHOTOS/'TEMP Photo Library'";
+          mountpoint = "/home/${username}/pcloud/temp-photo-library";
+          cacheMode = "writes";
+          readOnly = false;
+          uid = 1000;
+          gid = 100;
+        };
+        pcloud-data-mastery = {
+          remote = "pcloud:'DATA MASTERY'";
+          mountpoint = "/home/${username}/pcloud/data-mastery";
+          cacheMode = "writes";
+          readOnly = false;
+          uid = 1000;
+          gid = 100;
+        };
+        pcloud-dutch-dataworks = {
+          remote = "pcloud:'DUTCH DATAWORKS'";
+          mountpoint = "/home/${username}/pcloud/dutch-dataworks";
+          cacheMode = "writes";
+          readOnly = false;
+          uid = 1000;
+          gid = 100;
+        };
+      };
+    };
 
     # Lanzaboote replaces systemd-boot. Keys are generated and enrolled on
     # the installed laptop; /var/lib/sbctl remains on the normal root filesystem.

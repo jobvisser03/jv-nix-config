@@ -40,16 +40,6 @@ creation_rules:
           - *framework_user
           - *macbook_silicon
 
-  # Mac Intel NixOS-specific secrets
-  - path_regex: secrets/mac-intel-nixos\.yaml$
-    key_groups:
-      - age:
-          - *mac_intel_nixos
-          - *larkbox_user
-          - *mac_intel_user
-          - *framework_user
-          - *macbook_silicon
-
   # Shared secrets (all hosts can decrypt)
   - path_regex: secrets/shared\.yaml$
     key_groups:

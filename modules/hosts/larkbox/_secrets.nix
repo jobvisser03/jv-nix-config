@@ -30,6 +30,7 @@
       # Generate with: rclone config
       # Then copy ~/.config/rclone/rclone.conf content to sops
       rclone_config = {
+        sopsFile = ../../../secrets/shared.yaml;
         owner = "root";
         group = "root";
         mode = "0400";

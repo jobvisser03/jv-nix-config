@@ -172,7 +172,6 @@ The configuration follows a **dendritic pattern** using `import-tree` to auto-im
 │
 ├── secrets/               # SOPS-encrypted secrets
 │   ├── larkbox.yaml
-│   ├── mac-intel-nixos.yaml
 │   └── shared.yaml
 │
 └── non-nix-configs/       # Non-Nix configuration files
@@ -366,11 +365,10 @@ That's it — `import-tree` will auto-import the new module file.
 Secrets are managed with [sops-nix](https://github.com/Mic92/sops-nix). Encrypted YAML files live in `secrets/` and are referenced via the `_sops/` module.
 
 ```bash
-# Edit host-specific secrets
+# Edit host-specific homelab secrets
 sops secrets/larkbox.yaml
-sops secrets/mac-intel-nixos.yaml
 
-# Edit shared secrets
+# Edit shared secrets, including rclone_config
 sops secrets/shared.yaml
 ```
 
