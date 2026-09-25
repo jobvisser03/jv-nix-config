@@ -41,6 +41,7 @@
           unset SOPS_AGE_KEY_FILE
         fi
 
+        export EDITOR=vim
         export PIP_REQUIRE_VIRTUALENV=1
         export PIP_USE_PEP517=1
         export MANPAGER="sh -c 'col -bx | bat -l man -p'"
