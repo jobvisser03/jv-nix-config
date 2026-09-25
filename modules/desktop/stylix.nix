@@ -15,6 +15,15 @@ in {
         (throw "Could not resolve appearance package '${packagePath}' in pkgs")
         pkgs;
     in {
+      imports = [
+        (lib.mkAliasOptionModule
+          ["services" "displayManager" "regreet"]
+          ["programs" "regreet"])
+        (lib.mkAliasOptionModule
+          ["services" "kmscon" "config"]
+          ["services" "kmscon" "extraConfig"])
+      ];
+
       stylix = {
         enable = true;
         image = appearance.wallpaper;
@@ -50,6 +59,10 @@ in {
 
         targets = {
           gnome.enable = false;
+          # These targets follow newer nixpkgs option paths than pinned 26.05.
+          # Desktop uses greetd/tuigreet, not ReGreet or kmscon.
+          regreet.enable = false;
+          kmscon.enable = false;
         };
 
         icons = {
