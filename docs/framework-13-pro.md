@@ -7,7 +7,7 @@ NixOS host for Framework Laptop 13 Pro with Intel Core Ultra X7 358H, integrated
 ## Design
 
 - Host: `framework-13-pro`
-- Profile: exact `laptop-hyprland` profile used by `macbook-intel-nixos`
+- Profile: `laptop-niri` with Noctalia shell; switch to `laptop-hyprland` in `modules/flake/configurations.nix` to use Hyprland
 - Hardware: generic checked-in template plus `nixos-hardware.nixosModules.framework-intel-core-ultra-series3`
 - Boot: UEFI, Lanzaboote, Secure Boot, `sbctl`
 - Encryption: LUKS2 with TPM2 PCR 7 unlock and passphrase fallback

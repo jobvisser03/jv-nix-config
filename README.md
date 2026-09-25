@@ -122,10 +122,11 @@ The configuration follows a **dendritic pattern** using `import-tree` to auto-im
 │   │   ├── git.nix            # Git configuration
 │   │   └── tools.nix          # ripgrep, bat, jq, etc.
 │   │
-│   ├── desktop/           # Desktop environment (NixOS/Hyprland)
+│   ├── desktop/           # Desktop environment (NixOS, Hyprland, Niri)
 │   │   ├── base.nix           # Shared desktop plumbing
 │   │   ├── stylix.nix         # System-wide theming
 │   │   ├── hyprland.nix       # Hyprland compositor/session
+│   │   ├── niri.nix           # Niri compositor/session with Noctalia
 │   │   ├── waybar.nix         # Status bar
 │   │   ├── hyprlock.nix       # Lock screen
 │   │   ├── hypridle.nix       # Idle management
@@ -236,7 +237,7 @@ flake.nixosConfigurations = {
 };
 ```
 
-Common profiles currently include `common-nixos`, `common-shell`, `common-dev`, `hyprland-desktop`, `laptop-hyprland`, and `darwin-workstation`.
+Common profiles include `common-nixos`, `common-shell`, `common-dev`, `hyprland-desktop`, `laptop-hyprland`, `niri-desktop`, `laptop-niri`, and `darwin-workstation`. Select `laptop-hyprland` or `laptop-niri` per host in `modules/flake/configurations.nix`.
 
 ## Available Configurations
 
@@ -245,7 +246,7 @@ Common profiles currently include `common-nixos`, `common-shell`, `common-dev`, 
 | `larkbox`                   | NixOS  | x86_64-linux   | job        | Homelab server + Hyprland desktop             |
 | `macbook-intel-nixos`       | NixOS  | x86_64-linux   | job        | Intel MacBook running NixOS with Hyprland     |
 | `macbook-intel-nixos-sooph` | NixOS  | x86_64-linux   | sooph      | Intel MacBook running NixOS (sooph's account) |
-| `framework-13-pro`          | NixOS  | x86_64-linux   | job        | Framework Laptop 13 Pro, Intel Core Ultra     |
+| `framework-13-pro`          | NixOS  | x86_64-linux   | job        | Framework Laptop 13 Pro with Niri + Noctalia |
 | `macbook-intel`             | Darwin | x86_64-darwin  | job        | Intel MacBook running macOS                   |
 | `macbook-silicon`           | Darwin | aarch64-darwin | job.visser | Apple Silicon MacBook running macOS           |
 
