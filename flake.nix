@@ -7,12 +7,14 @@
       "https://cache.nixos.org"
       "https://pi.cachix.org"
       "https://nix-community.cachix.org"
+      "https://noctalia.cachix.org"
     ];
     extra-trusted-public-keys = [
       "jv-nix-config-cache.cachix.org-1:pvYeur0OqEar9g5x6mETEsrJSoW+U7eE7BbA4bB925w="
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "pi.cachix.org-1:lGeoGJaZ5ZDabuRzkcD5EBTNnDM4HJ1vqeOxlWk1Flk="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
     ];
   };
 
@@ -94,6 +96,9 @@
     };
 
     pi.url = "github:lukasl-dev/pi.nix";
+
+    # Pin to Noctalia's Cachix branch to use cached shell builds.
+    noctalia.url = "github:noctalia-dev/noctalia/cachix";
   };
 
   outputs = inputs:
