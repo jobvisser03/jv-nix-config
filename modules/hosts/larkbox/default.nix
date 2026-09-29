@@ -164,10 +164,6 @@
         mosquitto.enable = true;
       };
 
-      services.spotify-player = {
-        enable = true;
-      };
-
       services.remote-pi-relay = {
         enable = true;
       };

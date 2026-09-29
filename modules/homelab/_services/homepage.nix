@@ -154,22 +154,10 @@ in {
             };
         };
 
-        # Build spotify-player entry (no web UI, just service status)
-        # spotify-player is controlled via Spotify apps (phone/desktop), not a web interface
-        spotifyEntry = lib.optional (hl.spotify-player.enable or false) {
-          "${hl.spotify-player.homepage.name}" = {
-            icon = hl.spotify-player.homepage.icon;
-            description = hl.spotify-player.homepage.description;
-            href = "http://${homelab.hostname}:${toString hl.spotify-player.port}";
-            siteMonitor = "http://127.0.0.1:${toString hl.spotify-player.port}";
-          };
-        };
-
         # Group services by category
         mediaServices =
           (lib.optionals (hl.immich.enable or false) (mkServiceEntry "immich" hl.immich))
-          ++ jellyfinEntry
-          ++ spotifyEntry;
+          ++ jellyfinEntry;
 
         smartHomeServices =
           lib.optionals (hl.homeassistant.enable or false) (mkServiceEntry "homeassistant" hl.homeassistant);

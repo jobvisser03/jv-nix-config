@@ -160,7 +160,6 @@ The configuration follows a **dendritic pattern** using `import-tree` to auto-im
 │   │       ├── homepage.nix         # Service dashboard
 │   │       ├── paperless.nix        # Document management
 │   │       ├── radicale.nix         # CalDAV/CardDAV
-│   │       ├── spotify-player.nix   # Spotify daemon
 │   │       └── cloudflare-ddns.nix  # Dynamic DNS
 │   │
 │   ├── _rclone/           # Cloud storage mounts (internal)
@@ -266,9 +265,10 @@ The homelab module (`modules/homelab/`) provides a complete self-hosted services
 - **Paperless** - Document management
 - **Homepage** - Service dashboard
 - **Radicale** - CalDAV/CardDAV server
-- **Spotify Player** - Headless Spotify daemon
 - **GitLab / GitLab Runner** - CI/CD
 - **Cloudflare DDNS** - Dynamic DNS updates
+
+Larkbox Bluetooth audio setup is documented in [`docs/larkbox-bluetooth-audio.md`](docs/larkbox-bluetooth-audio.md). Phone Spotify streams over Bluetooth to Larkbox, then PipeWire routes audio to the DAC and hi-fi receiver. No Spotify service runs on Larkbox.
 
 ### Access Methods
 

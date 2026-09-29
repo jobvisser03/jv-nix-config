@@ -95,20 +95,6 @@
         mode = "0444";
       };
 
-      # Spotify OAuth credentials for spotify-player daemon
-      # To set up:
-      # 1. SSH to larkbox and run: spotify_player authenticate
-      # 2. Complete OAuth in browser
-      # 3. Copy ~/.cache/spotify-player/credentials.json content
-      # 4. Add to secrets/larkbox.yaml: sops secrets/larkbox.yaml
-      # 5. Uncomment credentialsFile in configuration.nix
-      spotify_credentials = {
-        # Must be readable by root for preStart script to copy it
-        group = "users";
-        mode = "0440";
-        path = "/run/secrets/spotify-player/credentials.json";
-      };
-
       # Forgejo admin user password
       # Used to ensure the admin user exists on every deploy
       forgejo_admin_password = {
