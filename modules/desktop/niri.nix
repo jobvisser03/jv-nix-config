@@ -130,6 +130,7 @@
           };
         };
 
+        # https://github.com/niri-wm/niri/blob/main/resources/default-config.kdl
         xdg.configFile."niri/config.kdl".text = ''
           input {
             keyboard {
@@ -229,12 +230,13 @@
           binds {
             "Mod+Return" { spawn-sh "${terminal}"; }
             "Mod+D" { spawn-sh "${launcher}"; }
-            "Mod+R" { spawn-sh "${launcher}"; }
             "Mod+S" { spawn-sh "${noctalia} msg panel-toggle control-center"; }
             "Mod+Comma" { spawn-sh "${noctalia} msg settings-toggle"; }
             "Alt+Tab" { spawn-sh "${noctalia} msg window-switcher"; }
 
-            "Mod+Q" { close-window; }
+            "Mod+O" repeat=false { toggle-overview; }
+
+            "Mod+Q" repeat=false { close-window; }
             "Mod+F" { maximize-column; }
             "Mod+G" { fullscreen-window; }
             "Mod+Space" { toggle-window-floating; }
@@ -251,6 +253,12 @@
             "Mod+Up" { focus-window-up; }
             "Mod+Down" { focus-window-down; }
 
+            // The following binds move the focused window in and out of a column.
+            // If the window is alone, they will consume it into the nearby column to the side.
+            // If the window is already in a column, they will expel it out.
+            Mod+BracketLeft  { consume-or-expel-window-left; }
+            Mod+BracketRight { consume-or-expel-window-right; }
+
             "Mod+Shift+H" { move-column-left; }
             "Mod+Shift+J" { move-window-down; }
             "Mod+Shift+K" { move-window-up; }
@@ -260,18 +268,22 @@
             "Mod+Shift+Up" { move-window-up; }
             "Mod+Shift+Down" { move-window-down; }
 
-            "Mod+Ctrl+H" { set-column-width "-25%"; }
-            "Mod+Ctrl+L" { set-column-width "+25%"; }
-            "Mod+Ctrl+J" { set-window-height "-25%"; }
-            "Mod+Ctrl+K" { set-window-height "+25%"; }
+            // Cycle through widths set in preset-column-widths.
+            Mod+R { switch-preset-column-width; }
+            // Cycling through the presets in reverse order is also possible.
+            Mod+Shift+R { switch-preset-column-width-back; }
 
-            "Mod+Shift+U" { move-column-to-workspace-down; }
-            "Mod+Shift+I" { move-column-to-workspace-up; }
-            "Mod+BracketLeft" { focus-monitor-left; }
-            "Mod+BracketRight" { focus-monitor-right; }
+            Mod+U              { focus-workspace-down; }
+            Mod+I              { focus-workspace-up; }
+            Mod+Ctrl+U         { move-column-to-workspace-down; }
+            Mod+Ctrl+I         { move-column-to-workspace-up; }
 
-            "Mod+M" { focus-monitor-right; }
-            "Mod+Shift+M" { move-column-to-monitor-right; }
+
+            Mod+Ctrl+Right { focus-monitor-right; }
+            Mod+Ctrl+H     { focus-monitor-left; }
+            Mod+Ctrl+J     { focus-monitor-down; }
+            Mod+Ctrl+K     { focus-monitor-up; }
+            Mod+Ctrl+L     { focus-monitor-right; }
 
             "Mod+1" { focus-workspace 1; }
             "Mod+2" { focus-workspace 2; }
