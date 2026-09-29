@@ -166,6 +166,12 @@
             border {
               off
             }
+            default-column-width { proportion 0.500000; }
+            preset-column-widths {
+                proportion 0.333330
+                proportion 0.500000
+                proportion 0.666670
+            }
           }
 
           overview {
@@ -194,6 +200,14 @@
 
           spawn-at-startup "${lib.getExe startupScript}"
           spawn-at-startup "${noctalia}"
+
+          window-rule {
+            // Rounded corners for a modern look.
+            geometry-corner-radius 15
+
+            // Clips window contents to the rounded corner boundaries.
+            clip-to-geometry true
+          }
 
           window-rule {
             match app-id="^dev.noctalia.Noctalia$"
@@ -246,13 +260,13 @@
             "Mod+Shift+Up" { move-window-up; }
             "Mod+Shift+Down" { move-window-down; }
 
-            "Mod+Ctrl+H" { set-column-width "-5%"; }
-            "Mod+Ctrl+L" { set-column-width "+5%"; }
-            "Mod+Ctrl+J" { set-window-height "-5%"; }
-            "Mod+Ctrl+K" { set-window-height "+5%"; }
+            "Mod+Ctrl+H" { set-column-width "-25%"; }
+            "Mod+Ctrl+L" { set-column-width "+25%"; }
+            "Mod+Ctrl+J" { set-window-height "-25%"; }
+            "Mod+Ctrl+K" { set-window-height "+25%"; }
 
-            "Mod+Page_Down" { focus-workspace-down; }
-            "Mod+Page_Up" { focus-workspace-up; }
+            "Mod+Shift+U" { move-column-to-workspace-down; }
+            "Mod+Shift+I" { move-column-to-workspace-up; }
             "Mod+BracketLeft" { focus-monitor-left; }
             "Mod+BracketRight" { focus-monitor-right; }
 
