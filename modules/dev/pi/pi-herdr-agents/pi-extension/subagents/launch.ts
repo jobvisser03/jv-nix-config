@@ -176,7 +176,6 @@ export interface PiLaunchOperations {
 		options: {
 			scriptPath: string;
 			scriptPreamble: string;
-			devenv?: boolean;
 		},
 	): string;
 	closePane(pane: string): void;
@@ -709,7 +708,6 @@ function startPiProcess(
 			shellComment(`Session: ${artifacts.sessionFile}`),
 			shellComment(`Surface: ${artifacts.surface}`),
 		].join("\n"),
-		devenv: true,
 	});
 }
 
@@ -826,7 +824,6 @@ async function launchResumedPiSubagent(
 						? [shellComment(`Resume message file: ${messageFile}`)]
 						: []),
 				].join("\n"),
-				devenv: true,
 			},
 		);
 		return {

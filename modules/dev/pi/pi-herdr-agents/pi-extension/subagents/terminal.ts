@@ -118,7 +118,6 @@ export function runScriptInPane(
 	options?: {
 		scriptPath?: string;
 		scriptPreamble?: string;
-		devenv?: boolean;
 	},
 ): string {
 	const scriptPath =
@@ -136,10 +135,7 @@ export function runScriptInPane(
 	scriptLines.push(command);
 	writeFileSync(scriptPath, `${scriptLines.join("\n")}\n`, { mode: 0o755 });
 
-	const runner = options?.devenv
-		? `devenv shell -- bash ${shellQuote(scriptPath)}`
-		: `bash ${shellQuote(scriptPath)}`;
-	runInPane(paneId, runner);
+	runInPane(paneId, `bash ${shellQuote(scriptPath)}`);
 	return scriptPath;
 }
 
