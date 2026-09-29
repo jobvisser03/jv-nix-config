@@ -58,6 +58,8 @@
         config.use_fancy_tab_bar = false
 
         config.window_background_opacity = 0.96
+        -- Keep final terminal row clear of Niri's clipped rounded bottom corners.
+        config.window_padding = { bottom = 15 }
 
         wezterm.on('window-resized', function(window, pane)
           local overrides = window:get_config_overrides() or {}
