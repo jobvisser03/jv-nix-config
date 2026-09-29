@@ -44,7 +44,22 @@
           owner = username;
           mode = "0400";
         };
+        github_access_token = {
+          sopsFile = ../../secrets/shared.yaml;
+          owner = username;
+          mode = "0400";
+        };
       };
+
+      sops.templates."nix-access-tokens.conf" = {
+        content = ''
+          access-tokens = github.com=${config.sops.placeholder.github_access_token}
+        '';
+        owner = username;
+        mode = "0400";
+      };
+
+      nix.extraOptions = "!include ${config.sops.templates."nix-access-tokens.conf".path}";
     };
   };
 }

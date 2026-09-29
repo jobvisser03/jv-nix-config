@@ -59,7 +59,7 @@
           "npm:pi-web-access"
           "npm:pi-caveman"
           "npm:@majorgilles/pi-grill-me"
-          "npm:@czottmann/pi-automode"
+          # "npm:@czottmann/pi-automode"
           "npm:@gaodes/pi-gitlab"
           # "npm:pi-subagents"
           # Local reproducible fork. Child agents enter each repository's
@@ -68,6 +68,9 @@
           "npm:pi-rtk-optimizer"
           # "npm:remote-pi"
           "npm:pi-mcp-adapter"
+          "npm:@dietrichgebert/ponytail"
+          "npm:pi-btw"
+          ""
         ];
       };
     };

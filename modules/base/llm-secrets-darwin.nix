@@ -25,7 +25,18 @@
         enexis_api_key = {};
         enexis_gitlab_api_key = {};
         openrouter_api_key = {};
+        github_access_token = {};
+      };
+
+      templates."nix-access-tokens.conf" = {
+        content = ''
+          access-tokens = github.com=${config.sops.placeholder.github_access_token}
+        '';
+        path = "${config.xdg.configHome}/nix/access-tokens.conf";
+        mode = "0400";
       };
     };
+
+    nix.extraOptions = "!include ${config.xdg.configHome}/nix/access-tokens.conf";
   };
 }
