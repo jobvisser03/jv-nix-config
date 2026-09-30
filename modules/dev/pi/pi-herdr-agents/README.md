@@ -312,18 +312,15 @@ cp config.json.example config.json
 }
 ```
 
-If `config.json` is absent, status, role, pane, and persistent-specialist settings fall back to `config.json.example`.
-Model routing does not read the example: no model overrides apply until a real
-`config.json` exists.
-
-The copyable example is model-neutral, so it works without requiring credentials
-for a specific provider. To configure models, replace the empty section with
-exact IDs from your authenticated model catalog:
+If `config.json` is absent, settings fall back to `config.json.example`. This
+checkout defaults subagents to `enx-litellm/gpt-5.6-luna`; change `models.default`
+to an exact authenticated model from your catalog if needed. Configure per-agent
+overrides with exact IDs:
 
 ```json
 {
   "models": {
-    "default": "your-provider/your-default-model",
+    "default": "enx-litellm/gpt-5.6-luna",
     "agents": {
       "scout": "your-provider/your-fast-model",
       "reviewer": "your-provider/your-review-model"

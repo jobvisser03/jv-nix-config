@@ -5,6 +5,7 @@ import { isPlainObject, isString } from "./type-guards.ts";
 
 const PACKAGE_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const DEFAULT_MODEL_CONFIG_PATH = join(PACKAGE_ROOT, "config.json");
+const MODEL_CONFIG_EXAMPLE_PATH = join(PACKAGE_ROOT, "config.json.example");
 
 export interface ModelConfig {
 	default?: string;
@@ -87,16 +88,25 @@ export function resolveModelDefault(
 
 export function loadModelConfig(
 	configPath = DEFAULT_MODEL_CONFIG_PATH,
+	examplePath = MODEL_CONFIG_EXAMPLE_PATH,
 ): ModelConfig {
 	let raw: string;
+	let sourcePath = configPath;
 	try {
 		raw = readFileSync(configPath, "utf8");
 	} catch (error) {
 		// SAFETY: readFileSync only throws Node's fs errors here, which are
 		// always Error instances carrying an ErrnoException `code`.
 		const errno = error as NodeJS.ErrnoException;
-		if (errno.code === "ENOENT") return { agents: {} };
-		throw error;
+		if (errno.code !== "ENOENT") throw error;
+		try {
+			raw = readFileSync(examplePath, "utf8");
+			sourcePath = examplePath;
+		} catch (exampleError) {
+			const exampleErrno = exampleError as NodeJS.ErrnoException;
+			if (exampleErrno.code === "ENOENT") return { agents: {} };
+			throw exampleError;
+		}
 	}
 
 	let parsed;
@@ -105,8 +115,8 @@ export function loadModelConfig(
 	} catch (error) {
 		const detail = error instanceof Error ? error.message : String(error);
 		throw new Error(
-			`Invalid JSON in subagent model config ${configPath}: ${detail}`,
+			`Invalid JSON in subagent model config ${sourcePath}: ${detail}`,
 		);
 	}
-	return parseModelConfig(parsed, configPath);
+	return parseModelConfig(parsed, sourcePath);
 }

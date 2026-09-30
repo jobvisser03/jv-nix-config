@@ -70,7 +70,6 @@
           "npm:pi-mcp-adapter"
           "npm:@dietrichgebert/ponytail"
           "npm:pi-btw"
-          ""
         ];
       };
     };
