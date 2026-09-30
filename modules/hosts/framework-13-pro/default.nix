@@ -25,6 +25,10 @@
 
     networking.hostName = "framework-13-pro";
 
+    # Use power-profiles-daemon so Noctalia can switch Framework power modes.
+    services.tlp.enable = lib.mkForce false;
+    services.power-profiles-daemon.enable = lib.mkForce true;
+
     # The shared SOPS file includes this host's ssh-to-age recipient.
     # sops-nix decrypts it at activation using /etc/ssh/ssh_host_ed25519_key.
     llmSecrets.enable = true;

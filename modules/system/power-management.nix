@@ -30,6 +30,7 @@
 
       # Laptop mode - keep TLP with battery optimizations
       (lib.mkIf (!config.powerManagement.desktopMode) {
+        services.upower.enable = true;
         services.power-profiles-daemon.enable = false;
 
         services.tlp = {
