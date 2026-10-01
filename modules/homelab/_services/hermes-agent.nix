@@ -17,6 +17,7 @@ in {
     services.hermes-agent = {
       enable = true;
       package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.messaging;
+      extraPackages = [pkgs.signal-cli];
       addToSystemPackages = true;
       environmentFiles = [config.sops.templates."hermes-agent.env".path];
       settings = {

@@ -168,7 +168,7 @@
         enable = false;
       };
 
-      services.hermes-agent.enable = false;
+      services.hermes-agent.enable = true;
 
       services.cloudflare-ddns = {
         enable = true;
