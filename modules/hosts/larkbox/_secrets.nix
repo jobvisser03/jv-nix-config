@@ -3,7 +3,7 @@
 #
 # The actual secret values are stored encrypted in ../../secrets/larkbox.yaml
 # Edit secrets with: sops secrets/larkbox.yaml
-{config, ...}: {
+{config, lib, ...}: {
   sops = {
     # Use larkbox-specific secrets file
     defaultSopsFile = ../../../secrets/larkbox.yaml;
@@ -95,16 +95,15 @@
         mode = "0444";
       };
 
-      # Forgejo admin user password
-      # Used to ensure the admin user exists on every deploy
-      forgejo_admin_password = {
-        owner = "forgejo";
-        mode = "0400";
-      };
-
       # Cloudflare DDNS API token
       # Token must have Zone:DNS:Read and Zone:DNS:Edit for dutchdataworks.nl
       cloudflare_ddns_token = {
+        mode = "0400";
+      };
+    } // lib.optionalAttrs config.services.forgejo.enable {
+      # Forgejo user exists only when service is enabled.
+      forgejo_admin_password = {
+        owner = "forgejo";
         mode = "0400";
       };
     };
