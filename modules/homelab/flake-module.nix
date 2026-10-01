@@ -1,6 +1,6 @@
 # Homelab flake-parts module
 # Wraps all homelab NixOS modules into a single flake.modules.nixos.homelab module
-{...}: {
+{inputs, ...}: {
   flake.modules.nixos.homelab = {
     config,
     lib,
@@ -31,6 +31,8 @@
       (import ./_services/paperless.nix)
       (import ./_services/radicale.nix)
       (import ./_services/remote-pi-relay.nix)
+      (import ./_services/hermes-agent.nix)
+      inputs.hermes-agent.nixosModules.default
     ];
 
     config = lib.mkIf cfg.enable {

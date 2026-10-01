@@ -51,6 +51,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    hermes-agent.url = "github:NousResearch/hermes-agent";
     herdr.url = "github:ogulcancelik/herdr/v0.9.0";
 
     darwin = {

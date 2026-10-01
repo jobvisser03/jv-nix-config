@@ -108,5 +108,14 @@
         mode = "0400";
       };
     };
+
+    # Hermes reads KEY=VALUE files, so render existing SOPS secret into runtime env format.
+    templates."hermes-agent.env" = {
+      content = ''
+        OPENROUTER_API_KEY=${config.sops.placeholder.openrouter_api_key}
+      '';
+      owner = "root";
+      mode = "0400";
+    };
   };
 }
