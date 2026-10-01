@@ -121,7 +121,7 @@
 
       domain = "dutchdataworks.nl";
 
-      services.forgejo.enable = true;
+      services.forgejo.enable = false;
       services.gitlab.enable = false;
       services.gitlab-runner.enable = false;
       services.jellyfin.enable = false;
@@ -138,8 +138,8 @@
 
       # Keep crash telemetry locally. Future external Hetzner VPS should enable
       # uptime-kuma and provide this host with its push-monitor URL via SOPS.
-      services.grafana.enable = true;
-      services.prometheus.enable = true;
+      services.grafana.enable = false;
+      services.prometheus.enable = false;
       services.uptime-kuma = {
         enable = false;
         heartbeat.enable = false;
@@ -151,7 +151,7 @@
       };
 
       services.paperless = {
-        enable = true;
+        enable = false;
         passwordFile = config.sops.secrets.paperless_admin_password.path;
       };
 
@@ -165,7 +165,7 @@
       };
 
       services.remote-pi-relay = {
-        enable = true;
+        enable = false;
       };
 
       services.cloudflare-ddns = {
