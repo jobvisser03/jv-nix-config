@@ -100,6 +100,17 @@
       cloudflare_ddns_token = {
         mode = "0400";
       };
+
+      # Hermes Desktop remote gateway authentication
+      hermes_dashboard_basic_auth_username = {
+        mode = "0400";
+      };
+      hermes_dashboard_basic_auth_password = {
+        mode = "0400";
+      };
+      hermes_dashboard_basic_auth_secret = {
+        mode = "0400";
+      };
     } // lib.optionalAttrs config.services.forgejo.enable {
       # Forgejo user exists only when service is enabled.
       forgejo_admin_password = {
@@ -108,10 +119,13 @@
       };
     };
 
-    # Hermes reads KEY=VALUE files, so render existing SOPS secret into runtime env format.
+    # Hermes reads KEY=VALUE files, so render SOPS secrets into runtime env format.
     templates."hermes-agent.env" = {
       content = ''
         OPENROUTER_API_KEY=${config.sops.placeholder.openrouter_api_key}
+        HERMES_DASHBOARD_BASIC_AUTH_USERNAME=${config.sops.placeholder.hermes_dashboard_basic_auth_username}
+        HERMES_DASHBOARD_BASIC_AUTH_PASSWORD=${config.sops.placeholder.hermes_dashboard_basic_auth_password}
+        HERMES_DASHBOARD_BASIC_AUTH_SECRET=${config.sops.placeholder.hermes_dashboard_basic_auth_secret}
       '';
       owner = "root";
       mode = "0400";

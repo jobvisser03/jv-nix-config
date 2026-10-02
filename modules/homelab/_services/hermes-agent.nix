@@ -18,6 +18,10 @@ in {
       enable = true;
       package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.messaging;
       extraPackages = [pkgs.signal-cli];
+      mcpServers.notion = {
+        url = "https://mcp.notion.com/mcp";
+        auth = "oauth";
+      };
       addToSystemPackages = true;
       environmentFiles = [config.sops.templates."hermes-agent.env".path];
       settings = {
