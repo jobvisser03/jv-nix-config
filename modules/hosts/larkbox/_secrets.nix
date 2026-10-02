@@ -111,6 +111,16 @@
       hermes_dashboard_basic_auth_secret = {
         mode = "0400";
       };
+      signal_account = {
+        mode = "0400";
+      };
+
+      # Google Workspace OAuth desktop client; consumed once by the Hermes setup helper.
+      google_workspace_oauth_client_secret_json = {
+        owner = "hermes";
+        group = "hermes";
+        mode = "0400";
+      };
     } // lib.optionalAttrs config.services.forgejo.enable {
       # Forgejo user exists only when service is enabled.
       forgejo_admin_password = {
@@ -126,6 +136,16 @@
         HERMES_DASHBOARD_BASIC_AUTH_USERNAME=${config.sops.placeholder.hermes_dashboard_basic_auth_username}
         HERMES_DASHBOARD_BASIC_AUTH_PASSWORD=${config.sops.placeholder.hermes_dashboard_basic_auth_password}
         HERMES_DASHBOARD_BASIC_AUTH_SECRET=${config.sops.placeholder.hermes_dashboard_basic_auth_secret}
+        SIGNAL_ACCOUNT=${config.sops.placeholder.signal_account}
+        SIGNAL_ALLOWED_USERS=${config.sops.placeholder.signal_account}
+      '';
+      owner = "root";
+      mode = "0400";
+    };
+
+    templates."signal-cli.env" = {
+      content = ''
+        SIGNAL_ACCOUNT=${config.sops.placeholder.signal_account}
       '';
       owner = "root";
       mode = "0400";

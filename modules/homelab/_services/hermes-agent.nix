@@ -9,6 +9,10 @@
 }: let
   cfg = config.homelab.services.hermes-agent;
   hermesHome = "${config.services.hermes-agent.stateDir}/.hermes";
+  signalHttpPort = 8081;
+  signalCliStart = pkgs.writeShellScript "hermes-signal-cli-start" ''
+    exec ${pkgs.signal-cli}/bin/signal-cli --scrub-log --account "$SIGNAL_ACCOUNT" daemon --http 127.0.0.1:${toString signalHttpPort}
+  '';
 
   rtkPluginSrc = pkgs.fetchFromGitHub {
     owner = "kerrz2020";
@@ -37,6 +41,7 @@ in {
         auth = "oauth";
       };
       addToSystemPackages = true;
+      environment.SIGNAL_HTTP_URL = "http://127.0.0.1:${toString signalHttpPort}";
       environmentFiles = [config.sops.templates."hermes-agent.env".path];
       backend = {
         mode = "serve";
@@ -44,10 +49,32 @@ in {
         port = 9119;
       };
       settings = {
-        model.default = "openrouter/gpt-6-luna";
+        model.default = "gpt-6-luna";
         terminal.backend = "local";
         plugins.enabled = ["rtk-rewrite"];
       };
+    };
+
+    systemd.services.hermes-signal-cli = {
+      description = "signal-cli HTTP daemon for Hermes";
+      wantedBy = ["multi-user.target"];
+      wants = ["network-online.target"];
+      after = ["network-online.target"];
+      environment.HOME = config.services.hermes-agent.stateDir;
+      serviceConfig = {
+        User = "hermes";
+        Group = "hermes";
+        WorkingDirectory = config.services.hermes-agent.stateDir;
+        EnvironmentFile = config.sops.templates."signal-cli.env".path;
+        ExecStart = "${signalCliStart}";
+        Restart = "on-failure";
+        RestartSec = "5s";
+      };
+    };
+
+    systemd.services.hermes-agent = {
+      wants = ["hermes-signal-cli.service"];
+      after = ["hermes-signal-cli.service"];
     };
 
     # Keep service and interactive state access aligned. The gateway/backend run as
