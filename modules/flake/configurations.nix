@@ -351,6 +351,7 @@ in {
       modules = [
         "user-job-work"
         "obsidian"
+        "syncthing"
       ];
     };
   };

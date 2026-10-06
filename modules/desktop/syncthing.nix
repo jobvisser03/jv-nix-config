@@ -19,4 +19,24 @@
       overrideFolders = false;
     };
   };
+
+  flake.modules.darwin.syncthing = {pkgs, ...}: {
+    environment.systemPackages = [pkgs.syncthing];
+
+    # Syncthing stores its configuration in the macOS user application-support
+    # directory. Pair devices and add the vault folder through its web UI.
+    launchd.user.agents.syncthing = {
+      serviceConfig = {
+        ProgramArguments = [
+          "${pkgs.syncthing}/bin/syncthing"
+          "serve"
+          "--no-browser"
+          "--no-restart"
+        ];
+        RunAtLoad = true;
+        KeepAlive = true;
+        ProcessType = "Interactive";
+      };
+    };
+  };
 }
