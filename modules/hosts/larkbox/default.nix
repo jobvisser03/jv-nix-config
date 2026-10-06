@@ -209,6 +209,25 @@
       };
     };
 
+    # Syncthing keeps live vault local; pCloud receives a one-way backup.
+    systemd.services.obsidian-pcloud-backup = {
+      description = "Back up Obsidian vault to pCloud";
+      unitConfig.ConditionPathIsDirectory = "/home/${username}/syncthing/obsidian_vault";
+      serviceConfig.Type = "oneshot";
+      script = ''
+        ${pkgs.rclone}/bin/rclone --config ${config.sops.secrets.rclone_config.path} copy \
+          /home/${username}/syncthing/obsidian_vault "pcloud:DUTCH DATAWORKS/obsidian_kb" \
+          --exclude '/.obsidian/**' --exclude '/.stfolder' --exclude '/.stfolder/**' \
+          --exclude '/.stversions/**' --exclude '/.stignore' --exclude '.syncthing.*.tmp'
+      '';
+    };
+    systemd.timers.obsidian-pcloud-backup = {
+      wantedBy = ["timers.target"];
+      timerConfig = {
+        OnBootSec = "15min";
+        OnUnitActiveSec = "15min";
+      };
+    };
     environment.systemPackages = with pkgs; [
       apacheHttpd
     ];

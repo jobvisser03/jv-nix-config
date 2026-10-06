@@ -24,6 +24,7 @@
     ];
 
     networking.hostName = "framework-13-pro";
+    home-manager.users.${username}.programs.obsidian.vaults.notes.target = lib.mkForce "syncthing/obsidian_vault";
 
     # Use power-profiles-daemon so Noctalia can switch Framework power modes.
     services.tlp.enable = lib.mkForce false;
@@ -81,8 +82,6 @@
           remote = "pcloud:'DUTCH DATAWORKS'";
           mountpoint = "/home/${username}/pcloud/dutch-dataworks";
           cacheMode = "writes";
-          # Home Manager's Obsidian plugin files are symlinks into the Nix store.
-          extraArgs = ["--vfs-links"];
           readOnly = false;
           uid = 1000;
           gid = 100;

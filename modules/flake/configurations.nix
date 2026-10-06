@@ -265,6 +265,7 @@ in {
       ];
       modules = [
         "user-job"
+        "syncthing"
         "power-management"
         "homelab"
       ];
@@ -307,6 +308,7 @@ in {
       modules = [
         "user-job"
         "obsidian"
+        "syncthing"
       ];
       extraModules = [
         inputs.sops-nix.nixosModules.sops

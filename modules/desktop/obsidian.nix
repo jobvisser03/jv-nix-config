@@ -4,10 +4,11 @@
   in {
     programs.obsidian = {
       enable = true;
-      vaults.notes.target = "pcloud/dutch-dataworks/obsidian_kb";
+      vaults.notes.target = "Documents/obsidian_kb";
       defaultSettings.communityPlugins = [
         plugins.obsidian-outliner
         plugins.journals
+        plugins.obsidian-importer
       ];
     };
   };
