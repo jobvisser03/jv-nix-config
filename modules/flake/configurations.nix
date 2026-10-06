@@ -285,6 +285,7 @@ in {
       ];
       modules = [
         "user-job"
+        "obsidian"
         "affinity"
         "nixos/networking/azure-vpn"
       ];
@@ -305,6 +306,7 @@ in {
       ];
       modules = [
         "user-job"
+        "obsidian"
       ];
       extraModules = [
         inputs.sops-nix.nixosModules.sops
@@ -324,6 +326,7 @@ in {
       ];
       modules = [
         "user-sooph"
+        "obsidian"
         "wezterm"
         "firefox"
         "desktop-apps"
@@ -345,6 +348,7 @@ in {
       ];
       modules = [
         "user-job-work"
+        "obsidian"
       ];
     };
   };

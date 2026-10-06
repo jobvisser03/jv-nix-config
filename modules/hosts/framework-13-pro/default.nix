@@ -81,6 +81,8 @@
           remote = "pcloud:'DUTCH DATAWORKS'";
           mountpoint = "/home/${username}/pcloud/dutch-dataworks";
           cacheMode = "writes";
+          # Home Manager's Obsidian plugin files are symlinks into the Nix store.
+          extraArgs = ["--vfs-links"];
           readOnly = false;
           uid = 1000;
           gid = 100;
