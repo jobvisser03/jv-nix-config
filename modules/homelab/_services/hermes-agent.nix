@@ -49,7 +49,7 @@ in {
         port = 9119;
       };
       settings = {
-        model.default = "gpt-6-luna";
+        model.default = "openrouter/gpt-6-luna";
         terminal.backend = "local";
         plugins.enabled = ["rtk-rewrite"];
       };
