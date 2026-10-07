@@ -171,6 +171,37 @@
       tree
     ];
 
+    # Prevent ALSA nodes from auto-suspending: T2's apple-bce audio node doesn't
+    # reliably wake → internal speakers only work at boot without this.
+    services.pipewire.wireplumber.extraConfig."10-alsa-no-suspend" = {
+      "monitor.alsa.rules" = [
+        {
+          matches = [{"node.name" = "~alsa_*";}];
+          actions."update-props" = {
+            "session.suspend-timeout-seconds" = 0;
+            "node.pause-on-idle" = false;
+          };
+        }
+      ];
+    };
+
+    # BlueZ tweaks for reliable reconnects after T2 suspend/resume (BCM4377).
+    hardware.bluetooth.settings = {
+      General = {
+        Enable = "Source,Sink,Media,Socket";
+        UserspaceHID = true;
+        AutoEnable = true;
+        FastConnectable = true;
+        ReconnectAttempts = 7;
+        ReconnectIntervals = "1,2,4,8,16,32,64";
+        JustWorksRepairing = "always";
+        RememberPowered = true;
+      };
+      Policy.AutoEnable = true;
+    };
+
+    environment.sessionVariables.WLR_NO_HARDWARE_CURSORS = "1";
+
     # T2 internal mic has very low hardware gain via apple-bce.
     # Set 250% software boost on login so browsers/Teams can pick it up.
     # Uses pactl (PipeWire pulse compat) targeting the fixed PCI node name.

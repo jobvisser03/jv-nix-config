@@ -18,39 +18,23 @@
       jack.enable = true;
 
       wireplumber.extraConfig = {
-        # Fix 1: prevent ALSA nodes from auto-suspending.
-        # T2's apple-bce audio node doesn't reliably wake → internal speakers
-        # only work at boot without this.
-        "10-alsa-no-suspend" = {
-          "monitor.alsa.rules" = [
-            {
-              matches = [{"node.name" = "~alsa_*";}];
-              actions."update-props" = {
-                "session.suspend-timeout-seconds" = 0;
-                "node.pause-on-idle" = false;
-              };
-            }
-          ];
-        };
-
-        # Fix 2: stable Bluetooth for Sony WH-1000XM6.
+        # Bluetooth audio tuned for Sony WH-1000XM6.
         # - Explicit codec list enables LDAC/AAC/SBC-XQ instead of library defaults.
-        # - autoswitch-to-headset-profile = false keeps headphones in A2DP by default;
-        #   the A2DP→HFP auto-switch on T2's BCM4377 caused a connect/disconnect loop.
-        # - enable-msbc = false: XM6 only exposes CVSD for HFP anyway; being explicit
-        #   avoids WirePlumber wasting time negotiating mSBC.
-        # - Manual profile switching via `headphones-call` / `headphones-music` aliases.
+        # - autoswitch-to-headset-profile = true: WirePlumber switches to HFP when an
+        #   app opens the headset mic and back to A2DP when it closes.
+        # - enable-msbc = true: wideband (16 kHz) HFP for calls instead of 8 kHz CVSD.
+        #   HFP codecs (msbc, lc3_swb) must also be in the codec list.
         "11-bluetooth" = {
           "monitor.bluez.properties" = {
             "bluez5.roles" = ["a2dp_sink" "a2dp_source" "hsp_hs" "hsp_ag" "hfp_hf" "hfp_ag"];
-            "bluez5.codecs" = ["sbc" "sbc_xq" "aac" "ldac" "aptx" "aptx_hd"];
+            "bluez5.codecs" = ["sbc" "sbc_xq" "aac" "ldac" "aptx" "aptx_hd" "msbc" "lc3_swb"];
             "bluez5.enable-sbc-xq" = true;
-            "bluez5.enable-msbc" = false;
+            "bluez5.enable-msbc" = true;
             "bluez5.enable-hw-volume" = true;
             "bluez5.hfphsp-backend" = "native";
           };
           "wireplumber.settings" = {
-            "bluetooth.autoswitch-to-headset-profile" = false;
+            "bluetooth.autoswitch-to-headset-profile" = true;
           };
         };
       };
@@ -60,20 +44,8 @@
     hardware.bluetooth = {
       enable = true;
       powerOnBoot = true;
-      settings = {
-        General = {
-          Enable = "Source,Sink,Media,Socket";
-          Experimental = true;
-          UserspaceHID = true;
-          AutoEnable = true;
-          FastConnectable = true;
-          ReconnectAttempts = 7;
-          ReconnectIntervals = "1,2,4,8,16,32,64";
-          JustWorksRepairing = "always";
-          RememberPowered = true;
-        };
-        Policy.AutoEnable = true;
-      };
+      # Exposes headset battery level to UPower / desktop widgets.
+      settings.General.Experimental = true;
     };
     services.blueman.enable = true;
 
@@ -86,7 +58,6 @@
     };
 
     environment.sessionVariables = {
-      WLR_NO_HARDWARE_CURSORS = "1";
       NIXOS_OZONE_WL = "1";
       ELECTRON_OZONE_PLATFORM_HINT = "auto";
       ELECTRON_ENABLE_WAYLAND = "1";

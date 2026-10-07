@@ -3,8 +3,9 @@
     systemd.tmpfiles.rules = [
       "d /home/job/syncthing 0750 job users - -"
       "d /home/job/syncthing/obsidian_vault 0750 job users - -"
-      # Keep editor caches and machine-specific Nix plugin links off Android.
-      "f+ /home/job/syncthing/obsidian_vault/.stignore 0600 job users - /.obsidian/cache\\n/.obsidian/workspace*.json\\n/.obsidian/plugins\\n/.obsidian/community-plugins.json"
+      # Keep editor caches and Home Manager-managed Obsidian files (machine-specific
+      # Nix store links) out of sync, or HM activation clobbers synced copies.
+      "f+ /home/job/syncthing/obsidian_vault/.stignore 0600 job users - /.obsidian/cache\\n/.obsidian/workspace*.json\\n/.obsidian/plugins\\n/.obsidian/snippets\\n/.obsidian/community-plugins.json\\n/.obsidian/appearance.json"
     ];
 
     services.syncthing = {
