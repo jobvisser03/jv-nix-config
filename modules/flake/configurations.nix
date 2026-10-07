@@ -309,6 +309,7 @@ in {
         "user-job"
         "obsidian"
         "syncthing"
+        "handy"
       ];
       extraModules = [
         inputs.sops-nix.nixosModules.sops

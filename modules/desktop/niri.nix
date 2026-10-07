@@ -60,6 +60,7 @@
       terminal = lib.getExe pkgs.wezterm;
       launcher = "${noctalia} msg panel-toggle launcher";
       lock = "${noctalia} msg session lock";
+      handyToggle = "${lib.getExe inputs.handy.packages.${pkgs.system}.handy} --toggle-transcription";
 
       startupScript = pkgs.writeShellScriptBin "niri-startup" ''
         ${pkgs.networkmanagerapplet}/bin/nm-applet --indicator &
@@ -227,6 +228,16 @@
             open-floating true
           }
 
+          // Handy's recording overlay is an xdg-toplevel, not a layer surface;
+          // keep it from stealing focus so the transcript lands in the right window.
+          window-rule {
+            match app-id=r#"^Handy$"# title="^Recording$"
+            open-floating true
+            open-focused false
+            focus-ring { off; }
+            shadow { off; }
+          }
+
           binds {
             "Mod+Return" { spawn-sh "${terminal}"; }
             "Mod+D" { spawn-sh "${launcher}"; }
@@ -311,6 +322,7 @@
             "Shift+Print" { screenshot-screen; }
             "Mod+Shift+S" { spawn-sh "${lib.getExe regionScreenshot}"; }
             "Mod+Shift+C" { spawn-sh "${noctalia} msg panel-toggle clipboard"; }
+            "Alt+Space" { spawn-sh "${handyToggle}"; }
 
             "XF86AudioMute" allow-when-locked=true { spawn-sh "${noctalia} msg volume-mute"; }
             "XF86AudioRaiseVolume" allow-when-locked=true { spawn-sh "${noctalia} msg volume-up"; }

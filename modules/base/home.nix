@@ -23,9 +23,6 @@
       programs.home-manager.enable = true;
     };
 
-    # Handy speech-to-text module
-    homeManager.handy = inputs.handy.nixModules.handy.homeManagerModules.default;
-
     # macOS-specific home config
     homeManager.home-darwin = {pkgs, ...}: {
       home.packages = with pkgs; [
