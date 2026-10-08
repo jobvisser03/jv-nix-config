@@ -5,7 +5,7 @@
       "d /home/job/syncthing/obsidian_vault 0750 job users - -"
       # Keep editor caches and Home Manager-managed Obsidian files (machine-specific
       # Nix store links) out of sync, or HM activation clobbers synced copies.
-      "f+ /home/job/syncthing/obsidian_vault/.stignore 0600 job users - /.obsidian/cache\\n/.obsidian/workspace*.json\\n/.obsidian/plugins\\n/.obsidian/snippets\\n/.obsidian/community-plugins.json\\n/.obsidian/appearance.json"
+      "f+ /home/job/syncthing/obsidian_vault/.stignore 0600 job users - /.obsidian/cache\\n/.obsidian/workspace*.json\\n/.obsidian/plugins\\n/.obsidian/snippets\\n/.obsidian/community-plugins.json*\\n/.obsidian/appearance.json*\\n/.obsidian/core-plugins*.json*\\n/.obsidian/graph*.json\\n*.hm-backup"
     ];
 
     services.syncthing = {
