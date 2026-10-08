@@ -27,6 +27,7 @@
         "brave-browser"
         "raycast"
         "logseq"
+        "obsidian"
         "cryptomator"
         "darktable"
         "macfuse"
