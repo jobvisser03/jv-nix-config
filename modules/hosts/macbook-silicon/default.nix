@@ -18,6 +18,9 @@
     home-manager.users.${username}.programs.obsidian.vaults.notes.target =
       lib.mkForce "syncthing/obsidian_vault";
 
+    # Obsidian plugin files can already have Home Manager backups.
+    home-manager.overwriteBackup = true;
+
     # Apple Silicon processor architecture
     nixpkgs.hostPlatform = "aarch64-darwin";
   };
