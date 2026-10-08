@@ -132,6 +132,7 @@
 
       options.niri = {
         suspendOnIdle = lib.mkEnableOption "Suspend system after idle timeout" // {default = true;};
+        handy.enable = lib.mkEnableOption "Handy speech-to-text";
 
         # Couch/beamer media node: edge-to-edge windows, Firefox at login,
         # hidden idle cursor, and no lock/dim/blank while watching video.
@@ -262,15 +263,17 @@
             open-floating true
           }
 
-          // Handy's recording overlay is an xdg-toplevel, not a layer surface;
-          // keep it from stealing focus so the transcript lands in the right window.
-          window-rule {
-            match app-id=r#"^Handy$"# title="^Recording$"
-            open-floating true
-            open-focused false
-            focus-ring { off; }
-            shadow { off; }
-          }
+          ${lib.optionalString config.niri.handy.enable ''
+            // Handy's recording overlay is an xdg-toplevel, not a layer surface;
+            // keep it from stealing focus so the transcript lands in the right window.
+            window-rule {
+              match app-id=r#"^Handy$"# title="^Recording$"
+              open-floating true
+              open-focused false
+              focus-ring { off; }
+              shadow { off; }
+            }
+          ''}
 
           binds {
             "Mod+Return" { spawn-sh "${terminal}"; }
@@ -356,7 +359,7 @@
             "Shift+Print" { screenshot-screen; }
             "Mod+Shift+S" { spawn-sh "${lib.getExe regionScreenshot}"; }
             "Mod+Shift+C" { spawn-sh "${noctalia} msg panel-toggle clipboard"; }
-            "Alt+Space" { spawn-sh "${handyToggle}"; }
+            ${lib.optionalString config.niri.handy.enable ''"Alt+Space" { spawn-sh "${handyToggle}"; }''}
 
             "XF86AudioMute" allow-when-locked=true { spawn-sh "${noctalia} msg volume-mute"; }
             "XF86AudioRaiseVolume" allow-when-locked=true { spawn-sh "${noctalia} msg volume-up"; }

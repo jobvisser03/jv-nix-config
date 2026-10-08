@@ -11,6 +11,7 @@
     imports = [inputs.handy.homeManagerModules.default];
 
     services.handy.enable = true;
+    niri.handy.enable = true;
 
     # Wayland-native typing tool; enigo's fallback is unreliable under niri.
     # Select "wtype" as typing tool in Handy's settings.
