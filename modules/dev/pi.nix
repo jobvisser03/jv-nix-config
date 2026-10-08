@@ -42,6 +42,9 @@
         ./pi/gitlab-mr-discussion.ts
       ];
 
+      # Skills: shared ones come from modules/dev/agent-skills.nix via
+      # ~/.agents/skills (read natively by pi) — don't list them here too.
+
       # Custom themes — cobalt2 ported from wesbos/cobalt2-vscode.
       themes = [./pi/themes/cobalt2.json];
 

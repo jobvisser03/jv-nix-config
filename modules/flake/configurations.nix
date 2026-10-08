@@ -29,6 +29,7 @@
     common-dev = [
       "git"
       "dev-tools"
+      "agent-skills"
     ];
 
     hyprland-desktop = [

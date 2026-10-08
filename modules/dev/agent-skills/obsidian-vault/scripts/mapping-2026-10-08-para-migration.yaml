@@ -1,0 +1,415 @@
+# Vault migration mapping — review & edit, then the script (phase 3) consumes it.
+#
+# Tag keys are lowercase without '#'; matching is case-insensitive.
+# Values are the LITERAL replacement text for the tag:
+#   "[[Simon]]"                 -> tag becomes a link
+#   "[[Enexis]] #enexis/squad"  -> link + keep a (sub)tag
+#   "#wijn"                     -> rename tag
+#   ""                          -> remove tag (surrounding text kept)
+# Tags not listed anywhere are LEFT UNCHANGED (see "unmapped" in the report).
+# Business: Dutch Dataworks = freelance company, Data Mastery = training company.
+# Other organisations are leads / freelance projects -> 30 Resources/Organisations.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 1. TAG → LINK  (things you want "Linked mentions" for)
+# ─────────────────────────────────────────────────────────────────────────────
+links:
+  # People
+  simon: "[[Simon]]"
+  simon/bespreken: "[[Simon]] #bespreken"
+  thijs: "[[Thijs]]"
+  sophie: "[[Sophie]]"
+  sophie/bespreken: "[[Sophie]] #bespreken"
+  nienke: "[[Nienke]]"
+  karsten: "[[Karsten]]"
+  timo: "[[Timo]]"
+  thijmen: "[[Thijmen]]"
+  robbie: "[[Robbie]]"
+  savas: "[[Savas]]"
+  petar: "[[Petar]]"
+  joseph: "[[Joseph]]"
+  jennifer: "[[Jennifer]]"
+  yanying: "[[Yanying]]"
+  jos: "[[Jos]]"
+  david: "[[David]]"
+  sevak: "[[Sevak]]"
+  daphne: "[[Daphne]]"
+  sabine: "[[Sabine]]"
+  andrew: "[[Andrew]]"
+  mark: "[[Mark]]"
+  max: "[[Max]]"
+  liesbeth: "[[Liesbeth]]"
+  brouwer: "[[Brouwer]]"
+  hugo: "[[Hugo]]"
+
+  # Projects
+  project/sims: "[[SIMS]]"
+  project/klantenservicerag: "[[KlantenserviceRAG]]"
+  project/gencv: "[[Enexis]] #enexis/cv-team"     # GenCV = Enexis computer-vision team
+  project/learn-logseq: "[[Learn Logseq]]"
+  project/image-quality-checker: "[[Image Quality Checker]]"
+  project/spenditor: "[[Spenditor]]"
+  project/meterstanden: "[[Meterstanden]]"
+  ai-platform: "[[AI Platform]]"
+  data-mastery: "[[Data Mastery]]"
+
+  # Organisations / clients
+  enexis: "[[Enexis]]"
+  enexis/genai-team: "[[Enexis]] #enexis/genai-team"
+  enexis/use-cases: "[[Enexis]] #enexis/use-cases"
+  enexis/locomv: "[[Enexis]] #enexis/locomv"
+  enexis/mijnaansluiting: "[[Enexis]] #enexis/mijnaansluiting"
+  enexis/squad/technologieverkennning: "[[Enexis]] #enexis/technologieverkenning"
+  enexis/strategy: "[[Enexis]] #enexis/strategy"
+  enexis/pixar: "[[Enexis]] #enexis/pixar"
+  enexis/troubleshooting: "[[Enexis]] #enexis/troubleshooting"
+  enexis/personen: "[[Enexis]] #enexis/personen"
+  enexis/urenlog: "[[Enexis]] #enexis/urenlog"
+  enexis/cvteam: "[[Enexis]] #enexis/cv-team"
+  dutch-dataworks: "[[Dutch Dataworks]]"
+  dutch-dataworks/omzetverdeling/2025: "[[Dutch Dataworks]] #omzetverdeling/2025"
+  veneficus: "[[Veneficus]]"
+  tennet: "[[Tennet]]"
+  collibra: "[[Collibra]]"
+  goodwe: "[[Goodwe]]"
+  unive: "[[Unive]]"
+  alfen: "[[Alfen]]"
+  alliander: "[[Alliander]]"
+  socgen: "[[SocGen]]"
+  schuberg/bespreken: "[[Schuberg Philis]] #bespreken"
+  bnd: "[[Brand New Day]]"          # pension provider
+  hcm: "[[HCM]]"
+
+  # Areas & assets
+  area/house: "[[House]]"
+  house: "[[House]]"
+  ravelijn47: "[[Ravelijn47]]"
+  area/finance: "[[Finance]]"
+  area/saxophone: "[[Saxophone]]"
+  saxophone: "[[Saxophone]]"
+  saxophone/standards: "[[Saxophone]] #standards"
+  band/tocoda: "[[ToCoda Band]]"
+  to-coda: "[[ToCoda Band]]"
+  health: "[[Health]]"
+  vouwwagen: "[[Vouwwagen]]"
+  volvo-xc90: "[[VolvoXC90]]"
+  auto/volvoxc90: "[[VolvoXC90]]"
+  auto/peugot308: "[[Peugeot 308]]"
+  auto/prius: "[[Prius]]"
+  tesla: "[[tesla]]"
+  zonnepanelen: "[[zonnepanelen]]"
+  tuin: "[[tuin]]"
+  lampen: "[[lampen]]"
+  pannen: "[[pannen]]"
+  verzekeringen: "[[verzekeringen]]"
+  kinderopvang: "[[kinderopvang]]"
+  kleding: "[[kleding]]"
+  gift: "[[gift]]"
+  friends-and-family: "[[Friends and family]]"
+  camping: "[[camping]]"
+  travel: "[[travel]]"
+  larkbox: "[[larkbox]]"
+  home-assistant: "[[home-assistant]]"
+  nixos: "[[nixos]]"
+  nix: "[[nix]]"
+  jaarafsluiting: "[[jaarafsluiting]]"
+  moneybird: "[[moneybird]]"
+  maandplanning: "[[maandplanning]]"
+
+  # Topics that have a real note
+  mlops: "[[mlops]]"
+  resource/mlops: "[[mlops]]"
+  resource/management: "[[Management]]"
+  crisp-ml: "[[CRISP-ML]]"
+  sales: "[[sales]]"
+  modelling-intentions: "[[modelling-intentions]]"
+  modelling-guidelines: "[[modelling-guidelines]]"
+  energy: "[[energy]]"
+  resource/energy: "[[energy]]"
+  personal-user-manual: "[[personal-user-manual]]"
+  staff-engineer: "[[staff-engineer]]"
+  python-lessons-learned: "[[python-lessons-learned]]"
+  software-dev: "[[software-dev]]"
+  guided-learning: "[[guided-learning]]"
+  poetry: "[[poetry]]"
+  git: "[[git]]"
+  okta: "[[okta]]"
+  pycon: "[[PyCon]]"
+  pycon-berlin: "[[PyCon]] #pycon/berlin"
+  pycon/bologna2025: "[[PyCon]] #pycon/bologna2025"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 2. KEEP AS TAG  (classifiers; renames listed explicitly)
+#    Pages that exist for these get a ```query``` block instead of backlinks
+#    (see query_notes below).
+# ─────────────────────────────────────────────────────────────────────────────
+keep:
+  # lists (to/* — all kept as-is)
+  - to/*
+  # note types
+  - meeting
+  - feedback
+  - accomplishments
+  - compliments
+  - gratitude
+  - book-summary
+  - coaching-call
+  - sales-interview
+  - scrum-planning
+  - verhaal
+  - gedicht
+  - quotes
+  - idea
+  - question
+  - why
+  - bespreken
+  - capture
+  # trackers / flashcards
+  - bloeddruk
+  - card
+  # topic buckets without their own note
+  - data-science
+  - data-engineering
+  - genai
+  - nlp
+  - rag
+  - llmops
+  - agents
+  - computer-vision
+  - deep-learning
+  - tools
+  - blog-posts-ai
+  - this-week-in-ai
+  - verhuur
+  - vakantie
+  - vakantie/*
+  - tweede          # second child / pregnancy
+  - derde
+
+renames:
+  wine: "#wijn"
+  cheat-sheet: "#cheatsheet"
+  life-goals: "#goals"
+  effective-altriusm: "#effective-altruism"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 3. TASK MARKERS  (Logseq workflow -> Tasks plugin)
+# ─────────────────────────────────────────────────────────────────────────────
+task_only:            # applied only on "- [ ]" / "- [x]" lines
+  a: "⏫"
+  b: "🔼"
+  c: "🔽"
+everywhere:           # applied on all lines
+  inbox: ""
+  later: "#someday"
+  someday: "#someday"
+# Logseq date suffixes on tasks are converted by the script:
+#   "— due [[2023-02-28|Journals/2023-02-28]]"       -> "📅 2023-02-28"
+#   "— scheduled [[2023-08-31|Journals/2023-08-31]]" -> "⏳ 2023-08-31"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 4. DROP
+# ─────────────────────────────────────────────────────────────────────────────
+drop: [life, work, project, resource, misc, mensen]
+links_replace:
+  "quick capture": "#capture"      # 44x Logseq quick-capture marker
+drop_properties:                   # Logseq SRS state lines (energy.md)
+  - card-last-interval
+  - card-repeats
+  - card-ease-factor
+  - card-next-schedule
+  - card-last-reviewed
+  - card-last-score
+frontmatter_tags_drop: [Project, Area, Resource, Archive, home]
+frontmatter_tags_to_type:
+  cheatsheet: cheatsheet
+  Cheatsheet: cheatsheet
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 5. FILE MOVES  (source relative to vault root -> destination)
+#    "TRASH" = move to .trash/   "MERGE:<dest>" = append content to dest
+#    Root attachments (png/jpg/pdf/aac/...) -> Attachments/ automatically.
+#    Journals with YYYY_MM_DD names -> YYYY-MM-DD automatically.
+#    Any *conflicted* file -> "00 Inbox/_conflicts/" automatically.
+#    Any .md not listed -> "00 Inbox/" (nothing gets lost).
+# ─────────────────────────────────────────────────────────────────────────────
+moves:
+  # 00 Inbox
+  Tasks/TODAY.md: 00 Inbox/TODAY.md
+  Tasks/TODO.md: 00 Inbox/TODO.md
+  Logseq/inbox.md: 00 Inbox/inbox.md
+  Logseq/idea.md: 00 Inbox/idea.md
+
+  # 10 Projects
+  Logseq/Data Mastery/Data Mastery.md: 20 Areas/Business/Data Mastery/Data Mastery.md
+  Logseq/Data Mastery/Module/Agents.md: 20 Areas/Business/Data Mastery/Modules/Agents.md
+  AI Platform.md: 40 Archive/LeasePlan/AI Platform.md
+  Logseq/Project/CV-Generator.md: 10 Projects/Personal/CV-Generator.md
+  Logseq/Project/KlantenserviceRAG.md: 10 Projects/Enexis/KlantenserviceRAG.md
+  Logseq/Project/NL today.md: 10 Projects/Personal/NL today.md
+  Logseq/Project/Onderwijs Analist Bot.md: 10 Projects/Personal/Onderwijs Analist Bot.md
+
+  # 20 Areas
+  Logseq/Area/House.md: 20 Areas/House/House.md
+  Logseq/House.md: MERGE:20 Areas/House/House.md
+  Logseq/HCM.md: 20 Areas/House/HCM.md
+  Logseq/zonnepanelen.md: 20 Areas/House/zonnepanelen.md
+  Logseq/tuin.md: 20 Areas/House/tuin.md
+  Logseq/pannen.md: 20 Areas/House/pannen.md
+  Logseq/Area/Finance.md: 20 Areas/Finance/Finance.md
+  Logseq/maandplanning.md: 20 Areas/Finance/maandplanning.md
+  Logseq/verzekeringen.md: 20 Areas/Finance/verzekeringen.md
+  Logseq/Dutch Dataworks.md: 20 Areas/Business/Dutch Dataworks/Dutch Dataworks.md
+  Logseq/moneybird.md: 20 Areas/Business/moneybird.md
+  Logseq/jaarafsluiting.md: 20 Areas/Business/jaarafsluiting.md
+  Logseq/sales.md: 20 Areas/Business/Dutch Dataworks/sales.md
+  Logseq/Enexis/Enexis.md: 20 Areas/Business/Dutch Dataworks/Enexis.md      # active client
+  Logseq/Veneficus.md: 20 Areas/Business/Data Mastery/Veneficus.md          # active customer
+  Logseq/Convince the business.md: 20 Areas/Business/Dutch Dataworks/Convince the business.md
+  Logseq/accomplishments.md: 20 Areas/Career/accomplishments.md
+  Logseq/compliments.md: 20 Areas/Career/compliments.md
+  Logseq/personal-user-manual.md: 20 Areas/Career/personal-user-manual.md
+  Logseq/staff-engineer.md: 20 Areas/Career/staff-engineer.md
+  Logseq/Friends and family.md: 20 Areas/Family/Friends and family.md
+  Logseq/kinderopvang.md: 20 Areas/Family/kinderopvang.md
+  Logseq/gift.md: 20 Areas/Family/gift.md
+  Logseq/kleding.md: 20 Areas/Family/kleding.md
+  Logseq/Health.md: 20 Areas/Health/Health.md
+  Logseq/auto/VolvoXC90.md: 20 Areas/Vehicles/VolvoXC90.md
+  Logseq/tesla.md: 20 Areas/Vehicles/tesla.md
+  Logseq/Vouwwagen.md: 20 Areas/Vehicles/Vouwwagen.md
+  Logseq/Area/Saxophone.md: 20 Areas/Music/Saxophone.md
+  Logseq/Music/ToCoda Band.md: 20 Areas/Music/ToCoda Band.md
+  Logseq/Homelab/homelab.md: 20 Areas/Homelab/homelab.md
+  Logseq/Homelab/NAS Home Server Build.md: 20 Areas/Homelab/NAS Home Server Build.md
+  Logseq/home-assistant.md: 20 Areas/Homelab/home-assistant.md
+  Logseq/photoprism.md: 20 Areas/Homelab/photoprism.md
+  Logseq/nixos.md: 20 Areas/Homelab/nixos.md
+  Logseq/nix.md: 20 Areas/Homelab/nix.md
+
+  # 30 Resources
+  Logseq/python.md: 30 Resources/Tech/python.md
+  Logseq/python-lessons-learned.md: 30 Resources/Tech/python-lessons-learned.md
+  Logseq/uv.md: 30 Resources/Tech/uv.md
+  Logseq/poetry.md: 30 Resources/Tech/poetry.md
+  Logseq/mambaforge.md: 30 Resources/Tech/mambaforge.md
+  Logseq/git.md: 30 Resources/Tech/git.md
+  Logseq/docker.md: 30 Resources/Tech/docker.md
+  Logseq/sql.md: 30 Resources/Tech/sql.md
+  Logseq/macos.md: 30 Resources/Tech/macos.md
+  Logseq/software-dev.md: 30 Resources/Tech/software-dev.md
+  Logseq/mlops.md: 30 Resources/Tech/mlops.md
+  Logseq/CRISP-ML.md: 30 Resources/Tech/CRISP-ML.md
+  Logseq/modelling-guidelines.md: 30 Resources/Tech/modelling-guidelines.md
+  Logseq/modelling-intentions.md: 30 Resources/Tech/modelling-intentions.md
+  Logseq/OBS.md: 30 Resources/Tech/OBS.md
+  Logseq/tools.md: 30 Resources/Tech/tools.md
+  Logseq/energy.md: 30 Resources/Tech/energy.md
+  Logseq/cheat-sheet.md: 30 Resources/Cheatsheets/cheat-sheet.md
+  Logseq/cheatsheet/Enexis.md: 30 Resources/Cheatsheets/Enexis cheatsheet.md   # renamed: basename clash with Enexis.md
+  Logseq/Book/Good Code Bad Code.md: 30 Resources/Books/Good Code Bad Code.md
+  Logseq/Book/Natural Language Processing with Transformers.md: 30 Resources/Books/Natural Language Processing with Transformers.md
+  Logseq/hls__Good_Code_Bad_Code_1674550473839_0.md: 30 Resources/Books/hls__Good_Code_Bad_Code_1674550473839_0.md
+  Logseq/course/ComputerVisionHuggingFace.md: 30 Resources/Courses/ComputerVisionHuggingFace.md
+  Logseq/guided-learning.md: 30 Resources/Courses/guided-learning.md
+  Logseq/Learning.md: 30 Resources/Courses/Learning.md
+  Logseq/To/drink.md: 30 Resources/Lists/To drink.md
+  Logseq/Philosophy.md: 30 Resources/Personal/Philosophy.md
+  Logseq/quotes.md: 30 Resources/Personal/quotes.md
+  Logseq/verhaal.md: 30 Resources/Personal/verhaal.md
+  Logseq/epic-humor-videos.md: 30 Resources/Personal/epic-humor-videos.md
+  Logseq/camping.md: 30 Resources/Personal/camping.md
+  Logseq/travel.md: 30 Resources/Personal/travel.md
+  Logseq/Simon.md: 30 Resources/People/Simon.md
+  Logseq/Thijmen.md: 30 Resources/People/Thijmen.md
+  Logseq/Liesbeth.md: 30 Resources/People/Liesbeth.md
+  Logseq/Brouwer.md: 30 Resources/People/Brouwer.md
+  Logseq/Hugo.md: 30 Resources/People/Hugo.md
+
+  # 40 Archive
+  Logseq/Project/sims.md: 40 Archive/LeasePlan/SIMS.md
+  Logseq/Team meeting.md: 40 Archive/LeasePlan/Team meeting.md
+  Logseq/okta.md: 40 Archive/LeasePlan/okta.md
+  Logseq/arec.md: 40 Archive/arec.md
+  Logseq/Project/Learn Logseq.md: 40 Archive/Learn Logseq.md
+  Logseq/contents.md: 40 Archive/Logseq/contents.md
+  Logseq/Week Ahead.md: 40 Archive/Logseq/Week Ahead.md
+
+  # Templates
+  Logseq/template.md: Templates/time-blocker.md
+
+  # TRASH (Logseq tag-index / query-only / empty pages; all in git anyway)
+  Logseq/Archive.md: TRASH
+  Logseq/Resource.md: TRASH
+  Logseq/Area/Area.md: TRASH
+  Logseq/Project/Project.md: TRASH
+  Logseq/Home.md: TRASH            # Logseq {{query}} only -> replaced by Tasks
+  Logseq/life.md: TRASH            # Logseq {{query}} only
+  Logseq/To/learn.md: TRASH        # empty
+  data-science.md: TRASH           # empty
+  color-type.md: TRASH             # empty
+  Untitled.canvas: TRASH
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 6. STUB NOTES for new link targets that have no file yet
+#    properties go into the stub's frontmatter
+# ─────────────────────────────────────────────────────────────────────────────
+stubs:
+  - folder: 30 Resources/People
+    properties: {type: person}
+    names: [Thijs, Sophie, Nienke, Karsten, Timo, Robbie, Savas, Petar, Joseph,
+            Jennifer, Yanying, Jos, David, Sevak, Daphne, Sabine, Andrew, Mark, Max, Andreea]
+  - folder: 30 Resources/Organisations          # leads / past freelance projects
+    properties: {type: organisation, business: "[[Dutch Dataworks]]"}
+    names: [Tennet, Collibra, Alfen, Alliander, SocGen, Schuberg Philis, LeasePlan]
+  - folder: 30 Resources/Organisations          # providers
+    properties: {type: organisation}
+    names: [Goodwe, Unive, Brand New Day]
+  - folder: 10 Projects/Enexis
+    properties: {type: project, status: active, client: "[[Enexis]]"}
+    names: [Image Quality Checker, Meterstanden]
+  - folder: 10 Projects/Personal
+    properties: {type: project, status: active}
+    names: [Spenditor]
+  - folder: 20 Areas/House
+    properties: {type: area}
+    names: [Ravelijn47]
+  - folder: 20 Areas/Homelab
+    properties: {type: device}
+    names: [larkbox]
+  - folder: 20 Areas/Vehicles
+    properties: {type: vehicle}
+    names: [Peugeot 308, Prius]
+  - folder: 30 Resources
+    properties: {type: topic}
+    names: [Management, PyCon]
+
+# Frontmatter merged into existing notes (enables a Projects.base view)
+properties:
+  10 Projects/Enexis/KlantenserviceRAG.md: {type: project, status: active, client: "[[Enexis]]"}
+  10 Projects/Personal/CV-Generator.md: {type: project, status: active}
+  10 Projects/Personal/NL today.md: {type: project, status: active}
+  10 Projects/Personal/Onderwijs Analist Bot.md: {type: project, status: active}
+  40 Archive/LeasePlan/SIMS.md: {type: project, status: done, client: "[[LeasePlan]]"}
+  40 Archive/LeasePlan/AI Platform.md: {type: project, status: done, client: "[[LeasePlan]]"}
+
+# Query notes: note name -> tag. Existing note gets the query appended,
+# otherwise it is created in 30 Resources/Lists/. Every to/* tag gets a
+# "To <x>" list note automatically.
+query_notes:
+  accomplishments: "#accomplishments"
+  compliments: "#compliments"
+  quotes: "#quotes"
+  verhaal: "#verhaal"
+  idea: "#idea"
+  tools: "#tools"
+  Feedback: "#feedback"
+  Gratitude: "#gratitude"
+  Bloeddruk: "#bloeddruk"
+  Capture: "#capture"
+
+# Per-file exceptions: source path -> {tag: replacement}
+file_overrides:
+  Journals/2024-05-27.md:
+    project/gencv: "[[CV-Generator]]"     # the only real CV-Generator mention
