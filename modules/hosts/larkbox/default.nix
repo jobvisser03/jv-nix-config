@@ -234,8 +234,36 @@
 
     # Home-manager overrides for this host
     home-manager.users.${username} = {
-      # Disable suspend on idle for homelab server
-      hypridle.suspendOnIdle = false;
+      # Media node on a full-HD beamer: Firefox kiosk-style playback, and
+      # never suspend the homelab server.
+      niri = {
+        suspendOnIdle = false;
+        mediaKiosk.enable = true;
+      };
+
+      programs.firefox.profiles.default.settings = {
+        # Scale UI and pages for viewing a 1080p beamer from the couch.
+        "layout.css.devPixelsPerPx" = "1.5";
+
+        # Widevine DRM for streaming sites.
+        "media.eme.enabled" = true;
+        "media.gmp-widevinecdm.enabled" = true;
+        "media.gmp-widevinecdm.visible" = true;
+
+        # VA-API decoding on the N100 iGPU keeps CPU load and heat down.
+        "media.ffmpeg.vaapi.enabled" = true;
+
+        # Let streaming sites autoplay the next episode.
+        "media.autoplay.default" = 0;
+
+        # Enter fullscreen video instantly without the overlay warning.
+        "full-screen-api.warning.timeout" = 0;
+        "full-screen-api.transition-duration.enter" = "0 0";
+        "full-screen-api.transition-duration.leave" = "0 0";
+
+        # Restore the last session instead of opening the homepage.
+        "browser.startup.page" = 3;
+      };
     };
 
     system.stateVersion = "25.11";

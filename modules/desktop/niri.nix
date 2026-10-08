@@ -89,6 +89,21 @@
         systemctl suspend
       '';
 
+      kiosk = config.niri.mediaKiosk.enable;
+      firefox = lib.getExe config.programs.firefox.finalPackage;
+      gaps =
+        if kiosk
+        then "0"
+        else "10";
+      defaultColumnWidth =
+        if kiosk
+        then "1.000000"
+        else "0.500000";
+      cornerRadius =
+        if kiosk
+        then "0"
+        else "15";
+
       idleCommand =
         [
           (lib.getExe pkgs.swayidle)
@@ -120,7 +135,13 @@
     in {
       imports = [inputs.noctalia.homeModules.default];
 
-      options.niri.suspendOnIdle = lib.mkEnableOption "Suspend system after idle timeout" // {default = true;};
+      options.niri = {
+        suspendOnIdle = lib.mkEnableOption "Suspend system after idle timeout" // {default = true;};
+
+        # Couch/beamer media node: edge-to-edge windows, Firefox at login,
+        # hidden idle cursor, and no lock/dim/blank while watching video.
+        mediaKiosk.enable = lib.mkEnableOption "media kiosk layout for full-HD beamer playback";
+      };
 
       config = {
         programs.noctalia = {
@@ -155,12 +176,15 @@
           cursor {
             xcursor-theme "${config.stylix.cursor.name}"
             xcursor-size ${toString config.stylix.cursor.size}
+            ${lib.optionalString kiosk "hide-when-typing"}
+            ${lib.optionalString kiosk "hide-after-inactive-ms 3000"}
           }
 
           layout {
             background-color "transparent"
-            gaps 10
+            gaps ${gaps}
             focus-ring {
+              ${lib.optionalString kiosk "off"}
               width 2
               active-color "${stylix.base0D}"
               inactive-color "${stylix.base03}"
@@ -168,7 +192,7 @@
             border {
               off
             }
-            default-column-width { proportion 0.500000; }
+            default-column-width { proportion ${defaultColumnWidth}; }
             preset-column-widths {
                 proportion 0.333330
                 proportion 0.500000
@@ -202,10 +226,11 @@
 
           spawn-at-startup "${lib.getExe startupScript}"
           spawn-at-startup "${noctalia}"
+          ${lib.optionalString kiosk ''spawn-at-startup "${firefox}"''}
 
           window-rule {
-            // Rounded corners for a modern look.
-            geometry-corner-radius 15
+            // Rounded corners for a modern look; square edges on the beamer.
+            geometry-corner-radius ${cornerRadius}
 
             // Clips window contents to the rounded corner boundaries.
             clip-to-geometry true
@@ -217,6 +242,13 @@
             default-column-width { fixed 1080; }
             default-window-height { fixed 920; }
           }
+
+          ${lib.optionalString kiosk ''
+            window-rule {
+              match app-id="^firefox$"
+              open-maximized true
+            }
+          ''}
 
           window-rule {
             match app-id="^firefox$" title="^Picture-in-Picture$"
@@ -338,7 +370,9 @@
 
         services.playerctld.enable = true;
 
-        systemd.user.services.niri-idle = {
+        # Firefox inhibits idle only while video plays; a paused stream must
+        # not lock or blank the beamer, so the kiosk skips idle management.
+        systemd.user.services.niri-idle = lib.mkIf (!kiosk) {
           Unit = {
             Description = "Niri idle management";
             After = ["graphical-session.target"];

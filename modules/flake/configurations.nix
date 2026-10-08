@@ -261,7 +261,7 @@ in {
         "common-nixos"
         "common-shell"
         "common-dev"
-        "hyprland-desktop"
+        "niri-desktop"
       ];
       modules = [
         "user-job"
