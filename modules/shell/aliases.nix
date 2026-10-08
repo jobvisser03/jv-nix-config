@@ -9,14 +9,12 @@
   }: {
     programs.zsh.shellAliases = {
       # Nix rebuild aliases (will be customized per-host)
-      nd-work = "sudo darwin-rebuild switch --flake ~/repos/jv-nix-config#macbook-silicon";
-      nd-mac = "sudo darwin-rebuild switch --flake ~/repos/jv-nix-config#macbook-intel";
-      nrf = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#framework-13-pro";
-      nrmb = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#macbook-intel-nixos";
-      nrs = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#macbook-intel-nixos-sooph";
-      nrl = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#larkbox";
-      nup = "sudo nixos-rebuild switch --flake ~/repos/jv-nix-config#macbok-intel-nixos --upgrade";
+      nd-work = "nh darwin switch ~/repos/jv-nix-config -H macbook-silicon";
+      nd-mac = "nh darwin switch ~/repos/jv-nix-config -H macbook-intel";
+      # Usage: nr <host>, e.g. `nr larkbox` (append --update to bump flake inputs)
+      nr = "nh os switch ~/repos/jv-nix-config -H";
       flup = "nix flake update --commit-lock-file";
+      ngc = "nh clean all --keep 5 --keep-since 7d";
 
       # Larkbox remote commands
       larkbox-spotify = "ssh larkbox 'XDG_RUNTIME_DIR=/run/user/$(id -u) HYPRLAND_INSTANCE_SIGNATURE=$(ls /run/user/$(id -u)/hypr/) hyprctl dispatch togglespecialworkspace spotify'";
