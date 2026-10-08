@@ -32,6 +32,8 @@
         plugins.obsidian-outliner
         plugins.journals
         plugins.obsidian-importer
+        plugins.obsidian-tasks-plugin
+        plugins.obsidian-spaced-repetition
       ];
     };
   };
