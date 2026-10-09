@@ -19,6 +19,7 @@
 #   &larkbox             -> modules/hosts/larkbox
 #   &macbook_intel_nixos -> modules/hosts/macbook-intel-nixos
 #   &framework_13_pro    -> modules/hosts/framework-13-pro
+#   &homeserver          -> modules/hosts/homeserver (recipient added after install)
 # Personal editing identities come from age-keygen on each host. Add only the
 # printed age1... public recipient here; keep AGE-SECRET-KEY-... in the local
 # ~/.config/sops/age/keys.txt. MacBook Silicon uses a personal key, not a NixOS
@@ -27,6 +28,7 @@ keys:
   - &larkbox age1pgyawfqrlvzwks4y2dq2u486lyz47qwu3uyt5ftazn3at70pxs0q9xwj6u
   - &macbook_intel_nixos age1swfmvcexzr04argh8ms5asd9rvaxfj4at2j7eaj9qj03gevvwakswkt62s
   - &framework_13_pro age1jhv83lmmvljj8a8s68nhed458d7lprg6rp36fjc75jzg9skke3hq2we6cx
+  # - &homeserver age1...   # uncomment with ssh-to-age output, see docs/homeserver.md
 
   # Personal age identities, used for editing encrypted files.
   - &larkbox_user age188usuuflnprxceyxxa4c79hgajgyzjzsuwrlpn0rntdfm4ujsv2swfx743
@@ -54,6 +56,7 @@ creation_rules:
           - *larkbox
           - *macbook_intel_nixos
           - *framework_13_pro
+          # - *homeserver
           - *larkbox_user
           - *macbook_intel_nixos_user
           - *framework_13_pro_user

@@ -84,6 +84,10 @@ The configuration follows a **dendritic pattern** using `import-tree` to auto-im
 │   │   │   ├── default.nix
 │   │   │   ├── _hardware-configuration.nix
 │   │   │   └── _secrets.nix
+│   │   ├── homeserver/        # Headless ZFS NAS (see docs/homeserver.md)
+│   │   │   ├── default.nix
+│   │   │   ├── _disko-nvme.nix / _disko-tank.nix
+│   │   │   └── _storage.nix, _shares.nix, _pcloud.nix, _secrets.nix
 │   │   ├── macbook-intel-nixos/  # Intel Mac running NixOS
 │   │   │   ├── default.nix
 │   │   │   ├── _hardware-configuration.nix
@@ -246,12 +250,17 @@ Common profiles include `common-nixos`, `common-shell`, `common-dev`, `hyprland-
 | `macbook-intel-nixos`       | NixOS  | x86_64-linux   | job        | Intel MacBook running NixOS with Hyprland     |
 | `macbook-intel-nixos-sooph` | NixOS  | x86_64-linux   | sooph      | Intel MacBook running NixOS (sooph's account) |
 | `framework-13-pro`          | NixOS  | x86_64-linux   | job        | Framework Laptop 13 Pro with Niri + Noctalia |
+| `homeserver`                | NixOS  | x86_64-linux   | job        | Headless ZFS NAS + Immich/Jellyfin            |
 | `macbook-intel`             | Darwin | x86_64-darwin  | job        | Intel MacBook running macOS                   |
 | `macbook-silicon`           | Darwin | aarch64-darwin | job.visser | Apple Silicon MacBook running macOS           |
 
 ## Framework 13 Pro
 
 Framework install, disko, LUKS2, Secure Boot, TPM2 unlock, and hibernation instructions live in [`docs/framework-13-pro.md`](docs/framework-13-pro.md).
+
+## Homeserver
+
+NAS install (disko, ZFS RAIDZ2 with encryption keyfile, shares, pCloud sync) and the larkbox media migration live in [`docs/homeserver.md`](docs/homeserver.md).
 
 ## Homelab Architecture
 

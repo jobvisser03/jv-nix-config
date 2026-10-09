@@ -279,6 +279,25 @@ in {
       ];
     };
 
+    # Headless NAS + media server (ZFS, Immich, Jellyfin)
+    homeserver = mkNixosSystem {
+      hostname = "homeserver";
+      system = "x86_64-linux";
+      user = "job";
+      profiles = [
+        "common-nixos"
+        "common-shell"
+        "common-dev"
+      ];
+      modules = [
+        "user-job"
+        "homelab"
+      ];
+      extraModules = [
+        inputs.sops-nix.nixosModules.sops
+      ];
+    };
+
     # MacBook running NixOS
     macbook-intel-nixos = mkNixosSystem {
       hostname = "macbook-intel-nixos";
