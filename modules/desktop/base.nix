@@ -2,11 +2,26 @@
 {...}: {
   flake.modules.nixos.desktop-base = {pkgs, ...}: {
     # X11 keyboard configuration is also reused by the console.
-    services.xserver.xkb = {
-      layout = "us";
-      options = "caps:escape";
-    };
+    services.xserver.xkb.layout = "us";
     console.useXkbConfig = true;
+
+    # CapsLock: Esc when tapped, Ctrl when held. keyd remaps below xkb, so it
+    # applies the same in niri, Hyprland and the TTY.
+    services.keyd = {
+      enable = true;
+      keyboards.default = {
+        ids = ["*"];
+        settings.main.capslock = "overload(control, esc)";
+      };
+    };
+    # keyd's virtual keyboard isn't seen as internal, which breaks libinput's
+    # disable-while-typing on touchpads; mark it internal.
+    environment.etc."libinput/local-overrides.quirks".text = ''
+      [keyd virtual keyboard]
+      MatchUdevType=keyboard
+      MatchName=keyd*virtual keyboard
+      AttrKeyboardIntegration=internal
+    '';
 
     # Audio with PipeWire.
     services.pulseaudio.enable = false;

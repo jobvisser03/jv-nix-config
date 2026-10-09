@@ -39,6 +39,15 @@
       useRoutingFeatures = lib.mkDefault "client";
     };
 
+    # Run unpatched binaries (pip wheels, uv tools, vendor CLIs). Extra
+    # libraries for VS Code Server are added in vscode-server.nix.
+    programs.nix-ld.enable = lib.mkDefault true;
+    # Populates /bin and /usr/bin so `#!/bin/bash`-style shebangs work
+    services.envfs.enable = lib.mkDefault true;
+
+    # Don't hang for 90s on "a stop job is running" at shutdown
+    systemd.settings.Manager.DefaultTimeoutStopSec = "10s";
+
     # Allow unfree packages
     nixpkgs.config.allowUnfree = true;
 

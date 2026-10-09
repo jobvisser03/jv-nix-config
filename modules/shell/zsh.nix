@@ -53,6 +53,9 @@
         bindkey "^ " autosuggest-accept
 
         eval "$(devenv hook zsh)"
+
+        # Keep zsh (and this prompt) inside `nix shell` / `nix develop`
+        ${lib.getExe pkgs.nix-your-shell} zsh | source /dev/stdin
       '';
 
       plugins = [

@@ -41,6 +41,20 @@
       };
 
       nixpkgs.config.allowUnfree = true;
+
+      # Weekly GC of old generations (same retention as the `ngc` alias), and
+      # NH_FLAKE so plain `nh os switch` finds this repo.
+      programs.nh = {
+        enable = true;
+        clean = {
+          enable = true;
+          extraArgs = "--keep 5 --keep-since 7d";
+        };
+        flake = "/home/${username}/repos/jv-nix-config";
+      };
+
+      # Hard-link identical store paths on a timer (cheaper than auto-optimise-store on every build)
+      nix.optimise.automatic = true;
     };
 
     # Darwin nix settings

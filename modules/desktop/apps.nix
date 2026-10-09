@@ -9,6 +9,9 @@
       electron_39 = pkgs.electron_41;
     };
   in {
+    # AirDrop-style LAN file sharing; also opens its firewall port (53317)
+    programs.localsend.enable = true;
+
     environment.systemPackages = with pkgs; [
       # Hardware management
       radeontop

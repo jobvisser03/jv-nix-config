@@ -6,6 +6,9 @@
     treefmt = {
       projectRootFile = "flake.nix";
 
+      # sops-encrypted files: never rewrite (sops owns their layout)
+      settings.global.excludes = ["secrets/*.yaml"];
+
       programs = {
         # Nix formatting
         alejandra.enable = true;

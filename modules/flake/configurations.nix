@@ -55,6 +55,7 @@
       "common-dev"
       "hyprland-desktop"
       "power-management"
+      "plymouth"
     ];
 
     niri-desktop = [
@@ -76,6 +77,7 @@
       "common-dev"
       "niri-desktop"
       "power-management"
+      "plymouth"
     ];
 
     darwin-workstation = [

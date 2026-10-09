@@ -139,8 +139,6 @@
 
             input = {
               kb_layout = "us";
-              # "caps:swapescape"
-              kb_options = "ctrl:nocaps";
               follow_mouse = 1;
               sensitivity = 0;
               repeat_delay = 300;
