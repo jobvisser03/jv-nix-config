@@ -143,9 +143,17 @@
           enable = true;
           settings.wallpaper = {
             enabled = true;
+            directory = "~/Pictures/Wallpapers";
             default.path = toString config.stylix.image;
           };
+          # Wallhaven browser: downloads into wallpaper.directory and applies it.
+          settings.plugins.enabled = ["noctalia/wallhaven"];
         };
+
+        # Seed the picker with the repo wallpapers; the dir itself stays
+        # writable so Wallhaven downloads land next to them.
+        home.file."Pictures/Wallpapers/nix-wallpaper-binary-black.png".source = ../../non-nix-configs/nix-wallpaper-binary-black.png;
+        home.file."Pictures/Wallpapers/nixos-wallpaper-catppuccin-frappe.png".source = ../../non-nix-configs/nixos-wallpaper-catppuccin-frappe.png;
 
         # https://github.com/niri-wm/niri/blob/main/resources/default-config.kdl
         xdg.configFile."niri/config.kdl".text = ''
