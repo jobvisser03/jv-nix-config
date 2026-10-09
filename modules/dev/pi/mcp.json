@@ -2,14 +2,12 @@
   "mcpServers": {
     "atlassian": {
       "url": "https://mcp.atlassian.com/v1/mcp/authv2",
-      "auth": "oauth",
       "oauth": {
         "skipIssuerMetadataValidation": true
       }
     },
     "miro": {
-      "url": "https://mcp.miro.com",
-      "auth": "oauth"
+      "url": "https://mcp.miro.com"
     }
   }
 }
