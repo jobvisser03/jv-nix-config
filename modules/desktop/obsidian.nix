@@ -30,6 +30,7 @@
       ];
       defaultSettings.communityPlugins = [
         plugins.obsidian-outliner
+        plugins.obsidian-zoom
         plugins.journals
         plugins.obsidian-importer
         plugins.obsidian-tasks-plugin

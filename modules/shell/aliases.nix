@@ -12,7 +12,7 @@
       nd-work = "nh darwin switch ~/repos/jv-nix-config -H macbook-silicon";
       nd-mac = "nh darwin switch ~/repos/jv-nix-config -H macbook-intel";
       # Usage: nr <host>, e.g. `nr larkbox` (append --update to bump flake inputs)
-      nr = "nh os switch ~/repos/jv-nix-config -H";
+      nr = "NIX_CONFIG='warn-dirty = false' nh os switch ~/repos/jv-nix-config --accept-flake-config -H";
       flup = "nix flake update --commit-lock-file";
       ngc = "nh clean all --keep 5 --keep-since 7d";
 

@@ -42,6 +42,7 @@
         # Greetd display manager with auto-login
         greetd = {
           enable = true;
+          useTextGreeter = true;
           settings = {
             default_session = {
               command = "${pkgs.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --remember --asterisks --sessions ${config.services.displayManager.sessionData.desktops}/share/wayland-sessions";

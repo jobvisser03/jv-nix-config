@@ -6,7 +6,6 @@
     nixos.niri = {
       config,
       pkgs,
-      username,
       ...
     }: {
       imports = [inputs.noctalia.nixosModules.default];
@@ -24,18 +23,14 @@
       # Niri needs the imported user-manager PATH rather than NixOS's stripped default.
       systemd.user.services.niri.enableDefaultPath = false;
 
-      # Start the compositor selected by this host's desktop profile at login.
+      # No autologin: the password typed at tuigreet lets greetd's PAM stack
+      # unlock gnome-keyring, so apps don't prompt for the keyring password.
       services.greetd = {
         enable = true;
-        settings = {
-          default_session = {
-            command = "${pkgs.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --remember --asterisks --sessions ${config.services.displayManager.sessionData.desktops}/share/wayland-sessions";
-            user = "greeter";
-          };
-          initial_session = {
-            command = "${config.programs.niri.package}/bin/niri-session";
-            user = username;
-          };
+        useTextGreeter = true;
+        settings.default_session = {
+          command = "${pkgs.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --remember --remember-user-session --asterisks --sessions ${config.services.displayManager.sessionData.desktops}/share/wayland-sessions";
+          user = "greeter";
         };
       };
 

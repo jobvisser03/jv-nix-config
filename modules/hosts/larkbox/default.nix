@@ -232,6 +232,13 @@
       apacheHttpd
     ];
 
+    # Unattended media node: boot straight into Niri. The shared Niri module
+    # has no autologin so desktops unlock gnome-keyring at the greeter.
+    services.greetd.settings.initial_session = {
+      command = "${config.programs.niri.package}/bin/niri-session";
+      user = username;
+    };
+
     # Home-manager overrides for this host
     home-manager.users.${username} = {
       # Media node on a full-HD beamer: Firefox kiosk-style playback, and
