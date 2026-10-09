@@ -70,14 +70,13 @@
           "${./pi/pi-herdr-agents}"
           "npm:pi-rtk-optimizer"
           # "npm:remote-pi"
-          "npm:pi-mcp-adapter"
           "npm:@dietrichgebert/ponytail"
           "npm:pi-btw"
         ];
       };
     };
 
-    # MCP server configuration — loaded by pi-mcp-adapter from ~/.pi/agent/mcp.json.
+    # MCP server configuration — loaded by Pi built-in MCP from ~/.pi/agent/mcp.json.
     home.file.".pi/agent/mcp.json".text = builtins.readFile ./pi/mcp.json;
 
     # Global AGENTS.md — loaded by pi at startup from ~/.pi/agent/AGENTS.md.
