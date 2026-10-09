@@ -26,7 +26,6 @@
     "scminput": false
   },
   "github.copilot.nextEditSuggestions.enabled": true,
-  "gitlens.ai.model": "vscode",
   "jupyter.askForKernelRestart": false,
   "nix.formatterPath": "alejandra",
   "security.workspace.trust.untrustedFiles": "open",
