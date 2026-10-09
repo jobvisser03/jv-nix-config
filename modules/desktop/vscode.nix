@@ -9,7 +9,32 @@
       nixpkgs.overlays = [inputs.nix4vscode.overlays.default];
     };
 
-    homeManager.vscode = {pkgs, ...}: {
+    homeManager.vscode = {
+      pkgs,
+      config,
+      ...
+    }: let
+      # Must match the path home-manager's vscode module uses for the default profile.
+      settingsPath =
+        if pkgs.stdenv.hostPlatform.isDarwin
+        then "${config.home.homeDirectory}/Library/Application Support/Code/User/settings.json"
+        else "${config.xdg.configHome}/Code/User/settings.json";
+    in {
+      # settings.json is a symlink to vscode-settings.json in this repo instead of
+      # home-manager's `userSettings`, which puts the file in the read-only Nix store.
+      # VS Code and its extensions (Claude Code, GitLens, Copilot, vim, …) write to
+      # settings.json whenever a setting changes, and a store file makes every such
+      # write fail with EROFS ("Failed to save 'settings.json'"). Linking out of the
+      # store keeps it writable; whatever VS Code changes shows up in `git diff` to
+      # commit or revert. The update-check flags (`update.mode`,
+      # `extensions.autoCheckUpdates`) live in the JSON too, because
+      # enableUpdateCheck/enableExtensionUpdateCheck would make home-manager generate
+      # its own settings.json again.
+      # Assumes the repo is checked out at ~/repos/jv-nix-config on every host.
+      home.file.${settingsPath}.source =
+        config.lib.file.mkOutOfStoreSymlink
+        "${config.home.homeDirectory}/repos/jv-nix-config/modules/desktop/vscode-settings.json";
+
       programs.vscode = {
         enable = true;
         package =
@@ -19,9 +44,6 @@
         mutableExtensionsDir = false;
 
         profiles.default = {
-          enableUpdateCheck = false;
-          enableExtensionUpdateCheck = false;
-
           extensions = pkgs.nix4vscode.forVscode [
             "antfu.slidev"
             "1yib.svelte-bundle"
@@ -66,97 +88,6 @@
             "kahole.magit"
             "yzhang.markdown-all-in-one"
           ];
-
-          userSettings = {
-            "git.autofetch" = true;
-            "git.enableSmartCommit" = true;
-            "git.confirmSync" = false;
-            "diffEditor.ignoreTrimWhitespace" = false;
-            "editor.formatOnSave" = true;
-            "editor.minimap.enabled" = false;
-            "explorer.confirmDelete" = false;
-            "explorer.confirmDragAndDrop" = false;
-            "explorer.confirmPasteNative" = false;
-            "security.workspace.trust.untrustedFiles" = "open";
-            "terminal.integrated.fontFamily" = "CaskaydiaCove Nerd Font, MesloLGS NF, Inconsolata-g for Powerline, Source Code Pro for Powerline";
-            "terminal.integrated.suggest.enabled" = false;
-            "workbench.colorTheme" = "Cobalt2";
-
-            "chat.instructionsFilesLocations" = {
-              ".github/instructions" = true;
-            };
-            "chat.viewSessions.orientation" = "stacked";
-            "chat.utilityModel" = "customendpoint/claude-haiku-4.5-bedrock";
-            "chat.utilitySmallModel" = "customendpoint/claude-haiku-4.5-bedrock";
-            "claudeCode.preferredLocation" = "panel";
-            "claudeCode.selectedModel" = "opus";
-            "docker.extension.enableComposeLanguageServer" = false;
-            "github.copilot.enable" = {
-              "*" = true;
-              plaintext = false;
-              markdown = true;
-              scminput = false;
-            };
-            "github.copilot.nextEditSuggestions.enabled" = true;
-            "gitlens.ai.model" = "vscode";
-            "jupyter.askForKernelRestart" = false;
-            "nix.formatterPath" = "alejandra";
-            "dbcode.ai.inlineCompletion" = false;
-            "vim.easymotion" = true;
-            "vim.useSystemClipboard" = true;
-            "vim.cursorStylePerMode.insert" = "line";
-            "vim.cursorStylePerMode.normal" = "block";
-            "vim.insertModeKeyBindings" = [
-              {
-                before = ["j" "j"];
-                after = ["<Esc>"];
-              }
-              {
-                before = ["f" "d"];
-                after = ["<Esc>"];
-              }
-            ];
-            "vim.normalModeKeyBindingsNonRecursive" = [
-              {
-                before = ["<space>"];
-                commands = ["vspacecode.space"];
-              }
-              {
-                before = [","];
-                commands = [
-                  "vspacecode.space"
-                  {
-                    command = "whichkey.triggerKey";
-                    args = "m";
-                  }
-                ];
-              }
-            ];
-            "vim.visualModeKeyBindingsNonRecursive" = [
-              {
-                before = ["<space>"];
-                commands = ["vspacecode.space"];
-              }
-              {
-                before = [","];
-                commands = [
-                  "vspacecode.space"
-                  {
-                    command = "whichkey.triggerKey";
-                    args = "m";
-                  }
-                ];
-              }
-              {
-                before = [">"];
-                commands = ["editor.action.indentLines"];
-              }
-              {
-                before = ["<"];
-                commands = ["editor.action.outdentLines"];
-              }
-            ];
-          };
 
           keybindings =
             (builtins.fromJSON (builtins.readFile ./vscode-vspacecode-keybindings.json))
