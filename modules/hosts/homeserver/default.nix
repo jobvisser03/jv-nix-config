@@ -5,7 +5,7 @@
 # Also runs a Tang server so the framework can unlock when larkbox is down.
 #
 # Immich and Jellyfin are preconfigured against tank but disabled until
-# they are migrated off larkbox. See docs/homeserver.md.
+# they are migrated off larkbox. See docs/homeserver/overview.md.
 {...}: {
   flake.modules.nixos."hosts/homeserver" = {
     config,

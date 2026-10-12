@@ -28,7 +28,7 @@ keys:
   - &larkbox age1pgyawfqrlvzwks4y2dq2u486lyz47qwu3uyt5ftazn3at70pxs0q9xwj6u
   - &macbook_intel_nixos age1swfmvcexzr04argh8ms5asd9rvaxfj4at2j7eaj9qj03gevvwakswkt62s
   - &framework_13_pro age1jhv83lmmvljj8a8s68nhed458d7lprg6rp36fjc75jzg9skke3hq2we6cx
-  # - &homeserver age1...   # uncomment with ssh-to-age output, see docs/homeserver.md
+  # - &homeserver age1...   # uncomment with ssh-to-age output, see docs/homeserver/install.md
 
   # Personal age identities, used for editing encrypted files.
   - &larkbox_user age188usuuflnprxceyxxa4c79hgajgyzjzsuwrlpn0rntdfm4ujsv2swfx743

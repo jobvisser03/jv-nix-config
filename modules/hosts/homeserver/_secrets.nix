@@ -1,7 +1,7 @@
 # Homeserver secrets configuration.
 #
 # Decryption requires this host's ssh-to-age recipient in .sops.yaml and
-# `sops updatekeys secrets/shared.yaml` (see docs/homeserver.md). Until then
+# `sops updatekeys secrets/shared.yaml` (see docs/homeserver/install.md). Until then
 # activation warns and the pCloud timers fail; the rest of the system works.
 {...}: {
   sops.secrets = {

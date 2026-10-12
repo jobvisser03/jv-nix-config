@@ -10,7 +10,7 @@ NixOS host for Framework Laptop 13 Pro with Intel Core Ultra X7 358H, integrated
 - Profile: `laptop-niri` with Noctalia shell; switch to `laptop-hyprland` in `modules/flake/configurations.nix` to use Hyprland
 - Hardware: generic checked-in template plus `nixos-hardware.nixosModules.framework-intel-core-ultra-series3`
 - Boot: UEFI, Lanzaboote, Secure Boot, `sbctl`
-- Encryption: LUKS2 with TPM2 PCR 7 unlock and passphrase fallback
+- Encryption: LUKS2. Unattended unlock only at home (Clevis: TPM2 PCR 7 **and** Tang over initrd Wi-Fi); passphrase everywhere else. See [network-unlock.md](network-unlock.md)
 - Storage: GPT → 1 GiB ESP → LUKS2 → LVM → BTRFS
 - BTRFS subvolumes: `/root`, `/home`, `/nix`
 - Swap: 40 GiB LVM LV for 32 GiB RAM and hibernation
@@ -109,32 +109,31 @@ Rebuild once keys exist. Lanzaboote then signs boot artifacts with `/var/lib/sbc
 3. Enable **Enforce Secure Boot** in Framework firmware and reboot.
 4. Confirm `bootctl status` reports `Secure Boot: enabled (user)`.
 
-Back up `/var/lib/sbctl` securely. If keys are lost, restore them before rebuilding boot artifacts. If firmware keys or Secure Boot policy change, re-enroll TPM2 unlock with PCR 7 using the LUKS passphrase first.
+Back up `/var/lib/sbctl` securely. If keys are lost, restore them before rebuilding boot artifacts. If firmware keys or Secure Boot policy change, unlock with the LUKS passphrase and run `sudo network-unlock bind --replace`.
 
-## TPM2 LUKS unlock
+## LUKS unlock (Tang + TPM2)
 
-The initrd uses systemd-cryptsetup. It tries the TPM2 token bound to PCR 7 and then presents the LUKS passphrase prompt when TPM unlock fails.
+The initrd runs `clevis-luks-askpass` next to the normal passphrase prompt. The root unlocks without typing only when the TPM2 (PCR 7) **and** larkbox's Tang server both answer. Tang is reached over the home Wi-Fi from the initrd. Away from home the passphrase prompt appears, so a stolen laptop no longer boots to the login screen.
 
-After first boot, enroll the TPM token against the LUKS partition. Replace the device path with the exact path shown by `lsblk -f`:
+Setup, migration from the earlier systemd-cryptenroll TPM2-only token, and the `network-unlock` helper are in [network-unlock.md](network-unlock.md#framework-13-pro-migrating-from-tpm2-only). In short:
 
 ```sh
-lsblk -f
-sudo systemd-cryptenroll \
-  --tpm2-device=auto \
-  --tpm2-pcrs=7 \
-  /dev/disk/by-id/nvme-FRAMEWORK-13-PRO-REPLACE-ME-part2
-sudo systemd-cryptenroll \
-  /dev/disk/by-id/nvme-FRAMEWORK-13-PRO-REPLACE-ME-part2
+nix build .#nixosConfigurations.framework-13-pro.config.system.build.networkUnlock -o /tmp/network-unlock
+sudo /tmp/network-unlock/bin/network-unlock wifi      # before the first rebuild
+sudo nixos-rebuild switch --flake .#framework-13-pro
+sudo network-unlock bind
+sudo network-unlock drop-systemd-tpm2
 ```
 
-The second command lists enrolled slots. Store and test the LUKS passphrase before relying on TPM unlock. Re-enroll the TPM token after:
+Rebind with `sudo network-unlock bind --replace` after any of these:
 
 - Secure Boot keys change.
 - Secure Boot enforcement or firmware policy changes.
 - Firmware updates change PCR 7 measurements.
-- TPM is cleared or replaced.
+- The TPM is cleared or replaced.
+- larkbox's Tang keys are lost.
 
-Do not remove the passphrase slot. TPM unlock is convenience, not recovery.
+Do not remove the passphrase slot. Network unlock is convenience, not recovery.
 
 ## Persistence
 
@@ -160,7 +159,7 @@ cat /proc/cmdline
 systemctl hibernate
 ```
 
-Verify that the laptop powers off, resumes into the same session, and retains data. Test both TPM unlock and passphrase fallback after cold boot. Do not mark hibernation complete until resume works with Secure Boot enabled.
+Verify that the laptop powers off, resumes into the same session, and retains data. Test both unattended unlock at home and passphrase fallback away from home after cold boot. Do not mark hibernation complete until resume works with Secure Boot enabled.
 
 ## Non-destructive validation
 
@@ -185,7 +184,7 @@ These commands do not format disks. Do not use `--mode disko` outside installati
 - [ ] Confirm Framework host recipient in `.sops.yaml` and `secrets/shared.yaml` match.
 - [ ] Verify host-key-based `sops updatekeys` workflow when recipient list changes.
 - [ ] Rebuild and verify `/run/secrets/openai_api_key`.
-- [ ] Test TPM unlock and passphrase fallback.
+- [ ] Test Tang + TPM unlock at home and passphrase fallback away from home.
 - [ ] Test Secure Boot enforcement and hibernation resume.
 
 ## Recovery
@@ -212,7 +211,7 @@ sudo nixos-enter --root /mnt -c 'passwd job'
 
 `nixos-install` prompts for root password. Set `job` password from `nixos-enter`; do not commit `initialPassword` or password hashes. Keep Secure Boot disabled during initial install. If preserving current disk, mount existing `/root`, `/home`, `/nix`, and `/boot`, run only `nixos-install` (not disko), then migrate old `/persist` state before reboot.
 
-- **TPM unlock fails:** enter LUKS passphrase. Re-enroll TPM after confirming Secure Boot and PCR 7 state.
+- **Network unlock fails:** enter the LUKS passphrase. Check `sudo network-unlock status`, then `bind --replace` after confirming Secure Boot and PCR 7 state.
 - **Secure Boot fails:** disable enforcement temporarily or return firmware to setup mode, boot a recovery generation, restore `/var/lib/sbctl`, and rebuild Lanzaboote artifacts.
 - **Bootloader repair from live media:** mount target filesystems, enter the installation, and run:
 

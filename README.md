@@ -53,6 +53,8 @@ darwin-rebuild switch --flake .#macbook-silicon
 
 # NixOS
 sudo nixos-rebuild switch --flake .#larkbox
+sudo nixos-rebuild switch --flake .#framework-13-pro
+sudo nixos-rebuild switch --flake .#homeserver
 sudo nixos-rebuild switch --flake .#macbook-intel-nixos
 sudo nixos-rebuild switch --flake .#macbook-intel-nixos-sooph
 ```
@@ -84,9 +86,9 @@ The configuration follows a **dendritic pattern** using `import-tree` to auto-im
 │   │   │   ├── default.nix
 │   │   │   ├── _hardware-configuration.nix
 │   │   │   └── _secrets.nix
-│   │   ├── homeserver/        # Headless ZFS NAS (see docs/homeserver.md)
+│   │   ├── homeserver/        # Headless ZFS NAS (see docs/homeserver/)
 │   │   │   ├── default.nix
-│   │   │   ├── _disko-nvme.nix / _disko-tank.nix
+│   │   │   ├── _disko-nvme.nix / _disko-tank.nix   # LUKS root / ZFS pool
 │   │   │   └── _storage.nix, _shares.nix, _pcloud.nix, _secrets.nix
 │   │   ├── macbook-intel-nixos/  # Intel Mac running NixOS
 │   │   │   ├── default.nix
@@ -108,7 +110,9 @@ The configuration follows a **dendritic pattern** using `import-tree` to auto-im
 │   │   └── sops.nix           # SOPS base setup
 │   │
 │   ├── nixos/             # NixOS-specific modules
-│   │   └── base.nix           # Core NixOS configuration
+│   │   ├── base.nix           # Core NixOS configuration
+│   │   ├── network-unlock/    # Clevis Tang + TPM2 LUKS unlock, Tang server
+│   │   └── networking/azure-vpn/
 │   │
 │   ├── darwin/            # Darwin-specific modules
 │   │   ├── base.nix           # Core Darwin configuration
@@ -169,10 +173,10 @@ The configuration follows a **dendritic pattern** using `import-tree` to auto-im
 │   │
 │   ├── _rclone/           # Cloud storage mounts (internal)
 │   │   └── default.nix
-│   ├── _sops/             # Secret management (internal)
-│   │   └── default.nix
 │   └── _wm-scripts/       # WM helper scripts (internal)
 │       └── get_battery_info.sh
+│
+├── docs/                  # Host runbooks (see Documentation below)
 │
 ├── secrets/               # SOPS-encrypted secrets
 │   ├── larkbox.yaml
@@ -184,7 +188,7 @@ The configuration follows a **dendritic pattern** using `import-tree` to auto-im
     └── *.png               # Wallpapers
 ```
 
-> **Note on `_` prefixes:** Paths containing `/_` are automatically excluded by `import-tree`. This includes `_rclone/`, `_sops/`, `_wm-scripts/`, `_firmware/`, `_options.nix`, `_services/`, `_hardware-configuration.nix`, and `_secrets.nix`. These internal files are imported explicitly where needed.
+> **Note on `_` prefixes:** Paths containing `/_` are automatically excluded by `import-tree`. This includes `_rclone/`, `_wm-scripts/`, `_firmware/`, `_options.nix`, `_services/`, `_hardware-configuration.nix`, and `_secrets.nix`. These internal files are imported explicitly where needed.
 
 ## How It Works
 
@@ -254,13 +258,34 @@ Common profiles include `common-nixos`, `common-shell`, `common-dev`, `hyprland-
 | `macbook-intel`             | Darwin | x86_64-darwin  | job        | Intel MacBook running macOS                   |
 | `macbook-silicon`           | Darwin | aarch64-darwin | job.visser | Apple Silicon MacBook running macOS           |
 
+## Documentation
+
+Docs are runbooks: each answers "what do I type now" for one situation. Code comments explain *why* a setting exists. This layout follows the `foundry` docs in [Riezebos/nix](https://github.com/Riezebos/nix).
+
+| Doc | Covers |
+| --- | --- |
+| [`AGENTS.md`](AGENTS.md) | Short orientation for coding agents |
+| [`docs/framework-13-pro.md`](docs/framework-13-pro.md) | Framework install, disko, Secure Boot, LUKS unlock, hibernation |
+| [`docs/homeserver/overview.md`](docs/homeserver/overview.md) | Homeserver hardware, design, security model, file map |
+| [`docs/homeserver/install.md`](docs/homeserver/install.md) | Homeserver install, Secure Boot, network unlock, sops, larkbox migration |
+| [`docs/homeserver/operations.md`](docs/homeserver/operations.md) | Unlock, deploy, health checks, key inventory |
+| [`docs/homeserver/recovery.md`](docs/homeserver/recovery.md) | Recovery order, mounting from the installer, root disk reinstall |
+| [`docs/homeserver/roadmap.md`](docs/homeserver/roadmap.md) | Deferred work: alerting, restic, deploy-rs, CI |
+| [`docs/network-unlock.md`](docs/network-unlock.md) | Clevis + Tang + TPM2 for homeserver and framework; Tang on larkbox |
+| [`docs/syncthing-obsidian.md`](docs/syncthing-obsidian.md) | Obsidian vault sync |
+| [`docs/larkbox-bluetooth-audio.md`](docs/larkbox-bluetooth-audio.md) | Larkbox Bluetooth audio |
+
+## Disk encryption
+
+`framework-13-pro` and `homeserver` use LUKS2 roots that unlock unattended only at home. Unlocking needs both the TPM2 (PCR 7, Secure Boot) and a Tang server on the LAN (larkbox, `nixos/tang-server`); otherwise the passphrase prompt appears. The homeserver also gets an SSH unlock prompt in the initrd on port 2222. Add `"nixos/network-unlock"` to a host and set `networkUnlock.*`; see [`docs/network-unlock.md`](docs/network-unlock.md).
+
 ## Framework 13 Pro
 
-Framework install, disko, LUKS2, Secure Boot, TPM2 unlock, and hibernation instructions live in [`docs/framework-13-pro.md`](docs/framework-13-pro.md).
+Framework install, disko, LUKS2, Secure Boot, network unlock, and hibernation instructions live in [`docs/framework-13-pro.md`](docs/framework-13-pro.md).
 
 ## Homeserver
 
-NAS install (disko, ZFS RAIDZ2 with encryption keyfile, shares, pCloud sync) and the larkbox media migration live in [`docs/homeserver.md`](docs/homeserver.md).
+Headless NAS: LUKS root with Tang + TPM2 unlock, ZFS RAIDZ2 `tank` with an encryption keyfile, shares, pCloud sync, and the larkbox media migration. Start at [`docs/homeserver/overview.md`](docs/homeserver/overview.md).
 
 ## Homelab Architecture
 
@@ -372,7 +397,7 @@ That's it — `import-tree` will auto-import the new module file.
 
 ## Secrets
 
-Secrets are managed with [sops-nix](https://github.com/Mic92/sops-nix). Encrypted YAML files live in `secrets/` and are referenced via the `_sops/` module.
+Secrets are managed with [sops-nix](https://github.com/Mic92/sops-nix). Encrypted YAML files live in `secrets/`; the shared setup is `modules/base/sops.nix`, and recipients are listed in `.sops.yaml`.
 
 ```bash
 # Edit host-specific homelab secrets

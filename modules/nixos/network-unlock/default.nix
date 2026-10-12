@@ -221,7 +221,7 @@ in {
     services.tang = {
       enable = true;
       listenStream = [(toString tangPort)];
-      ipAddressAllow = [lanSubnet "127.0.0.0/8"];
+      ipAddressAllow = [lanSubnet "127.0.0.0/8" "::1/128"];
     };
     networking.firewall.allowedTCPPorts = [tangPort];
   };

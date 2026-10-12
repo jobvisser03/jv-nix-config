@@ -100,7 +100,8 @@ trust_adv() {
   echo "Tang $url signing key thumbprint(s):"
   jose fmt -j "$out.new" -g payload -y -o- |
     jose jwk use -i- -r -u verify -o- |
-    jose jwk thp -i- -a S256 | sed 's/^/  /'
+    jose jwk thp -i- -a S256 | sed "s/^/  /"
+  echo
   echo "Compare with: ssh <tang-host> tang-show-keys ${url##*:}"
   read -r -p "Trust these keys? [y/N] " answer
   [[ $answer == [yY] ]] || die "advertisement for $url not trusted"

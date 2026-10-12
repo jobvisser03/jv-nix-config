@@ -7,7 +7,7 @@
 # Encryption: ZFS native, raw hex key stored on the NVMe at
 # /etc/zfs/keys/tank.key. This protects discarded/RMA'd HDDs while keeping
 # boot unattended. Losing the key means losing the pool: keep a copy in KeePass.
-# The key is read from /tmp/tank.key at creation time (see docs/homeserver.md),
+# The key is read from /tmp/tank.key at creation time (see docs/homeserver/install.md),
 # then keylocation is switched to the on-disk path.
 #
 # Plain attrset (no function args) so the disko CLI can consume this file
