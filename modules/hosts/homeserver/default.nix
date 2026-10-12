@@ -1,7 +1,8 @@
 # Homeserver: headless NAS + media server.
 #
-# Ryzen 5 7600 / ASRock B650M RS Pro / 32 GB ECC / 1 TB NVMe (root) /
+# Ryzen 5 7600 / ASRock B650M RS Pro / 32 GB ECC / 1 TB NVMe (LUKS root) /
 # 5x 10 TB HDD (ZFS RAIDZ2 `tank`). Console access via JetKVM.
+# Also runs a Tang server so the framework can unlock when larkbox is down.
 #
 # Immich and Jellyfin are preconfigured against tank but disabled until
 # they are migrated off larkbox. See docs/homeserver.md.
@@ -10,8 +11,14 @@
     config,
     lib,
     inputs,
+    username,
     ...
-  }: {
+  }: let
+    # framework-13-pro. Used for normal SSH and the initrd unlock SSH.
+    adminKeys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN2mNxAxH9uxUJ+Mk5dwTaIKU7iApm4HYPFhiKtkJ0VF job@dutchdataworks.nl"
+    ];
+  in {
     imports = [
       ./_hardware-configuration.nix
       ./_disko-nvme.nix
@@ -21,6 +28,7 @@
       ./_shares.nix
       ./_pcloud.nix
       inputs.disko.nixosModules.disko
+      inputs.lanzaboote.nixosModules.lanzaboote
     ];
 
     networking.hostName = "homeserver";
@@ -30,9 +38,43 @@
       wheelNeedsPassword = false;
     };
 
+    # Key-only SSH, as on Riezebos/nix foundry. Passwordless sudo makes a
+    # guessed password equal to root, so password logins stay off.
+    users.users.${username}.openssh.authorizedKeys.keys = adminKeys;
+    services.openssh.settings = {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+      PermitRootLogin = "no";
+    };
+
+    # Secure Boot via Lanzaboote, same flow as framework-13-pro: install with
+    # Secure Boot off, keys are generated on first boot, enroll, enforce.
+    # It makes the TPM2 PCR 7 seal meaningful: booting other media changes
+    # PCR 7, so the TPM refuses even while Tang is reachable.
     boot.loader = {
-      systemd-boot.enable = true;
+      systemd-boot.enable = lib.mkForce false;
       efi.canTouchEfiVariables = true;
+    };
+    boot.lanzaboote = {
+      enable = true;
+      pkiBundle = "/var/lib/sbctl";
+      autoGenerateKeys.enable = true;
+      configurationLimit = 10;
+    };
+
+    # Unattended LUKS unlock: TPM2 (PCR 7) AND Tang on larkbox. If either is
+    # missing, unlock over SSH (port 2222, initrd) or type it via JetKVM.
+    # See docs/network-unlock.md.
+    networkUnlock = {
+      enable = true;
+      tpm2Pcrs = "7";
+      # B650M onboard 2.5GbE is Realtek RTL8125; confirm after install with
+      # `readlink /sys/class/net/*/device/driver`.
+      initrdKernelModules = ["r8169"];
+      ssh = {
+        enable = true;
+        authorizedKeys = adminKeys;
+      };
     };
 
     # No swap partition; compressed RAM swap absorbs Immich ML spikes.

@@ -1,4 +1,8 @@
-# Boot/root NVMe layout for homeserver: GPT -> 1 GiB ESP -> BTRFS.
+# Boot/root NVMe layout for homeserver: GPT -> 1 GiB ESP -> LUKS2 -> BTRFS.
+#
+# LUKS protects the root and with it the ZFS key at /etc/zfs/keys/tank.key.
+# Unlock is unattended via Clevis Tang + TPM2 (networkUnlock in default.nix);
+# disko prompts for the fallback passphrase at format time.
 #
 # Kept separate from _disko-tank.nix so the root disk can be reinstalled
 # without touching the data pool:
@@ -24,29 +28,34 @@
           };
         };
 
-        root = {
+        luks = {
           size = "100%";
           content = {
-            type = "btrfs";
-            extraArgs = ["-f"];
-            subvolumes = {
-              "/root" = {
-                mountpoint = "/";
-                mountOptions = ["compress=zstd" "noatime"];
-              };
-              "/home" = {
-                mountpoint = "/home";
-                mountOptions = ["compress=zstd" "noatime"];
-              };
-              "/nix" = {
-                mountpoint = "/nix";
-                mountOptions = ["compress=zstd" "noatime"];
-              };
-              # Service state (Immich Postgres, Jellyfin metadata/cache) on
-              # fast NVMe, separately snapshottable from the root subvolume.
-              "/var-lib" = {
-                mountpoint = "/var/lib";
-                mountOptions = ["compress=zstd" "noatime"];
+            type = "luks";
+            name = "cryptroot";
+            settings.allowDiscards = true;
+            content = {
+              type = "btrfs";
+              extraArgs = ["-f"];
+              subvolumes = {
+                "/root" = {
+                  mountpoint = "/";
+                  mountOptions = ["compress=zstd" "noatime"];
+                };
+                "/home" = {
+                  mountpoint = "/home";
+                  mountOptions = ["compress=zstd" "noatime"];
+                };
+                "/nix" = {
+                  mountpoint = "/nix";
+                  mountOptions = ["compress=zstd" "noatime"];
+                };
+                # Service state (Immich Postgres, Jellyfin metadata/cache) on
+                # fast NVMe, separately snapshottable from the root subvolume.
+                "/var-lib" = {
+                  mountpoint = "/var/lib";
+                  mountOptions = ["compress=zstd" "noatime"];
+                };
               };
             };
           };

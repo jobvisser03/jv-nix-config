@@ -11,9 +11,7 @@
     inputs,
     username,
     ...
-  }: let
-    crypttabExtraOpts = ["tpm2-device=auto" "tpm2-pcrs=7"];
-  in {
+  }: {
     imports = [
       ./_hardware-configuration.nix
       ./_disko.nix
@@ -29,6 +27,12 @@
     # Use power-profiles-daemon so Noctalia can switch Framework power modes.
     services.tlp.enable = lib.mkForce false;
     services.power-profiles-daemon.enable = lib.mkForce true;
+
+    # fprintd adds fingerprint auth to PAM (sudo, polkit); Noctalia's lock screen
+    # talks to fprintd directly. Keep the greeter password-only so greetd can
+    # still unlock gnome-keyring.
+    services.fprintd.enable = true;
+    security.pam.services.greetd.fprintAuth = false;
 
     # The shared SOPS file includes this host's ssh-to-age recipient.
     # sops-nix decrypts it at activation using /etc/ssh/ssh_host_ed25519_key.
@@ -105,10 +109,24 @@
       autoGenerateKeys.enable = true;
     };
 
-    # systemd-initrd lets systemd-cryptsetup try the TPM2 token first and
-    # fall back to an interactive LUKS passphrase prompt.
-    boot.initrd.systemd.enable = true;
-    boot.initrd.luks.devices.cryptroot.crypttabExtraOpts = crypttabExtraOpts;
+    # LUKS unlocks unattended only at home: TPM2 (PCR 7) AND a Tang server on
+    # the LAN, reached over Wi-Fi from the initrd. Elsewhere it asks for the
+    # passphrase. See docs/network-unlock.md.
+    networkUnlock = {
+      enable = true;
+      tpm2Pcrs = "7";
+      wifi = {
+        enable = true;
+        interface = "wlp0s20f3";
+      };
+      # Intel Wi-Fi 7 (8086:e440) uses the iwlmld op-mode. Its ucode is not in
+      # iwlwifi's modinfo list, so name the file the kernel actually loads
+      # (`journalctl -k -b | grep 'loaded firmware'`).
+      initrdKernelModules = ["iwlwifi" "iwlmld"];
+      initrdFirmware = ["iwlwifi-sc-a0-wh-b0-101.ucode"];
+      # Add homeserver once its LAN address is reserved:
+      # tangServers = ["http://192.168.178.190:7654" "http://<homeserver>:7654"];
+    };
     boot.resumeDevice = "/dev/vg/swap";
 
     environment.systemPackages = [pkgs.sbctl];
@@ -171,12 +189,8 @@
         message = "Framework must disable the stock systemd-boot module when Lanzaboote is enabled.";
       }
       {
-        assertion = config.boot.initrd.systemd.enable;
-        message = "Framework TPM2 LUKS unlock requires systemd-based initrd.";
-      }
-      {
-        assertion = config.boot.initrd.luks.devices.cryptroot.crypttabExtraOpts == crypttabExtraOpts;
-        message = "Framework LUKS unlock must use TPM2 PCR 7 with passphrase fallback.";
+        assertion = config.networkUnlock.enable && config.boot.initrd.clevisLuksAskpass.enable;
+        message = "Framework LUKS unlock must use Clevis Tang + TPM2 with passphrase fallback.";
       }
     ];
 

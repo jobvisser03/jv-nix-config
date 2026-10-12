@@ -2,8 +2,8 @@
 # Access is limited to the LAN and Tailscale (tailscale0 is a trusted interface).
 # Samba users need a password once: `sudo smbpasswd -a <user>`.
 {username, ...}: let
-  # TODO: verify against the router before first install.
-  lanSubnet = "192.168.1.0/24";
+  # FritzBox home LAN (verified 2026-10-12; same subnet the Tang servers allow).
+  lanSubnet = "192.168.178.0/24";
   tailnet = "100.64.0.0/10";
 
   mkShare = path: extra:

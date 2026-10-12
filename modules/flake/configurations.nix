@@ -271,6 +271,7 @@ in {
         "syncthing"
         "power-management"
         "homelab"
+        "nixos/tang-server"
       ];
       extraModules = [
         inputs.sops-nix.nixosModules.sops
@@ -292,6 +293,8 @@ in {
       modules = [
         "user-job"
         "homelab"
+        "nixos/network-unlock"
+        "nixos/tang-server"
       ];
       extraModules = [
         inputs.sops-nix.nixosModules.sops
@@ -332,6 +335,7 @@ in {
         "obsidian"
         "syncthing"
         "handy"
+        "nixos/network-unlock"
       ];
       extraModules = [
         inputs.sops-nix.nixosModules.sops
