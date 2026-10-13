@@ -143,6 +143,11 @@ in {
       "Z ${hermesHome}/runtime - hermes hermes - -"
       "z ${hermesHome}/runtime/active_sessions.lock 0660 hermes hermes - -"
       "z ${hermesHome}/runtime/active_sessions.json 0660 hermes hermes - -"
+      # CLI prompt history and paste/image dirs: the service creates them 0644/0755,
+      # which locks out the CLI user.
+      "z ${hermesHome}/.hermes_history 0660 hermes hermes - -"
+      "d ${hermesHome}/pastes 2770 hermes hermes - -"
+      "d ${hermesHome}/images 2770 hermes hermes - -"
       # MCP OAuth tokens are credentials: keep their directory and files service-owned/private.
       "d ${hermesHome}/mcp-tokens 0700 hermes hermes - -"
       "Z ${hermesHome}/mcp-tokens - hermes hermes - -"
