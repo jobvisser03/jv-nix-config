@@ -51,7 +51,17 @@ Headless NixOS NAS and media server. Console access is through JetKVM.
 - Services: `homelab` is imported. Immich (`/tank/immich`) and Jellyfin
   (`/tank/media`) are configured but disabled until the migration from larkbox.
   Transcoding uses VAAPI on the iGPU.
-- Tang server for the framework, once homeserver's IP is reserved.
+- Tang server at `192.168.178.43:7654`, a second unlock server for the framework.
+
+## Network addresses
+
+FritzBox DHCP reservations on `192.168.178.0/24`:
+
+| Host | IP | Role |
+| --- | --- | --- |
+| homeserver | `192.168.178.43` | NAS, Tang server |
+| larkbox | `192.168.178.190` | Tang server for homeserver's unlock |
+| JetKVM | `192.168.178.158` | Console, virtual media, BIOS access |
 
 ## Security model
 

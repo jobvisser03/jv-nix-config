@@ -36,10 +36,12 @@ anywhere. Remove it with `network-unlock drop-systemd-tpm2` after `bind`.
 | Host | URL | Serves |
 | --- | --- | --- |
 | larkbox | `http://192.168.178.190:7654` | homeserver, framework |
-| homeserver | not yet in any policy | framework, once its IP is reserved |
+| homeserver | `http://192.168.178.43:7654` | framework, after the homeserver install (commented out in its `tangServers`) |
 
-- Both IPs need a DHCP reservation in the FritzBox. The initrd has no
-  mDNS or DNS.
+- Both IPs are DHCP reservations in the FritzBox (made 2026-10-12, along
+  with JetKVM at `192.168.178.158`). The initrd has no mDNS or DNS, so
+  these addresses are hard-coded; changing a reservation means editing
+  `tangServers` and running `bind --replace` on each client.
 - Tang answers only to the LAN subnet and loopback (`services.tang.ipAddressAllow`).
   Port 7654 is not forwarded on the router.
 - Keys are created on the first request in `/var/lib/private/tang`. If they are

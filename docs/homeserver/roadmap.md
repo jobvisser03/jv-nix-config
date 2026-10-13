@@ -64,5 +64,6 @@ in a repo that holds sops files and host keys' public halves.
   list is settled.
 - `ClientAliveInterval`/`ClientAliveCountMax` if remote deploys over flaky links
   start hanging (foundry hit this from CI runners).
-- A second Tang server (homeserver) in the framework policy, so the laptop
-  still unlocks at home when larkbox is down.
+- A second Tang server (homeserver, `192.168.178.43`) in the framework
+  policy, so the laptop still unlocks at home when larkbox is down. The
+  config line is ready; see [install.md](install.md#remaining-steps).

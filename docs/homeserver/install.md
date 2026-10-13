@@ -12,10 +12,10 @@
    - Enable ECC (if exposed).
    - Keep the iGPU enabled.
    - Set "Restore on AC power loss" to Power On.
-2. **FritzBox**:
-   - Reserve a fixed IP for `homeserver`.
-   - Confirm larkbox keeps `192.168.178.190`, the Tang URL baked into
-     `networkUnlock.tangServers`.
+2. **FritzBox**: the reservations are already in place: homeserver
+   `192.168.178.43`, larkbox `192.168.178.190` (the Tang URL baked into
+   `networkUnlock.tangServers`), JetKVM `192.168.178.158`. Check that the
+   homeserver's MAC matches its reservation after first boot.
 3. Boot the NixOS installer through JetKVM virtual media and clone this repo.
 4. Fill in the disk IDs:
 
@@ -136,9 +136,12 @@ again afterwards.
 
 3. Trigger the first photo pull manually (it is large):
    `sudo systemctl start pcloud-photos-pull`.
-4. If the framework should also use homeserver's Tang, add its reserved IP to
-   `tangServers` in `modules/hosts/framework-13-pro/default.nix`. Then run
-   `sudo network-unlock bind --replace` on the framework.
+4. Make homeserver the framework's second Tang server:
+   1. On the framework, run `curl -fsS http://192.168.178.43:7654/adv` to check
+      it answers.
+   2. Uncomment the two-server `tangServers` line in
+      `modules/hosts/framework-13-pro/default.nix` and rebuild.
+   3. Run `sudo network-unlock bind --replace`.
 
 ## Migrating media from larkbox
 

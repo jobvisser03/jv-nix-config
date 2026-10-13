@@ -124,8 +124,9 @@
       # (`journalctl -k -b | grep 'loaded firmware'`).
       initrdKernelModules = ["iwlwifi" "iwlmld"];
       initrdFirmware = ["iwlwifi-sc-a0-wh-b0-101.ucode"];
-      # Add homeserver once its LAN address is reserved:
-      # tangServers = ["http://192.168.178.190:7654" "http://<homeserver>:7654"];
+      # Enable once homeserver is installed and serving Tang (`bind` needs every
+      # listed server reachable), then run `network-unlock bind --replace`:
+      # tangServers = ["http://192.168.178.190:7654" "http://192.168.178.43:7654"];
     };
     boot.resumeDevice = "/dev/vg/swap";
 
