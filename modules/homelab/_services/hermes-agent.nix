@@ -49,6 +49,7 @@ in {
         port = 9119;
       };
       settings = {
+        model.base_url = "https://openrouter.ai/api/v1";
         model.default = "openai/gpt-6-luna";
         terminal.backend = "local";
         plugins.enabled = ["rtk-rewrite"];
