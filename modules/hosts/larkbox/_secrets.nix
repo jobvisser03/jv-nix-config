@@ -105,27 +105,6 @@
         cloudflare_ddns_token = {
           mode = "0400";
         };
-
-        # Hermes Desktop remote gateway authentication
-        hermes_dashboard_basic_auth_username = {
-          mode = "0400";
-        };
-        hermes_dashboard_basic_auth_password = {
-          mode = "0400";
-        };
-        hermes_dashboard_basic_auth_secret = {
-          mode = "0400";
-        };
-        signal_account = {
-          mode = "0400";
-        };
-
-        # Google Workspace OAuth desktop client; consumed once by the Hermes setup helper.
-        google_workspace_oauth_client_secret_json = {
-          owner = "hermes";
-          group = "hermes";
-          mode = "0400";
-        };
       }
       // lib.optionalAttrs config.services.forgejo.enable {
         # Forgejo user exists only when service is enabled.
@@ -134,27 +113,5 @@
           mode = "0400";
         };
       };
-
-    # Hermes reads KEY=VALUE files, so render SOPS secrets into runtime env format.
-    templates."hermes-agent.env" = {
-      content = ''
-        OPENROUTER_API_KEY=${config.sops.placeholder.openrouter_api_key}
-        HERMES_DASHBOARD_BASIC_AUTH_USERNAME=${config.sops.placeholder.hermes_dashboard_basic_auth_username}
-        HERMES_DASHBOARD_BASIC_AUTH_PASSWORD=${config.sops.placeholder.hermes_dashboard_basic_auth_password}
-        HERMES_DASHBOARD_BASIC_AUTH_SECRET=${config.sops.placeholder.hermes_dashboard_basic_auth_secret}
-        SIGNAL_ACCOUNT=${config.sops.placeholder.signal_account}
-        SIGNAL_ALLOWED_USERS=${config.sops.placeholder.signal_account}
-      '';
-      owner = "root";
-      mode = "0400";
-    };
-
-    templates."signal-cli.env" = {
-      content = ''
-        SIGNAL_ACCOUNT=${config.sops.placeholder.signal_account}
-      '';
-      owner = "root";
-      mode = "0400";
-    };
   };
 }

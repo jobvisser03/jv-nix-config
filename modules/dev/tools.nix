@@ -10,6 +10,7 @@
     home.packages = with pkgs; [
       alejandra # Nix formatter
       nh # Nix helper CLI (https://github.com/nix-community/nh)
+      pkgs.unstable.devenv # zsh runs `devenv hook`; unstable moves faster than the stable base
     ];
 
     programs = {

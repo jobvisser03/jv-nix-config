@@ -53,7 +53,6 @@
       enable = true;
       trustedInterfaces = ["tailscale0"];
       allowedUDPPorts = [41641];
-      interfaces.wlp0s20f3.allowedTCPPorts = [9119];
     };
 
     # Tailscale VPN - enable server routing features for homelab
@@ -169,7 +168,8 @@
         enable = false;
       };
 
-      services.hermes-agent.enable = true;
+      # Hermes moved to homeserver (one Signal account, one gateway).
+      services.hermes-agent.enable = false;
 
       services.cloudflare-ddns = {
         enable = true;

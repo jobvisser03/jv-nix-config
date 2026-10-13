@@ -29,7 +29,7 @@ keys:
   - &macbook_intel_nixos age1swfmvcexzr04argh8ms5asd9rvaxfj4at2j7eaj9qj03gevvwakswkt62s
   - &framework_13_pro age1jhv83lmmvljj8a8s68nhed458d7lprg6rp36fjc75jzg9skke3hq2we6cx
   - &homeserver age1rnvsd29pxwtcaenpa349j58zlg5aq52mudlcgqyssmnke3djdqrqntly58
-  
+
   # Personal age identities, used for editing encrypted files.
   - &larkbox_user age188usuuflnprxceyxxa4c79hgajgyzjzsuwrlpn0rntdfm4ujsv2swfx743
   - &macbook_intel_nixos_user age1n2pfff2ss6pdrfj59sjt74rz3cun7segxel2ppcsm5a9dj35k54sdlwead
@@ -43,6 +43,17 @@ creation_rules:
     key_groups:
       - age:
           - *larkbox
+          - *larkbox_user
+          - *macbook_intel_nixos_user
+          - *framework_13_pro_user
+          - *macbook_silicon_user
+
+  # Recipients for secrets/homeserver.yaml (Hermes gateway): homeserver host
+  # decrypts at boot; personal keys can edit.
+  - path_regex: secrets/homeserver\.yaml$
+    key_groups:
+      - age:
+          - *homeserver
           - *larkbox_user
           - *macbook_intel_nixos_user
           - *framework_13_pro_user

@@ -4,6 +4,9 @@
 # `sops updatekeys secrets/shared.yaml` (see docs/homeserver/install.md). Until then
 # activation warns and the pCloud timers fail; the rest of the system works.
 {...}: {
+  # Host-only secrets (Hermes). Edit with: sops secrets/homeserver.yaml
+  sops.defaultSopsFile = ../../../secrets/homeserver.yaml;
+
   sops.secrets = {
     # Rclone configuration file (contains pCloud OAuth token)
     rclone_config = {

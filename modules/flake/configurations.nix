@@ -29,7 +29,16 @@
     common-dev = [
       "git"
       "dev-tools"
+      "cli-apps"
       "agent-skills"
+    ];
+
+    # Desktopless dev host: terminal tools, pi, VS Code Remote SSH (common-nixos).
+    headless-dev = [
+      "common-nixos"
+      "common-shell"
+      "common-dev"
+      "pi"
     ];
 
     hyprland-desktop = [
@@ -286,9 +295,7 @@ in {
       system = "x86_64-linux";
       user = "job";
       profiles = [
-        "common-nixos"
-        "common-shell"
-        "common-dev"
+        "headless-dev"
       ];
       modules = [
         "user-job"

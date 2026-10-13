@@ -120,6 +120,12 @@
         enable = false;
         mediaDir = "/tank/media";
       };
+
+      # Signal / dashboard gateway, moved from larkbox. Secrets in secrets/homeserver.yaml.
+      services.hermes-agent = {
+        enable = true;
+        listenAddress = "192.168.178.43";
+      };
     };
 
     # Services on tank must wait for the (nofail) pool mounts.

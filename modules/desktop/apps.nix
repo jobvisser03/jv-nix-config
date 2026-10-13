@@ -32,35 +32,15 @@
     ];
   };
 
-  # Cross-platform home-manager packages (works on both NixOS and Darwin)
+  # Cross-platform GUI apps and fonts (works on both NixOS and Darwin).
+  # Terminal tools live in cli-apps (modules/dev/cli-apps.nix).
   flake.modules.homeManager.desktop-apps = {
     pkgs,
     lib,
-    inputs,
     ...
   }: let
     packages = with pkgs; [
-      # Core CLI tools
-      curl
-      ffmpeg
-      fzf
-      hurl
-      yt-dlp
-      fastfetch
-      magic-wormhole
-
-      # CLI maintenance
-      # scan folders and files for cleanup using a rust implementation of du
-      dust
-
-      # Languages and formatters
-      nil
-      alejandra
-      shfmt
-
-      # Shells and terminals
-      pkgs.unstable.vim
-      pkgs.unstable.helix
+      # Terminals
       pkgs.unstable.wezterm
 
       # Fonts
@@ -68,44 +48,14 @@
       (nerd-fonts.fantasque-sans-mono)
       (nerd-fonts.sauce-code-pro)
 
-      # Cloud and networking
-      google-cloud-sdk
-      azure-cli
-      azure-storage-azcopy
-      cachix
-      tailscale
-      speedtest-cli
-
-      # DevOps & CI/CD
-      glab
-
-      # Android and Docker
+      # Android
       android-tools
-
-      # Graph visualization
-      graphviz
-
-      # Image manipulation
-      imagemagick
-
-      # Development tools (unstable: moves faster than the stable base)
-      pkgs.unstable.devenv
-
-      # TUI coding apps
-      pkgs.unstable.opencode
-      pkgs.unstable.claude-code
-      inputs.herdr.packages.${pkgs.system}.default
-      # pi-coding-agent is managed by modules/dev/pi.nix (pi.nix flake)
-
-      # Reduce LLM token consumption
-      pkgs.unstable.rtk
 
       # Desktop applications
       # keepassxc # moved to homebrew (qtmacextras/cctools linker crash)
       proton-pass
       drawio
       anki-bin
-      docker-client
       darktable
     ];
   in {
