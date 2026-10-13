@@ -77,8 +77,7 @@
     networkUnlock = {
       enable = true;
       tpm2Pcrs = "7";
-      # B650M onboard 2.5GbE is Realtek RTL8125; confirm after install with
-      # `readlink /sys/class/net/*/device/driver`.
+      # Onboard Realtek 2.5GbE (driver confirmed on the installed box 2026-10-13).
       initrdKernelModules = ["r8169"];
       ssh = {
         enable = true;

@@ -14,10 +14,10 @@
 # directly as well as through the NixOS module system.
 let
   hdds = {
-    hdd1 = "/dev/disk/by-id/ata-HOMESERVER-HDD1-REPLACE-ME";
-    hdd2 = "/dev/disk/by-id/ata-HOMESERVER-HDD2-REPLACE-ME";
-    hdd3 = "/dev/disk/by-id/ata-HOMESERVER-HDD3-REPLACE-ME";
-    hdd4 = "/dev/disk/by-id/ata-HOMESERVER-HDD4-REPLACE-ME";
+    hdd1 = "/dev/disk/by-id/ata-ST10000DM0004-1ZC101_ZA2DR9PP";
+    hdd2 = "/dev/disk/by-id/ata-ST10000DM0004-1ZC101_ZA2DQY07";
+    hdd3 = "/dev/disk/by-id/ata-ST10000NE0008-2JM101_ZHZ1Z6C0";
+    hdd4 = "/dev/disk/by-id/ata-ST10000NE0008-2JM101_ZHZ3XZ87";
     hdd5 = "/dev/disk/by-id/ata-HOMESERVER-HDD5-REPLACE-ME";
   };
 

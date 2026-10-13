@@ -13,7 +13,7 @@
 {
   disko.devices.disk.main = {
     type = "disk";
-    device = "/dev/disk/by-id/nvme-HOMESERVER-REPLACE-ME";
+    device = "/dev/disk/by-id/nvme-Samsung_SSD_990_EVO_Plus_1TB_S7U4NU0Y996757A";
     content = {
       type = "gpt";
       partitions = {
