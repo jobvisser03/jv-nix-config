@@ -17,14 +17,15 @@
    `networkUnlock.tangServers`), JetKVM `192.168.178.158`. Check that the
    homeserver's MAC matches its reservation after first boot.
 3. Boot the NixOS installer through JetKVM virtual media and clone this repo.
-4. Fill in the disk IDs:
+4. Fill in the NVMe disk ID in `_disko-nvme.nix`:
 
    ```sh
    ls -l /dev/disk/by-id/ | grep -v part
    ```
 
-   Replace the `REPLACE-ME` paths in `_disko-nvme.nix` (NVMe) and `_disko-tank.nix`
-   (`ata-…` for each HDD). Evaluation fails until all of them are replaced.
+   Evaluation fails while a `REPLACE-ME` path remains in an imported disko file.
+   With `tank = false` in `default.nix` only the NVMe is imported. The HDD IDs
+   are filled in later; see [Creating `tank` later](#creating-tank-later).
 5. Check the NIC driver the initrd needs and update
    `networkUnlock.initrdKernelModules` if it is not `r8169`:
 
@@ -34,21 +35,12 @@
 
 ## Installation
 
+This installs the NVMe-only system (`tank = false`). The HDDs stay untouched.
+
 ```sh
-# ZFS encryption key, used by disko at pool creation.
-openssl rand -hex 32 | tr -d '\n' > /tmp/tank.key
-chmod 0400 /tmp/tank.key
-# Store a copy of this key in KeePass NOW. Losing it loses the pool.
-
-# Destructive: NVMe root (prompts for the LUKS passphrase), then the HDD pool.
-# Store the LUKS passphrase in KeePass too: it is the fallback for every boot
-# where Tang or the TPM does not answer.
+# Destructive to the NVMe: prompts for the LUKS passphrase. Store it in
+# KeePass: it is the fallback for every boot where Tang or the TPM fails.
 sudo nix run github:nix-community/disko -- --mode disko modules/hosts/homeserver/_disko-nvme.nix
-sudo nix run github:nix-community/disko -- --mode disko modules/hosts/homeserver/_disko-tank.nix
-
-# Put the key where the installed system loads it from (now on LUKS).
-sudo install -D -m 0400 /tmp/tank.key /mnt/etc/zfs/keys/tank.key
-zfs get keylocation tank   # expect file:///etc/zfs/keys/tank.key
 
 # Host key for the initrd unlock sshd (port 2222). It must exist before
 # nixos-install: the bootloader step embeds it into the initrd.
@@ -63,12 +55,10 @@ cp /mnt/etc/nixos/hardware-configuration.nix modules/hosts/homeserver/_hardware-
 sudo nixos-install --flake .#homeserver --root /mnt
 # If Lanzaboote refuses because no keys exist yet:
 #   sudo nixos-enter --root /mnt -c 'sbctl create-keys'   and rerun nixos-install.
-
-# Export so the installed system (different hostid) can import cleanly.
-sudo zpool export tank
 reboot
 ```
 
+Commit the NVMe ID and the generated `_hardware-configuration.nix`.
 The first boot asks for the LUKS passphrase. Type it through JetKVM, or run
 `ssh -p 2222 root@homeserver` from the LAN.
 
@@ -123,25 +113,73 @@ again afterwards.
 
 ### Remaining steps
 
-1. Samba password: `sudo smbpasswd -a job`.
-2. Verify:
+1. Verify:
 
    ```sh
-   zpool status tank
-   zfs get encryption,keystatus tank
    ras-mc-ctl --status            # ECC/EDAC driver loaded
-   systemctl list-timers 'pcloud-*' 'sanoid*'
    vainfo                         # radeonsi VAAPI profiles
+   sudo network-unlock status
    ```
 
-3. Trigger the first photo pull manually (it is large):
-   `sudo systemctl start pcloud-photos-pull`.
-4. Make homeserver the framework's second Tang server:
+2. Make homeserver the framework's second Tang server:
    1. On the framework, run `curl -fsS http://192.168.178.43:7654/adv` to check
       it answers.
    2. Uncomment the two-server `tangServers` line in
       `modules/hosts/framework-13-pro/default.nix` and rebuild.
    3. Run `sudo network-unlock bind --replace`.
+3. Once the fifth HDD is connected: [Creating `tank` later](#creating-tank-later).
+
+## Creating `tank` later
+
+Do this on the running system once all five HDDs are connected. RAIDZ2 width
+is fixed at creation, so wait for the fifth disk rather than creating a
+four-disk pool. OpenZFS can widen a RAIDZ vdev afterwards, but data written
+before that keeps the 2:2 data/parity ratio, so you lose capacity.
+
+1. Confirm all five drives are visible, then fill the `ata-…` IDs into
+   `_disko-tank.nix`:
+
+   ```sh
+   ls -l /dev/disk/by-id/ | grep -E '^.*ata-' | grep -v part
+   sudo smartctl -H /dev/disk/by-id/ata-…        # each drive: PASSED
+   ```
+
+2. Create the key and the pool:
+
+   ```sh
+   # ZFS encryption key. Store a copy in KeePass NOW: losing it loses the pool.
+   openssl rand -hex 32 | tr -d '\n' | sudo tee /tmp/tank.key >/dev/null
+   sudo chmod 0400 /tmp/tank.key
+   sudo install -D -m 0400 /tmp/tank.key /etc/zfs/keys/tank.key   # LUKS root
+
+   # Destructive to the five HDDs only. Triple-check the IDs first.
+   sudo nix run github:nix-community/disko -- --mode disko modules/hosts/homeserver/_disko-tank.nix
+   zfs get keylocation tank   # expect file:///etc/zfs/keys/tank.key
+   sudo shred -u /tmp/tank.key
+   sudo umount -R /mnt/tank 2>/dev/null || true   # disko's temporary mounts
+   ```
+
+3. Set `tank = true` in `modules/hosts/homeserver/default.nix`. This imports
+   `_disko-tank.nix`, `_tank.nix`, `_shares.nix` and `_pcloud.nix`. Then:
+
+   ```sh
+   sudo nixos-rebuild switch --flake .#homeserver
+   sudo reboot        # proves the pool imports and its key loads at boot
+   ```
+
+4. Finish:
+   1. Samba password: `sudo smbpasswd -a job`.
+   2. Verify:
+
+      ```sh
+      zpool status tank
+      zfs get encryption,keystatus tank
+      systemctl list-timers 'pcloud-*' 'sanoid*' 'zfs-scrub*'
+      ls -ld /tank/*                 # ownership set by tank-permissions
+      ```
+
+   3. Trigger the first photo pull manually (it is large):
+      `sudo systemctl start pcloud-photos-pull`.
 
 ## Migrating media from larkbox
 

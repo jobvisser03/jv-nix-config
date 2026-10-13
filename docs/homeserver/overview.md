@@ -29,7 +29,9 @@ Headless NixOS NAS and media server. Console access is through JetKVM.
   `/var-lib` → `/var/lib`), zram swap.
 - Unlock: Clevis Tang (larkbox) + TPM2 PCR 7. Fallbacks are the initrd SSH
   service on port 2222 and the JetKVM console.
-- Data: ZFS pool `tank`, RAIDZ2 over 5 HDDs (~30 TB usable).
+- Data: ZFS pool `tank`, RAIDZ2 over 5 HDDs (~30 TB usable). Created after
+  the first install, once the fifth disk is connected (`tank` flag in
+  `default.nix`).
   - Native encryption with a keyfile at `/etc/zfs/keys/tank.key`. That file
     sits on the LUKS root, so it is encrypted at rest.
   - Boot stays unattended.
@@ -87,7 +89,8 @@ FritzBox DHCP reservations on `192.168.178.0/24`:
 | `modules/hosts/homeserver/default.nix` | Host identity, boot, SSH, network unlock, homelab wiring |
 | `_disko-nvme.nix` | Root disk layout (ESP + LUKS + BTRFS) |
 | `_disko-tank.nix` | ZFS pool and datasets |
-| `_storage.nix` | ZFS runtime, sanoid, smartd, rasdaemon, dataset ownership |
+| `_storage.nix` | ZFS support, hostId, ARC cap, smartd, rasdaemon (always on) |
+| `_tank.nix` | Scrub, sanoid snapshots, dataset ownership (only with `tank = true`) |
 | `_shares.nix` | Samba + NFS |
 | `_pcloud.nix` | rclone pull/push timers |
 | `_secrets.nix` | sops secrets |

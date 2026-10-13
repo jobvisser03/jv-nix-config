@@ -18,18 +18,27 @@
     adminKeys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN2mNxAxH9uxUJ+Mk5dwTaIKU7iApm4HYPFhiKtkJ0VF job@dutchdataworks.nl"
     ];
+
+    # The ZFS pool and everything on /tank (shares, pCloud sync, snapshots).
+    # false = NVMe-only system; flip once all five HDDs are connected and
+    # `tank` has been created. See docs/homeserver/install.md#creating-tank-later.
+    tank = false;
   in {
-    imports = [
-      ./_hardware-configuration.nix
-      ./_disko-nvme.nix
-      ./_disko-tank.nix
-      ./_secrets.nix
-      ./_storage.nix
-      ./_shares.nix
-      ./_pcloud.nix
-      inputs.disko.nixosModules.disko
-      inputs.lanzaboote.nixosModules.lanzaboote
-    ];
+    imports =
+      [
+        ./_hardware-configuration.nix
+        ./_disko-nvme.nix
+        ./_secrets.nix
+        ./_storage.nix
+        inputs.disko.nixosModules.disko
+        inputs.lanzaboote.nixosModules.lanzaboote
+      ]
+      ++ lib.optionals tank [
+        ./_disko-tank.nix
+        ./_tank.nix
+        ./_shares.nix
+        ./_pcloud.nix
+      ];
 
     networking.hostName = "homeserver";
 
@@ -128,6 +137,10 @@
           lib.all (disk: !(lib.hasInfix "REPLACE-ME" disk.device))
           (lib.attrValues config.disko.devices.disk);
         message = "homeserver: replace REPLACE-ME disk ids in _disko-nvme.nix / _disko-tank.nix with /dev/disk/by-id paths.";
+      }
+      {
+        assertion = tank || !(config.homelab.services.immich.enable || config.homelab.services.jellyfin.enable);
+        message = "homeserver: Immich and Jellyfin store their data on /tank; set `tank = true` first.";
       }
     ];
 

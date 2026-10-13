@@ -89,7 +89,7 @@ The configuration follows a **dendritic pattern** using `import-tree` to auto-im
 │   │   ├── homeserver/        # Headless ZFS NAS (see docs/homeserver/)
 │   │   │   ├── default.nix
 │   │   │   ├── _disko-nvme.nix / _disko-tank.nix   # LUKS root / ZFS pool
-│   │   │   └── _storage.nix, _shares.nix, _pcloud.nix, _secrets.nix
+│   │   │   └── _storage.nix, _tank.nix, _shares.nix, _pcloud.nix, _secrets.nix
 │   │   ├── macbook-intel-nixos/  # Intel Mac running NixOS
 │   │   │   ├── default.nix
 │   │   │   ├── _hardware-configuration.nix
