@@ -61,6 +61,13 @@ in {
       "f+ ${cfg.dir}/.stignore 0600 ${cfg.user} ${cfg.group} - ${lib.concatStringsSep "\\n" stignore}"
     ];
 
+    # The repo is owned by cfg.user; let other users (e.g. the admin, via the
+    # group) run read-only git commands without the "dubious ownership" error.
+    programs.git = lib.mkIf cfg.autocommit.enable {
+      enable = true;
+      config.safe.directory = [cfg.dir];
+    };
+
     # Local history of every change (local or synced), so a bad edit can be
     # reverted. /.git is in .stignore, so the repo stays on this host.
     systemd.services.obsidian-vault-autocommit = lib.mkIf cfg.autocommit.enable {

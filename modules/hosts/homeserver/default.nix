@@ -138,6 +138,10 @@
       };
     };
 
+    # Point Hermes' bundled `obsidian` skill at the vault. Written to
+    # $HERMES_HOME/.env, so the gateway and the `hermes` CLI both see it.
+    services.hermes-agent.environment.OBSIDIAN_VAULT_PATH = config.homelab.services.obsidian-vault.dir;
+
     # Services on tank must wait for the (nofail) pool mounts.
     systemd.services = lib.mkMerge [
       (lib.mkIf config.homelab.services.immich.enable {

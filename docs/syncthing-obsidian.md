@@ -99,13 +99,18 @@ On homeserver the vault is there for the Hermes agent, not for Obsidian. `homela
 /var/lib/hermes/workspace/obsidian_vault
 ```
 
+Hermes' bundled `obsidian` skill finds the vault through `OBSIDIAN_VAULT_PATH`. Homeserver sets it from `homelab.services.obsidian-vault.dir`.
+
 The agent's terminal tool starts in `/var/lib/hermes/workspace`, and the service sandbox (`ProtectSystem=strict`) already allows writes there. The files belong to `hermes`, so you need no ACLs and no extra `ReadWritePaths`. A vault under `/home/job` would need both, because home directories are `0700`.
 
-The folder is two-way: Hermes edits notes, and its edits sync to every device. Every 15 minutes the `obsidian-vault-autocommit` timer commits all vault changes to a local git repo in the vault. The repo is created on the first run, and `/.git` is in `.stignore`, so it never syncs. To undo a bad edit:
+The folder is two-way: Hermes edits notes, and its edits sync to every device. Every 15 minutes the `obsidian-vault-autocommit` timer commits all vault changes to a local git repo in the vault. The repo is created on the first run, and `/.git` is in `.stignore`, so it never syncs.
+
+The repo belongs to `hermes`. `/etc/gitconfig` marks the vault as a `safe.directory`, so `job` (through the `hermes` group) can run read-only commands such as `git status`, `git log` and `git diff`. Commands that write, such as `revert` and `commit`, must run as `hermes`. Run as `job`, they would fail or leave `job`-owned files in `.git` that break the timer. To undo a bad edit:
 
 ```sh
-sudo -u hermes git -C /var/lib/hermes/workspace/obsidian_vault log --stat
-sudo -u hermes git -C /var/lib/hermes/workspace/obsidian_vault revert <commit>
+cd /var/lib/hermes/workspace/obsidian_vault
+git log --stat
+sudo -u hermes git revert <commit>
 ```
 
 The revert is a normal change, so it syncs back out. The history lives only on homeserver; pCloud (from larkbox) is still the off-site copy.
