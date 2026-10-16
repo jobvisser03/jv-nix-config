@@ -23,6 +23,7 @@
       # logseq
       cryptomator
       signal-desktop
+      beeper
 
       # Office
       onlyoffice-desktopeditors
