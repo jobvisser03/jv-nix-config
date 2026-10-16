@@ -104,6 +104,8 @@ in {
         model.base_url = "https://openrouter.ai/api/v1";
         model.default = "openai/gpt-6-luna";
         terminal.backend = "local";
+        # Nix owns the plugin list: activation replaces it wholesale, so add
+        # plugins via `extraPlugins` + here, not `hermes plugins enable`.
         plugins.enabled = ["rtk-rewrite"];
       };
     };
