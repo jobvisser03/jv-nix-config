@@ -29,6 +29,20 @@
     mkdir -p "$out"
     cp -r ${rtkPluginSrc}/. "$out/"
   '';
+
+  # `google` extra backs the bundled google-workspace skill; its `--install-deps`
+  # can't write to the store.
+  hermesPackage = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.minimal.override {
+    extraDependencyGroups = ["messaging" "google"];
+  };
+
+  # Bundled skills shell out to `python`; point it at Hermes' own venv so their
+  # deps (google-api-python-client etc.) resolve.
+  hermesPython = pkgs.runCommand "hermes-python" {} ''
+    mkdir -p "$out/bin"
+    ln -s ${hermesPackage.hermesVenv}/bin/python3 "$out/bin/python"
+    ln -s ${hermesPackage.hermesVenv}/bin/python3 "$out/bin/python3"
+  '';
 in {
   options.homelab.services.hermes-agent = {
     enable = lib.mkEnableOption "Hermes Agent gateway";
@@ -49,9 +63,9 @@ in {
   config = lib.mkIf cfg.enable {
     services.hermes-agent = {
       enable = true;
-      package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.messaging;
+      package = hermesPackage;
       extraPlugins = [rtkPlugin];
-      extraPackages = [pkgs.signal-cli pkgs.rtk];
+      extraPackages = [pkgs.signal-cli pkgs.rtk hermesPython];
       mcpServers.notion = {
         url = "https://mcp.notion.com/mcp";
         auth = "oauth";
@@ -104,7 +118,7 @@ in {
         hermes_dashboard_basic_auth_secret.mode = "0400";
         signal_account.mode = "0400";
 
-        # Google Workspace OAuth desktop client; consumed once by the Hermes setup helper.
+        # Google Workspace OAuth desktop client, linked to where the skill looks for it.
         google_workspace_oauth_client_secret_json = {
           owner = "hermes";
           group = "hermes";
@@ -151,6 +165,9 @@ in {
       # MCP OAuth tokens are credentials: keep their directory and files service-owned/private.
       "d ${hermesHome}/mcp-tokens 0700 hermes hermes - -"
       "Z ${hermesHome}/mcp-tokens - hermes hermes - -"
+      # Google Workspace skill: client secret from SOPS, OAuth token kept private.
+      "L+ ${hermesHome}/google_client_secret.json - - - - ${config.sops.secrets.google_workspace_oauth_client_secret_json.path}"
+      "z ${hermesHome}/google_token.json 0600 hermes hermes - -"
     ];
 
     # Let host user use same state as gateway CLI.

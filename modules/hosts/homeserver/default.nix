@@ -71,7 +71,8 @@
       autoGenerateKeys.enable = true;
       configurationLimit = 10;
     };
-    environment.systemPackages = [pkgs.sbctl];
+    # Terminfo for the client terminals, so SSH from kitty/wezterm gets a sane TERM.
+    environment.systemPackages = [pkgs.sbctl pkgs.kitty.terminfo pkgs.wezterm.terminfo];
 
     # Unattended LUKS unlock: TPM2 (PCR 7) AND Tang on larkbox. If either is
     # missing, unlock over SSH (port 2222, initrd) or type it via JetKVM.
