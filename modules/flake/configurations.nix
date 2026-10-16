@@ -24,6 +24,7 @@
       "aliases"
       "eza"
       "fd"
+      "host-tint"
     ];
 
     common-dev = [
