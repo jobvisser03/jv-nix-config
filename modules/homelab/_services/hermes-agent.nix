@@ -213,37 +213,50 @@ in {
 
     # Keep service and interactive state access aligned. The gateway/backend run as
     # `hermes`, while the host CLI user is in the `hermes` group.
-    systemd.tmpfiles.rules =
-      [
-        "d ${hermesHome}/runtime 2770 hermes hermes - -"
-        # Normalize existing files created by the CLI user, while preserving their modes.
-        "Z ${hermesHome}/runtime - hermes hermes - -"
-        "z ${hermesHome}/runtime/active_sessions.lock 0660 hermes hermes - -"
-        "z ${hermesHome}/runtime/active_sessions.json 0660 hermes hermes - -"
-        # CLI prompt history and paste/image dirs: the service creates them 0644/0755,
-        # which locks out the CLI user.
-        "z ${hermesHome}/.hermes_history 0660 hermes hermes - -"
-        "d ${hermesHome}/pastes 2770 hermes hermes - -"
-        "d ${hermesHome}/images 2770 hermes hermes - -"
-        # MCP OAuth tokens: shared with the CLI user (`~` keeps x bits on the dir only).
-        "d ${mcpTokensDir} 0770 hermes hermes - -"
-        "Z ${mcpTokensDir} ~0770 hermes hermes - -"
-      ]
-      ++ map (f: "z ${f} 0660 hermes hermes - -") googleAuthFiles;
+    systemd.tmpfiles.rules = [
+      "d ${hermesHome}/runtime 2770 hermes hermes - -"
+      # Normalize existing files created by the CLI user, while preserving their modes.
+      "Z ${hermesHome}/runtime - hermes hermes - -"
+      "z ${hermesHome}/runtime/active_sessions.lock 0660 hermes hermes - -"
+      "z ${hermesHome}/runtime/active_sessions.json 0660 hermes hermes - -"
+      # CLI prompt history and paste/image dirs: the service creates them 0644/0755,
+      # which locks out the CLI user.
+      "z ${hermesHome}/.hermes_history 0660 hermes hermes - -"
+      "d ${hermesHome}/pastes 2770 hermes hermes - -"
+      "d ${hermesHome}/images 2770 hermes hermes - -"
+      # MCP OAuth tokens: shared with the CLI user (`~` keeps x bits on the dir only).
+      "d ${mcpTokensDir} 0770 hermes hermes - -"
+      "Z ${mcpTokensDir} ~0770 hermes hermes - -"
+    ];
 
     # Auth state is written with the writer's owner and a private mode (Hermes
     # hardcodes 0600 files / 0700 dir for MCP tokens), so whichever of `hermes`
-    # or the CLI user writes it, the other loses access. Re-apply the tmpfiles
-    # rules above on every write.
+    # or the CLI user writes it, the other loses access. Re-apply shared
+    # ownership on every write, and at gateway start for files written while the
+    # path unit wasn't watching. Plain chown, not tmpfiles: tmpfiles refuses
+    # ("unsafe path transition") to touch a CLI-user-owned file in hermes' dir.
     systemd.paths.hermes-auth-perms = {
       wantedBy = ["paths.target"];
       pathConfig.PathChanged = sharedAuthPaths;
     };
     systemd.services.hermes-auth-perms = {
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = "${config.systemd.package}/bin/systemd-tmpfiles --create ${lib.concatMapStringsSep " " (p: "--prefix=${p}") sharedAuthPaths}";
-      };
+      wantedBy = ["hermes-agent.service"];
+      before = ["hermes-agent.service"];
+      serviceConfig.Type = "oneshot";
+      path = [pkgs.coreutils pkgs.findutils];
+      script = ''
+        for f in ${lib.escapeShellArgs googleAuthFiles}; do
+          [ -f "$f" ] && [ ! -L "$f" ] || continue
+          chown hermes:hermes "$f"
+          chmod 0660 "$f"
+        done
+        d=${lib.escapeShellArg mcpTokensDir}
+        if [ -d "$d" ] && [ ! -L "$d" ]; then
+          chown -R --no-dereference hermes:hermes "$d"
+          find "$d" -type d -exec chmod 0770 {} +
+          find "$d" -type f -exec chmod 0660 {} +
+        fi
+      '';
     };
 
     # The skill shells out to `python`; the CLI user needs Hermes' venv too.
