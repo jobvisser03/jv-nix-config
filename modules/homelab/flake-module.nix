@@ -32,6 +32,7 @@
       (import ./_services/radicale.nix)
       (import ./_services/remote-pi-relay.nix)
       (import ./_services/hermes-agent.nix)
+      (import ./_services/obsidian-vault.nix)
       inputs.hermes-agent.nixosModules.default
     ];
 

@@ -1,11 +1,9 @@
 {...}: {
-  flake.modules.nixos.syncthing = {...}: {
+  flake.modules.nixos.syncthing = {lib, ...}: {
     systemd.tmpfiles.rules = [
       "d /home/job/syncthing 0750 job users - -"
       "d /home/job/syncthing/obsidian_vault 0750 job users - -"
-      # Keep editor caches and Home Manager-managed Obsidian files (machine-specific
-      # Nix store links) out of sync, or HM activation clobbers synced copies.
-      "f+ /home/job/syncthing/obsidian_vault/.stignore 0600 job users - /.git\\n/.obsidian/cache\\n/.obsidian/workspace*.json\\n/.obsidian/plugins\\n/.obsidian/snippets\\n/.obsidian/community-plugins.json*\\n/.obsidian/appearance.json*\\n/.obsidian/core-plugins*.json*\\n/.obsidian/graph*.json\\n*.hm-backup"
+      "f+ /home/job/syncthing/obsidian_vault/.stignore 0600 job users - ${lib.concatStringsSep "\\n" (import ../_obsidian-stignore.nix)}"
     ];
 
     services.syncthing = {

@@ -127,6 +127,15 @@
         enable = true;
         listenAddress = "192.168.178.43";
       };
+
+      # Vault inside Hermes' workspace: its terminal tool starts there and the
+      # service sandbox allows writes. Owned by `hermes`, so no ACLs are needed.
+      services.obsidian-vault = {
+        enable = true;
+        user = "hermes";
+        group = "hermes";
+        dir = "${config.services.hermes-agent.workingDirectory}/obsidian_vault";
+      };
     };
 
     # Services on tank must wait for the (nofail) pool mounts.

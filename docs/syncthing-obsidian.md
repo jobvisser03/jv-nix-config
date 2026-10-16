@@ -5,10 +5,11 @@ The Obsidian vault syncs between hosts with Syncthing. Larkbox is the always-on 
 ```text
 framework-13-pro ─┐
                   ├─ Syncthing (folder "obsidian_vault", ID 6wlbb-itm77) ─ larkbox → pCloud
-macbook-silicon ──┘
+macbook-silicon ──┤
+homeserver ───────┘  (Hermes agent)
 ```
 
-Vault path on every host: `~/syncthing/obsidian_vault`.
+Vault path on every host: `~/syncthing/obsidian_vault`. Homeserver is the exception: see [Homeserver (Hermes)](#homeserver-hermes).
 
 ## What is synced and what is not
 
@@ -27,7 +28,7 @@ To enable or disable a core or community plugin, edit `modules/desktop/obsidian.
 
 ## Ignore list
 
-On NixOS the `syncthing` module (`modules/desktop/syncthing.nix`) writes this to `.stignore` with a tmpfiles rule on every switch. On Darwin, add it by hand (see below).
+The list lives in `modules/_obsidian-stignore.nix`. On NixOS the `syncthing` module (`modules/desktop/syncthing.nix`) and `homelab.services.obsidian-vault` write it to `.stignore` with a tmpfiles rule on every switch. On Darwin, add it by hand (see below).
 
 ```text
 /.obsidian/cache
@@ -41,7 +42,7 @@ On NixOS the `syncthing` module (`modules/desktop/syncthing.nix`) writes this to
 *.hm-backup
 ```
 
-`.stignore` is not synced itself, so every host needs its own copy. When changing the list, update `modules/desktop/syncthing.nix` and this file together.
+`.stignore` is not synced itself, so every host needs its own copy. When changing the list, update `modules/_obsidian-stignore.nix` and this file together.
 
 ## New NixOS host
 
@@ -88,7 +89,33 @@ nix-darwin installs Syncthing and runs it as a launchd user agent, but does not 
 4. Pair with Larkbox and accept `obsidian_vault` at `~/syncthing/obsidian_vault`, as for NixOS (steps 4–7).
 5. Check the folder's *Ignore Patterns* tab shows the list.
 
-Repeat step 3 on the Mac whenever the list in `modules/desktop/syncthing.nix` changes.
+Repeat step 3 on the Mac whenever the list in `modules/_obsidian-stignore.nix` changes.
+
+## Homeserver (Hermes)
+
+On homeserver the vault is there for the Hermes agent, not for Obsidian. `homelab.services.obsidian-vault` (`modules/homelab/_services/obsidian-vault.nix`) runs Syncthing and the git auto-commit. The host sets it to run as `hermes`, with the vault in Hermes' working directory, so the Hermes module itself knows nothing about the vault. Vault path:
+
+```text
+/var/lib/hermes/workspace/obsidian_vault
+```
+
+The agent's terminal tool starts in `/var/lib/hermes/workspace`, and the service sandbox (`ProtectSystem=strict`) already allows writes there. The files belong to `hermes`, so you need no ACLs and no extra `ReadWritePaths`. A vault under `/home/job` would need both, because home directories are `0700`.
+
+The folder is two-way: Hermes edits notes, and its edits sync to every device. Every 15 minutes the `obsidian-vault-autocommit` timer commits all vault changes to a local git repo in the vault. The repo is created on the first run, and `/.git` is in `.stignore`, so it never syncs. To undo a bad edit:
+
+```sh
+sudo -u hermes git -C /var/lib/hermes/workspace/obsidian_vault log --stat
+sudo -u hermes git -C /var/lib/hermes/workspace/obsidian_vault revert <commit>
+```
+
+The revert is a normal change, so it syncs back out. The history lives only on homeserver; pCloud (from larkbox) is still the off-site copy.
+
+Pairing:
+
+1. Switch homeserver. Open the GUI through a tunnel: `ssh -L 8385:127.0.0.1:8384 homeserver`, then go to <http://127.0.0.1:8385>.
+2. Copy homeserver's device ID. On larkbox, add the device with address `tcp://homeserver:22000`. Ports are closed on the LAN, so the peers connect over Tailscale MagicDNS. Share `obsidian_vault` with homeserver.
+3. On homeserver, accept larkbox and the folder. Set the path to `/var/lib/hermes/workspace/obsidian_vault`. Do not keep the default `~/obsidian_vault`.
+4. Optionally add larkbox's address on homeserver too (`tcp://larkbox:22000`).
 
 ## Cleanup after a conflict
 
