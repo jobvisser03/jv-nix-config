@@ -103,6 +103,32 @@ in {
       settings = {
         model.base_url = "https://openrouter.ai/api/v1";
         model.default = "openai/gpt-6-luna";
+        # Cheap long-context model for side tasks instead of the main model.
+        # Judgement-heavy tasks (review, goal_judge, kanban_decomposer, moa_*)
+        # and voice_chat stay on the main model.
+        auxiliary =
+          lib.genAttrs [
+            "compression"
+            "vision"
+            "approval"
+            "mcp"
+            "skills_hub"
+            "title_generation"
+            "memory_query_rewrite"
+            "background_review"
+            "curator"
+            "monitor"
+            "triage_specifier"
+            "profile_describer"
+            "tts_audio_tags"
+          ] (_: {
+            provider = "openrouter";
+            model = "google/gemini-2.5-flash";
+          })
+          // {
+            # Auto-chain fallback for anything not pinned above.
+            openrouter_model = "google/gemini-2.5-flash";
+          };
         terminal.backend = "local";
         # Nix owns the plugin list: activation replaces it wholesale, so add
         # plugins via `extraPlugins` + here, not `hermes plugins enable`.
