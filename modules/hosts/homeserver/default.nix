@@ -29,6 +29,7 @@
       [
         ./_hardware-configuration.nix
         ./_disko-nvme.nix
+        ./_power.nix
         ./_secrets.nix
         ./_storage.nix
         inputs.disko.nixosModules.disko
@@ -87,6 +88,13 @@
         authorizedKeys = adminKeys;
       };
     };
+
+    # The HDDs sit unused until `tank` exists, so spin them down after 20 min
+    # idle (-S 240). Revisit when enabling tank: snapshots and media services
+    # would wake them often.
+    services.udev.extraRules = lib.mkIf (!tank) ''
+      ACTION=="add", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", RUN+="${pkgs.hdparm}/bin/hdparm -S 240 /dev/%k"
+    '';
 
     # No swap partition; compressed RAM swap absorbs Immich ML spikes.
     zramSwap.enable = true;
