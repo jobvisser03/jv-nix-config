@@ -133,6 +133,11 @@
       options.niri = {
         suspendOnIdle = lib.mkEnableOption "Suspend system after idle timeout" // {default = true;};
         handy.enable = lib.mkEnableOption "Handy speech-to-text";
+        extraConfig = lib.mkOption {
+          type = lib.types.lines;
+          default = "";
+          description = "Extra KDL appended to config.kdl, e.g. host-specific output blocks.";
+        };
 
         # Couch/beamer media node: edge-to-edge windows, Firefox at login,
         # hidden idle cursor, and no lock/dim/blank while watching video.
@@ -371,6 +376,8 @@
             "XF86MonBrightnessUp" allow-when-locked=true { spawn-sh "${noctalia} msg brightness-up"; }
             "XF86MonBrightnessDown" allow-when-locked=true { spawn-sh "${noctalia} msg brightness-down"; }
           }
+
+          ${config.niri.extraConfig}
         '';
 
         services.playerctld.enable = true;

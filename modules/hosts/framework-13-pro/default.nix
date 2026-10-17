@@ -22,11 +22,15 @@
     ];
 
     networking.hostName = "framework-13-pro";
-    home-manager.users.${username}.programs.obsidian.vaults.notes.target = lib.mkForce "syncthing/obsidian_vault";
-
-    # Use power-profiles-daemon so Noctalia can switch Framework power modes.
-    services.tlp.enable = lib.mkForce false;
-    services.power-profiles-daemon.enable = lib.mkForce true;
+    home-manager.users.${username} = {
+      programs.obsidian.vaults.notes.target = lib.mkForce "syncthing/obsidian_vault";
+      # VRR lets the 120 Hz panel drop its refresh rate when content is static.
+      niri.extraConfig = ''
+        output "eDP-1" {
+          variable-refresh-rate
+        }
+      '';
+    };
 
     # fprintd adds fingerprint auth to PAM (sudo, polkit); Noctalia's lock screen
     # talks to fprintd directly. Keep the greeter password-only so greetd can

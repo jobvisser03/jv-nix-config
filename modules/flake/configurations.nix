@@ -64,7 +64,6 @@
       "common-shell"
       "common-dev"
       "hyprland-desktop"
-      "power-management"
       "plymouth"
     ];
 
